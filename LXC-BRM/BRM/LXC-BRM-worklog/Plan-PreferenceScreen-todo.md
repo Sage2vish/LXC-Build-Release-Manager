@@ -9,8 +9,18 @@ Sources:
 - **Screen 4 — Logs & Console tab**, same fidelity. Superseded the early Logs & Console field guesses.
 - **Screen 5 — Appearance tab**, same fidelity. Superseded the early Appearance field guess (was a single "App Theme" line; the real tab is much larger).
 - **Screen 6 — Notifications tab**, same fidelity. Superseded the early Notifications field guess.
+- **Screen 7 — Advanced tab**, same fidelity. Superseded the early Advanced field guess. **All 7 tabs now covered.**
 
-Image files: `assets/Preference-Screen-1.png` through `assets/Preference-Screen-6.png` — still not on disk. This is a hard tool limitation: a chat-pasted image reaches me only as something I can look at, never as file bytes, and nothing in my toolset exports it — I've checked every location I can justify checking. The only way these land in `assets/` is saving them from Finder (drag the image out of the chat, or right-click → Save Image As) under the exact names above. Everything else below is written directly from reading each screen.
+Image files (naming convention: `Preference-Screen-N-<TabName>.png`):
+- `assets/Preference-Screen-1-General.png`
+- `assets/Preference-Screen-2-Repositories.png`
+- `assets/Preference-Screen-3-BuildExecution.png`
+- `assets/Preference-Screen-4-LogsConsole.png`
+- `assets/Preference-Screen-5-Appearance.png`
+- `assets/Preference-Screen-6-Notifications.png`
+- `assets/Preference-Screen-7-Advanced.png`
+
+None are on disk yet. This is a hard tool limitation: a chat-pasted image reaches me only as something I can look at, never as file bytes, and nothing in my toolset exports it. The only way these land in `assets/` is saving them from Finder (drag the image out of the chat, or right-click → Save Image As) under the exact names above. Everything else below is written directly from reading each screen.
 
 This is a **plan document**, not a duplicate todo list — the single active todo file is still `todo-2026-08-16.md`. This file holds the detailed design + checklist for one feature (the Preferences screen); the master todo links to it as one line item so tracking still has one home.
 
@@ -120,10 +130,33 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 **Advanced (Optional)**
 - Group multiple notifications (off) — "Combine multiple events into a single notification."
 
-### 07 🛠 Advanced
-- Allow script execution from outside `/build/scripts` (default off)
-- Enable verbose internal logging (default off)
-- Restore Defaults (reset all settings to recommended defaults)
+### 07 🛠 Advanced — *finalized from Screen 7*
+
+**Build & Script Behavior**
+- Allow scripts outside `/build/scripts` (off) — "Allow executing scripts from anywhere in the repository."
+- Custom build timeout, overrides per-build timeout — stepper, default 0 min ("0 = no timeout") — a **global ceiling**, distinct from Build Execution's per-build "Build timeout" dropdown (Screen 3) — see open question below
+- Detect executable files automatically (on) — "Treat files with exec permission as runnable scripts."
+- Terminate process tree on Stop (on) — "Kill all child processes and their children when build is stopped." *(duplicate of Build Execution's "Terminate child processes on Stop" — see open question below)*
+
+**Logging & Diagnostics**
+- Verbose / Debug logging (off) — "Enable detailed internal logging for troubleshooting."
+- Log internal diagnostics to file (on) — "Save Build Manager diagnostics to disk."
+- Diagnostics log location — text field + folder icon, default `~/Library/Logs/BuildManager/`
+- "Run Diagnostics Report…" button — "Collect system and configuration info for troubleshooting."
+
+**GitHub & Network**
+- GitHub API diagnostics — "Run GitHub Diagnostics…" button — "Check GitHub API connectivity and token status."
+- GitHub rate limit alerts — dropdown, default "Warn me at 20%" — "Warn when API rate limit is low."
+
+**Data & Maintenance**
+- Open Build Manager data directory — "Open Folder" button
+- Open `projects.json` — "Open File" button (opens in the user's default editor)
+- Clear repository metadata cache — "Clear Cache" button — "Repositories will be re-scanned."
+- Clear build history — "Clear History" button — "Remove all build history from this machine."
+- Reset all warnings — "Reset Warnings" button — "Reset all 'Don't show again' warnings."
+
+**Danger Zone**
+- Restore All Defaults — destructive red button in a highlighted "Danger Zone" panel — "Reset all preferences to default values." *(distinct from the bottom-bar "Restore Defaults" — see open question below)*
 
 ## Window Mechanics
 
@@ -221,9 +254,21 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 - [ ] Group multiple notifications toggle — wire into `UNNotificationRequest` threading/grouping
 
 ### 07 Advanced
-- [ ] Allow script execution from outside `/build/scripts` toggle — wire into `BuildScriptScanner`
-- [ ] Verbose internal logging toggle — groundwork only, no internal debug logging exists yet
-- [ ] Restore Defaults action — resets the draft to recommended defaults (not saved until Save is pressed)
+- [ ] Allow scripts outside `/build/scripts` toggle — wire into `BuildScriptScanner`
+- [ ] Global custom build timeout stepper — wire into `BuildRunner` as a ceiling that overrides Build Execution's per-build timeout when non-zero
+- [ ] Detect executable files automatically toggle — wire into `BuildScriptScanner` (currently only matches `.sh` by extension, not exec permission)
+- [ ] Terminate process tree on Stop toggle — same underlying setting as Build Execution's "Terminate child processes on Stop"; back both fields with one shared value, don't build two
+- [ ] Verbose / Debug logging toggle — groundwork only, no internal debug logging exists yet
+- [ ] Log internal diagnostics to file toggle + location field — groundwork; no diagnostics-log writer exists yet
+- [ ] "Run Diagnostics Report…" button — new feature, collects system/app/config info into a shareable report
+- [ ] "Run GitHub Diagnostics…" button — wire into `BuildScriptScanner.scanGitHub`'s connectivity path as a manual health check
+- [ ] GitHub rate limit alerts dropdown — wire into the GitHub API response headers (`X-RateLimit-Remaining`) once the scanner reads them
+- [ ] Open Build Manager data directory button — `NSWorkspace.shared.open` on `~/Library/Application Support/LXC-BRM/`
+- [ ] Open `projects.json` button — `NSWorkspace.shared.open` on the file (note: `projects.json` today is the static config template in the repo, not a live app file — see open question)
+- [ ] Clear repository metadata cache button — no metadata cache exists yet to clear (current scans are always live, not cached)
+- [ ] Clear build history button — wire into `BuildHistoryStore` (needs a real "clear" method; doesn't exist yet)
+- [ ] Reset all warnings button — no "don't show again" warning system exists yet
+- [ ] Restore All Defaults (Danger Zone) — immediate destructive action distinct from the per-tab bottom-bar "Restore Defaults" (draft-only, needs Save) — see open question below
 
 ### Polish
 - [ ] Preferences load and apply on app launch (theme, default tab, etc.)
@@ -240,9 +285,9 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 | 04 Logs & Console | 0 / 15 | Open |
 | 05 Appearance | 0 / 9 | Open |
 | 06 Notifications | 0 / 7 | Open |
-| 07 Advanced | 0 / 3 | Open (pending Screen 7) |
+| 07 Advanced | 0 / 15 | Open |
 | Polish | 0 / 1 | Open |
-| **Total** | **0 / 72** | **Not started** |
+| **Total** | **0 / 84** | **Not started — all 7 screens now incorporated** |
 
 ## Screens Received
 
@@ -254,7 +299,7 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 | 4 | Logs & Console | ✅ Read and incorporated (image not yet saved to `assets/`) |
 | 5 | Appearance | ✅ Read and incorporated (image not yet saved to `assets/`) |
 | 6 | Notifications | ✅ Read and incorporated (image not yet saved to `assets/`) |
-| 7 | Advanced | ⏳ Waiting — fields below are still the early guesses from the concept mockup |
+| 7 | Advanced | ✅ Read and incorporated (image not yet saved to `assets/`) — **all screens done** |
 
 ## Notes / Open Questions
 
@@ -267,3 +312,7 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 7. **Theme override reverses an earlier decision.** Screen 5's Light/Dark/System picker means the app needs a manual appearance override — but the app was deliberately built earlier today to *always* follow the system appearance, per explicit instruction ("the dark or bright has to be the system default"), which removed a hardcoded dark background specifically to achieve that. This isn't a contradiction to silently resolve: implementing the theme picker is the right call (it's what's being asked for now, and "System" as the default still satisfies the earlier instruction), just flagging that it's a deliberate reversal of "no in-app override," not an oversight.
 8. Storage path: keeping `~/Library/Application Support/LXC-BRM/preferences.json` instead of the early mockup's `BuildManager/` folder name, for consistency with the app's existing stores.
 9. This supersedes the placeholder `PreferencesView`/`Settings` scene built earlier today (2026-08-16); that code will be replaced, not kept alongside.
+10. **Third duplicate: "terminate process tree on Stop."** Appears near-verbatim on both Build Execution (Screen 3) and Advanced (Screen 7). Same resolution as notes 2 and 5 — one shared stored value, shown in both places, not two independently-tracked settings.
+11. **Two different "timeout" fields that are NOT duplicates.** Build Execution's "Build timeout" (Screen 3, default 60 min) is a per-build default; Advanced's "Custom build timeout (overrides per-build timeout)" (Screen 7, default 0/no limit) is described as a global ceiling. Kept as two distinct fields since the mockup is explicit about the override relationship — worth confirming that reading is right before implementing.
+12. **Two different "Restore Defaults" actions that are NOT duplicates.** The bottom bar's "Restore Defaults" (present on every tab) resets the current draft — not applied until Save. Advanced's "Restore All Defaults" sits in a red "Danger Zone" panel, styled as an immediate destructive action. Treating these as genuinely different: one is undo-able (Cancel discards it), the other reads as applying immediately. Needs a real confirmation dialog before wiring, given the styling explicitly calls it dangerous.
+13. **"Open projects.json" assumes a live file that doesn't exist yet.** Today, `projects.json` is a static example/template committed in `LXC-BRM-build-release/`, not a file the running app reads or writes. This button implies the app should have its own live `projects.json`-equivalent — needs a decision on whether to point this at the existing repo file (read-only reference) or introduce a new live one (more consistent with the rest of Advanced's "Data & Maintenance" framing, but a bigger change).
