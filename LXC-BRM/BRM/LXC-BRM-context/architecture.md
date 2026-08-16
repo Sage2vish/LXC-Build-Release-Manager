@@ -3,10 +3,10 @@
 ## UI Architecture
 
 - Native SwiftUI app.
-- Main shell uses a split layout for BRM areas and detail content.
-- Left side lists the BRM folders.
-- Detail pane shows the selected area, naming rules, and release output.
-- UI copy should reflect the actual folder conventions and the current todo file naming.
+- Main shell uses a `NavigationSplitView`: repository sidebar, repository detail pane, and an optional build inspector.
+- Reusable sidebar components (`RepositoryRow`, `RecentRepositoryRow`, `AddRepositorySheet`, `StatusBar`) live in dedicated Swift files instead of being duplicated in the app shell.
+- The detail pane owns Build, Logs, History, Overview, and Settings tabs for the selected repository.
+- UI copy reflects actual repository state, build output, and saved preferences.
 
 ## Workspace Architecture
 

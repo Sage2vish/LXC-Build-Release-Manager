@@ -15,6 +15,8 @@ final class BuildRunner: ObservableObject {
     private var wasCancelled = false
     private var sleepActivityToken: NSObjectProtocol?
     private var timeoutWorkItem: DispatchWorkItem?
+    private var stdoutBuffer = Data()
+    private var stderrBuffer = Data()
 
     var isRunning: Bool { runningScript != nil }
 
@@ -31,6 +33,8 @@ final class BuildRunner: ObservableObject {
         startedAt = Date()
         finishedAt = nil
         wasCancelled = false
+        stdoutBuffer.removeAll(keepingCapacity: true)
+        stderrBuffer.removeAll(keepingCapacity: true)
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: preferences.defaultShell)
@@ -51,10 +55,10 @@ final class BuildRunner: ObservableObject {
         process.standardError = stderrPipe
 
         stdoutPipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
-            self?.handleOutput(handle.availableData)
+            self?.handleOutput(handle.availableData, stream: .stdout)
         }
         stderrPipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
-            self?.handleOutput(handle.availableData)
+            self?.handleOutput(handle.availableData, stream: .stderr)
         }
 
         process.terminationHandler = { [weak self] proc in
@@ -119,24 +123,49 @@ final class BuildRunner: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(effectiveMinutes * 60), execute: workItem)
     }
 
-    nonisolated private func handleOutput(_ data: Data) {
-        guard !data.isEmpty, let text = String(data: data, encoding: .utf8) else { return }
-        let lines = text.split(separator: "\n", omittingEmptySubsequences: true).map(String.init)
-        guard !lines.isEmpty else { return }
+    private enum OutputStream {
+        case stdout
+        case stderr
+    }
+
+    nonisolated private func handleOutput(_ data: Data, stream: OutputStream) {
+        guard !data.isEmpty else { return }
         Task { @MainActor [weak self] in
-            self?.appendLines(lines)
+            self?.appendOutput(data, from: stream)
         }
     }
 
-    private func appendLines(_ lines: [String]) {
-        let now = Date()
-        logLines.append(contentsOf: lines.map { LogLine(timestamp: now, text: $0) })
+    private func appendOutput(_ data: Data, from stream: OutputStream) {
+        var buffer = stream == .stdout ? stdoutBuffer : stderrBuffer
+        buffer.append(data)
+
+        while let newline = buffer.firstIndex(of: 0x0A) {
+            let lineData = buffer[..<newline]
+            let line = String(decoding: lineData.last == 0x0D ? lineData.dropLast() : lineData, as: UTF8.self)
+            logLines.append(LogLine(timestamp: Date(), text: line))
+            buffer.removeSubrange(...newline)
+        }
+
+        switch stream {
+        case .stdout: stdoutBuffer = buffer
+        case .stderr: stderrBuffer = buffer
+        }
+    }
+
+    private func flushOutputBuffers() {
+        for buffer in [stdoutBuffer, stderrBuffer] where !buffer.isEmpty {
+            let line = String(decoding: buffer.last == 0x0D ? buffer.dropLast() : buffer, as: UTF8.self)
+            logLines.append(LogLine(timestamp: Date(), text: line))
+        }
+        stdoutBuffer.removeAll(keepingCapacity: true)
+        stderrBuffer.removeAll(keepingCapacity: true)
     }
 
     private func finish(exitCode: Int32, repository: Repository, script: BuildScript, historyStore: BuildHistoryStore, preferences: Preferences) {
         guard runningScript != nil else { return }
         stdoutHandle?.readabilityHandler = nil
         stderrHandle?.readabilityHandler = nil
+        flushOutputBuffers()
         finishedAt = Date()
         timeoutWorkItem?.cancel()
         timeoutWorkItem = nil

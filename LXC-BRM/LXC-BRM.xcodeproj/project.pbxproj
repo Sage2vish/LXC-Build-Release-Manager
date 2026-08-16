@@ -23,6 +23,10 @@
 		A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9911BF5D489D90AE02811CB3 /* LogFileService.swift */; };
 		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
 		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
+		F50575EB30318AE700601A4A /* AddRepositorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EA30318AE700601A4A /* AddRepositorySheet.swift */; };
+		F50575ED30318AE800601A4A /* RepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EC30318AE800601A4A /* RepositoryRow.swift */; };
+		F50575EF30318AEB00601A4A /* RecentRepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EE30318AEB00601A4A /* RecentRepositoryRow.swift */; };
+		F50575F130318AEE00601A4A /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575F030318AEE00601A4A /* StatusBar.swift */; };
 		FEEDFCE5AA26DC939D4E44DE /* RepositoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F0A7F761D84D0548A244BA /* RepositoryStore.swift */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +49,10 @@
 		D42A86DDBD972CFA5981609E /* BuildRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRecord.swift; path = App/Models/BuildRecord.swift; sourceTree = "<group>"; };
 		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		F50575EA30318AE700601A4A /* AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
+		F50575EC30318AE800601A4A /* RepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RepositoryRow.swift; sourceTree = "<group>"; };
+		F50575EE30318AEB00601A4A /* RecentRepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RecentRepositoryRow.swift; sourceTree = "<group>"; };
+		F50575F030318AEE00601A4A /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/StatusBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,8 +101,20 @@
 				376C275B291A8197FDA9F65B /* AppDelegate.swift */,
 				A1B2C3D4E5F6071829384756 /* Models */,
 				A6B5C4D3E2F1897061524738 /* Services */,
+				F50575F230318AFF00601A4A /* Views */,
 			);
 			name = App;
+			sourceTree = "<group>";
+		};
+		F50575F230318AFF00601A4A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F50575EA30318AE700601A4A /* AddRepositorySheet.swift */,
+				F50575EC30318AE800601A4A /* RepositoryRow.swift */,
+				F50575EE30318AEB00601A4A /* RecentRepositoryRow.swift */,
+				F50575F030318AEE00601A4A /* StatusBar.swift */,
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 		96D8A2840BD6F8C71B5C2396 /* Products */ = {
@@ -194,7 +214,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F50575ED30318AE800601A4A /* RepositoryRow.swift in Sources */,
 				861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */,
+				F50575EB30318AE700601A4A /* AddRepositorySheet.swift in Sources */,
 				DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */,
 				9DD375B6E51F32764D466AAF /* Repository.swift in Sources */,
 				2069CF7280E3EFC8FE58FDDF /* BuildScript.swift in Sources */,
@@ -204,8 +226,10 @@
 				4C6B8D1F2A3E4C5D6F708192 /* BuildNotificationService.swift in Sources */,
 				A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */,
 				50CC22F6B112137092256122 /* BuildHistoryStore.swift in Sources */,
+				F50575EF30318AEB00601A4A /* RecentRepositoryRow.swift in Sources */,
 				E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */,
 				2F3B4B4C450DA1992E367F86 /* GitBranchReader.swift in Sources */,
+				F50575F130318AEE00601A4A /* StatusBar.swift in Sources */,
 				77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */,
 				55BA48F23D7D589AEBE85E1D /* Preferences.swift in Sources */,
 				5D97B5F6FBFEF4DFB4D2AFE8 /* PreferencesStore.swift in Sources */,
@@ -223,10 +247,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 6EERS23K5D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "LXC Build Release Manager";
@@ -237,7 +264,8 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sagevish.lxcbrm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.brm;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
 			};
@@ -321,7 +349,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sagevish.lxcbrm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.brm;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
 			};
