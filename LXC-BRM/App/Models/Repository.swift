@@ -17,6 +17,34 @@ enum RepositorySource: Codable, Hashable {
     }
 }
 
+/// Validation for the supplementary GitHub URL a local repository can record.
+///
+/// Kept out of the view so the accept/reject rules can be tested directly rather than only
+/// through the Settings text field.
+enum GitHubURLValidator {
+    enum Outcome: Equatable {
+        /// The field was blank: the stored URL should be cleared.
+        case cleared
+        /// A usable GitHub URL, trimmed of surrounding whitespace.
+        case valid(String)
+        case invalid(String)
+    }
+
+    static let invalidMessage = "Enter a GitHub URL in the form https://github.com/owner/repo."
+
+    static func evaluate(_ raw: String) -> Outcome {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return .cleared }
+        guard let url = URL(string: trimmed),
+              let host = url.host?.lowercased(),
+              host == "github.com" || host.hasSuffix(".github.com"),
+              url.pathComponents.count >= 3 else {
+            return .invalid(invalidMessage)
+        }
+        return .valid(trimmed)
+    }
+}
+
 struct Repository: Identifiable, Codable, Hashable {
     let id: UUID
     var name: String

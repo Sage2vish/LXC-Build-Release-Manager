@@ -221,6 +221,157 @@ final class BuildWorkspaceTests: XCTestCase {
         XCTAssertEqual(history.records(for: repository.id).first?.status, .cancelled)
     }
 
+    // MARK: Folder import — the branches the GUI could not be driven through
+
+    func testFolderImportRejectsFolderOutsideTheRepository() throws {
+        let repository = temporaryDirectory.appendingPathComponent("ImportRepo", isDirectory: true)
+        let outside = temporaryDirectory.appendingPathComponent("SomewhereElse", isDirectory: true)
+        try FileManager.default.createDirectory(at: repository, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: outside, withIntermediateDirectories: true)
+        try "echo hi".write(to: outside.appendingPathComponent("outside.sh"), atomically: true, encoding: .utf8)
+
+        let blocked = BuildScriptFolderImport.resolve(
+            folderPath: outside.path,
+            repositoryPath: repository.path,
+            allowOutsideRepository: false,
+            existingPaths: []
+        )
+        XCTAssertEqual(blocked, .outsideRepository)
+        XCTAssertEqual(
+            blocked.errorMessage,
+            "That folder is outside this repository. Enable that option in Preferences to add it."
+        )
+
+        // The same folder is allowed once the preference opts in.
+        let allowed = BuildScriptFolderImport.resolve(
+            folderPath: outside.path,
+            repositoryPath: repository.path,
+            allowOutsideRepository: true,
+            existingPaths: []
+        )
+        XCTAssertEqual(allowed, .scripts([outside.appendingPathComponent("outside.sh").path]))
+    }
+
+    func testFolderImportReportsEmptyUnreadableAndFullyDuplicateFolders() throws {
+        let repository = temporaryDirectory.appendingPathComponent("DupRepo", isDirectory: true)
+        let empty = repository.appendingPathComponent("empty", isDirectory: true)
+        let scripts = repository.appendingPathComponent("scripts", isDirectory: true)
+        try FileManager.default.createDirectory(at: empty, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: scripts, withIntermediateDirectories: true)
+        try "not a script".write(to: empty.appendingPathComponent("readme.txt"), atomically: true, encoding: .utf8)
+
+        let first = scripts.appendingPathComponent("a.sh")
+        let second = scripts.appendingPathComponent("b.sh")
+        try "echo a".write(to: first, atomically: true, encoding: .utf8)
+        try "echo b".write(to: second, atomically: true, encoding: .utf8)
+
+        func resolve(_ folder: URL, existing: Set<String> = []) -> BuildScriptFolderImport.Outcome {
+            BuildScriptFolderImport.resolve(
+                folderPath: folder.path,
+                repositoryPath: repository.path,
+                allowOutsideRepository: false,
+                existingPaths: existing
+            )
+        }
+
+        XCTAssertEqual(resolve(empty), .noScriptsInFolder)
+        XCTAssertEqual(resolve(empty).errorMessage, "No .sh scripts were found in that folder.")
+
+        XCTAssertEqual(
+            resolve(repository.appendingPathComponent("does-not-exist")),
+            .unreadableFolder
+        )
+
+        // Every script already present: nothing to add.
+        XCTAssertEqual(
+            resolve(scripts, existing: [first.path, second.path]),
+            .allAlreadyAdded
+        )
+        XCTAssertEqual(
+            resolve(scripts, existing: [first.path, second.path]).errorMessage,
+            "Those scripts are already in this repository."
+        )
+
+        // Partially present: only the genuinely new script is returned.
+        XCTAssertEqual(resolve(scripts, existing: [first.path]), .scripts([second.path]))
+        // Nothing present: both, in sorted order.
+        XCTAssertEqual(resolve(scripts), .scripts([first.path, second.path]))
+    }
+
+    // MARK: GitHub origin field
+
+    func testGitHubURLValidatorAcceptsClearsAndRejects() {
+        XCTAssertEqual(GitHubURLValidator.evaluate(""), .cleared)
+        XCTAssertEqual(GitHubURLValidator.evaluate("   \n "), .cleared)
+
+        XCTAssertEqual(
+            GitHubURLValidator.evaluate("  https://github.com/Sage2vish/LXC-BRM  "),
+            .valid("https://github.com/Sage2vish/LXC-BRM")
+        )
+
+        for rejected in [
+            "https://gitlab.com/owner/repo",
+            "https://github.com/owner",
+            "not a url at all",
+            "https://notgithub.com/owner/repo"
+        ] {
+            XCTAssertEqual(
+                GitHubURLValidator.evaluate(rejected),
+                .invalid(GitHubURLValidator.invalidMessage),
+                "Expected \(rejected) to be rejected"
+            )
+        }
+    }
+
+    func testRepositoryKeepsGitHubURLOptionalAndDecodesOlderRecords() throws {
+        // A repository written before the field existed must still decode.
+        let legacy = """
+        {"id":"\(UUID().uuidString)","name":"Legacy","source":{"local":{"_0":"/tmp/legacy"}},
+         "lastAccessed":0,"isPinned":false}
+        """
+        let decoder = JSONDecoder()
+        let restored = try? decoder.decode(Repository.self, from: Data(legacy.utf8))
+        XCTAssertNil(restored?.gitHubURL)
+
+        var repository = Repository(name: "Example", source: .local(path: "/tmp/example"))
+        XCTAssertNil(repository.resolvedGitHubURL)
+        repository.gitHubURL = "https://github.com/owner/repo"
+        XCTAssertEqual(repository.resolvedGitHubURL, "https://github.com/owner/repo")
+        XCTAssertEqual(repository.localPath, "/tmp/example")
+
+        // A GitHub-sourced repository resolves its URL from `source` with no extra field.
+        let remote = Repository(name: "Remote", source: .github(url: "https://github.com/owner/remote"))
+        XCTAssertEqual(remote.resolvedGitHubURL, "https://github.com/owner/remote")
+        XCTAssertNil(remote.localPath)
+    }
+
+    func testDeepScriptSearchSkipsXcodeBuildTreesButKeepsRealScripts() throws {
+        let repository = temporaryDirectory.appendingPathComponent("SearchRepo", isDirectory: true)
+        let keep = repository.appendingPathComponent("tools", isDirectory: true)
+        let derived = repository.appendingPathComponent("DerivedData-Device-Release/Build", isDirectory: true)
+        let intermediate = repository.appendingPathComponent("ios/hermes-engine.build", isDirectory: true)
+        let modules = repository.appendingPathComponent("node_modules/pkg", isDirectory: true)
+        for directory in [keep, derived, intermediate, modules] {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        }
+        try "echo real".write(to: keep.appendingPathComponent("deploy.sh"), atomically: true, encoding: .utf8)
+        try "echo junk".write(to: derived.appendingPathComponent("Script-ABC123.sh"), atomically: true, encoding: .utf8)
+        try "echo junk".write(to: intermediate.appendingPathComponent("Script-DEF456.sh"), atomically: true, encoding: .utf8)
+        try "echo junk".write(to: modules.appendingPathComponent("postinstall.sh"), atomically: true, encoding: .utf8)
+
+        let found = DeepScriptSearch.search(rootPath: repository.path, existingPaths: [])
+        XCTAssertEqual(found.map(\.fileName), ["deploy.sh"])
+        XCTAssertEqual(found.first?.folderName, "tools")
+        XCTAssertEqual(found.first?.relativePath, "tools/deploy.sh")
+        XCTAssertFalse(found.first?.isAlreadyAdded ?? true)
+
+        let reRun = DeepScriptSearch.search(
+            rootPath: repository.path,
+            existingPaths: [keep.appendingPathComponent("deploy.sh").path]
+        )
+        XCTAssertTrue(reRun.first?.isAlreadyAdded ?? false)
+    }
+
     private func waitForRunner(_ runner: BuildRunner, timeout: Duration = .seconds(5)) async throws {
         let clock = ContinuousClock()
         let deadline = clock.now + timeout

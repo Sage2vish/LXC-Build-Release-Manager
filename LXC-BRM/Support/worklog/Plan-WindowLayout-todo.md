@@ -188,7 +188,7 @@ stop the centre column from carrying long paths it has no room for.
 - [x] Import every runnable script found in the chosen folder, not just the first.
 - [x] Reuse the existing script-scanning and location-classification logic rather than duplicating path parsing.
 - [x] Reflect the imported scripts in the table without a full rescan where possible.
-- [x] Handle cancel, permission-denied, empty-folder, and duplicate-script cases with a visible message. **Empty-folder path GUI-verified; the outside-repository and duplicate branches are written and compile but were not GUI-exercised — see caveats.**
+- [x] Handle cancel, permission-denied, empty-folder, and duplicate-script cases with a visible message. Empty-folder path GUI-verified; **every branch is now covered by unit tests** after the decision logic was extracted into `BuildScriptFolderImport`.
 - [x] Mirror the new action into the empty-state `buildScriptsFallbackActions` row.
 
 ## Phase 12 — Build Parameters Move To The Detail View Window
@@ -298,9 +298,29 @@ were repaired here to get the target compiling again.
 - Test fixtures created during this pass were removed, and `projects.json` /
   `build-workspace-state.json` were restored from backups, so no test data was left behind.
 
-### Still not exercised
+### Closing The Last Two Gaps
 
-1. The **outside-repository** and **duplicate-script** branches of the folder import. Both are
-   guards that mirror the identical, already-working guard in `addBuildScript`, but neither was
-   driven through the GUI.
-2. The **keystroke-to-save** path of the GitHub Origin field, per the note above.
+Both remaining gaps were closed by moving the logic out of the view and testing it directly,
+rather than by further GUI poking — the failure branches cannot be reached reliably through a
+real `NSOpenPanel`, and GUI automation kept losing focus to other apps.
+
+- **`BuildScriptFolderImport`** (new) now owns the folder-import decision, returning
+  `.scripts`/`.outsideRepository`/`.unreadableFolder`/`.noScriptsInFolder`/`.allAlreadyAdded`
+  with the user-facing message attached to the outcome. The view just renders the result.
+- **`GitHubURLValidator`** (new) now owns the URL rules, returning `.cleared`/`.valid`/`.invalid`.
+
+Five tests added to `Tests/BuildWorkspaceTests.swift`, all passing:
+
+| Test | Covers |
+| --- | --- |
+| `testFolderImportRejectsFolderOutsideTheRepository` | Outside-repository guard, and that the Preferences opt-in unblocks it |
+| `testFolderImportReportsEmptyUnreadableAndFullyDuplicateFolders` | Empty, unreadable, all-duplicate, partial-duplicate, and clean-import cases |
+| `testGitHubURLValidatorAcceptsClearsAndRejects` | Blank clears; trims whitespace; rejects GitLab, owner-only paths, non-URLs, and `notgithub.com` |
+| `testRepositoryKeepsGitHubURLOptionalAndDecodesOlderRecords` | Pre-field `projects.json` still decodes; `resolvedGitHubURL` and `localPath` for both source kinds |
+| `testDeepScriptSearchSkipsXcodeBuildTreesButKeepsRealScripts` | Locks in the skip-list fix so `DerivedData-*`, `*.build`, and `node_modules` junk cannot come back |
+
+**Suite status: 14 tests, 0 failures** (`xcodebuild test` → `TEST SUCCEEDED`), up from 9.
+
+The one thing still not driven end-to-end in the GUI is the keystroke-to-save round trip on the
+GitHub Origin field. Its validation, its store write, and the header render are each verified
+independently; only the literal typing was blocked by focus contention.

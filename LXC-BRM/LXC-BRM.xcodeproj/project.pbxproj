@@ -29,6 +29,7 @@
 		F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */; };
 		5BA86873F58547929F408FEE /* App/Views/AutoFindScriptsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 530D82D215D5463E8AACEC56 /* App/Views/AutoFindScriptsSheet.swift */; };
 		9C2A7EF640374F2AB326DC49 /* App/Services/DeepScriptSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0D1DE81E304C1E9B2771ED /* App/Services/DeepScriptSearch.swift */; };
+		8A0B88E86C774770A10B0AEC /* App/Services/BuildScriptFolderImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543DCCF6EF334013B8B54853 /* App/Services/BuildScriptFolderImport.swift */; };
 		F50575ED30318AE800601A4A /* App/Views/RepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EC30318AE800601A4A /* App/Views/RepositoryRow.swift */; };
 		F50575EF30318AEB00601A4A /* App/Views/RecentRepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EE30318AEB00601A4A /* App/Views/RecentRepositoryRow.swift */; };
 		F50575F130318AEE00601A4A /* App/Views/StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575F030318AEE00601A4A /* App/Views/StatusBar.swift */; };
@@ -109,6 +110,7 @@
 		F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
 		530D82D215D5463E8AACEC56 /* App/Views/AutoFindScriptsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AutoFindScriptsSheet.swift; sourceTree = "<group>"; };
 		BE0D1DE81E304C1E9B2771ED /* App/Services/DeepScriptSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/DeepScriptSearch.swift; sourceTree = "<group>"; };
+		543DCCF6EF334013B8B54853 /* App/Services/BuildScriptFolderImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/BuildScriptFolderImport.swift; sourceTree = "<group>"; };
 		F50575EC30318AE800601A4A /* App/Views/RepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RepositoryRow.swift; sourceTree = "<group>"; };
 		F50575EE30318AEB00601A4A /* App/Views/RecentRepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RecentRepositoryRow.swift; sourceTree = "<group>"; };
 		F50575F030318AEE00601A4A /* App/Views/StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/StatusBar.swift; sourceTree = "<group>"; };
@@ -264,6 +266,7 @@
 				F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */,
 				530D82D215D5463E8AACEC56 /* App/Views/AutoFindScriptsSheet.swift */,
 				BE0D1DE81E304C1E9B2771ED /* App/Services/DeepScriptSearch.swift */,
+				543DCCF6EF334013B8B54853 /* App/Services/BuildScriptFolderImport.swift */,
 				F50575EC30318AE800601A4A /* App/Views/RepositoryRow.swift */,
 				F50575EE30318AEB00601A4A /* App/Views/RecentRepositoryRow.swift */,
 				F50575F030318AEE00601A4A /* App/Views/StatusBar.swift */,
@@ -536,6 +539,7 @@
 				F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */,
 				5BA86873F58547929F408FEE /* App/Views/AutoFindScriptsSheet.swift in Sources */,
 				9C2A7EF640374F2AB326DC49 /* App/Services/DeepScriptSearch.swift in Sources */,
+				8A0B88E86C774770A10B0AEC /* App/Services/BuildScriptFolderImport.swift in Sources */,
 				DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */,
 				9DD375B6E51F32764D466AAF /* Repository.swift in Sources */,
 				2069CF7280E3EFC8FE58FDDF /* BuildScript.swift in Sources */,

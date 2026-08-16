@@ -1736,21 +1736,16 @@ private struct RepositoryDetailView: View {
     }
 
     private func saveGitHubURL() {
-        let trimmed = gitHubURLDraft.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else {
+        switch GitHubURLValidator.evaluate(gitHubURLDraft) {
+        case .cleared:
             store.setGitHubURL("", for: repository)
             gitHubURLError = nil
-            return
+        case .valid(let url):
+            store.setGitHubURL(url, for: repository)
+            gitHubURLError = nil
+        case .invalid(let message):
+            gitHubURLError = message
         }
-        guard let url = URL(string: trimmed),
-              let host = url.host,
-              host.lowercased().hasSuffix("github.com"),
-              url.pathComponents.count >= 3 else {
-            gitHubURLError = "Enter a GitHub URL in the form https://github.com/owner/repo."
-            return
-        }
-        store.setGitHubURL(trimmed, for: repository)
-        gitHubURLError = nil
     }
 
     private func scan() async {
@@ -1813,25 +1808,15 @@ private struct RepositoryDetailView: View {
         guard case .local(let repositoryPath) = repository.source else { return }
         guard let folderPath = presentLocalFolderPickerPath() else { return }
 
-        let isInsideRepository = BuildScriptPathResolver.isWithin(folderPath, rootPath: repositoryPath)
-        guard isInsideRepository || preferencesStore.preferences.allowScriptsOutsideBuildScripts else {
-            pickerError = "That folder is outside this repository. Enable that option in Preferences to add it."
-            return
-        }
+        let outcome = BuildScriptFolderImport.resolve(
+            folderPath: folderPath,
+            repositoryPath: repositoryPath,
+            allowOutsideRepository: preferencesStore.preferences.allowScriptsOutsideBuildScripts,
+            existingPaths: existingScriptPaths
+        )
 
-        let fileManager = FileManager.default
-        guard let entries = try? fileManager.contentsOfDirectory(atPath: folderPath) else {
-            pickerError = "That folder could not be read."
-            return
-        }
-
-        let scriptPaths = entries
-            .filter { $0.hasSuffix(".sh") }
-            .map { (folderPath as NSString).appendingPathComponent($0) }
-            .sorted()
-
-        guard !scriptPaths.isEmpty else {
-            pickerError = "No .sh scripts were found in that folder."
+        guard case .scripts(let scriptPaths) = outcome else {
+            pickerError = outcome.errorMessage
             return
         }
 
