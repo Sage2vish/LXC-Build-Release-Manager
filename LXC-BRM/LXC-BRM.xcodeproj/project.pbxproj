@@ -10,6 +10,10 @@
 		32AFC59C44ABE8B95311B6F4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */; };
 		861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */; };
 		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
+		9DD375B6E51F32764D466AAF /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B97018D171778322754574B /* Repository.swift */; };
+		2069CF7280E3EFC8FE58FDDF /* BuildScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925160EB5C5E561373968382 /* BuildScript.swift */; };
+		FEEDFCE5AA26DC939D4E44DE /* RepositoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F0A7F761D84D0548A244BA /* RepositoryStore.swift */; };
+		251FCCFB1823E848C6967B7C /* BuildScriptScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +32,10 @@
 		EC7DCB9FFFC45B14143505CA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = "BRM/LXC-BRM-context/README.md"; sourceTree = "<group>"; };
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		F8A35B40DE5743548135AE5E /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-shared/todo-2026-08-16.md"; sourceTree = "<group>"; };
+		1B97018D171778322754574B /* Repository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Repository.swift; path = App/Models/Repository.swift; sourceTree = "<group>"; };
+		925160EB5C5E561373968382 /* BuildScript.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScript.swift; path = App/Models/BuildScript.swift; sourceTree = "<group>"; };
+		16F0A7F761D84D0548A244BA /* RepositoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RepositoryStore.swift; path = App/Services/RepositoryStore.swift; sourceTree = "<group>"; };
+		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,8 +99,28 @@
 			children = (
 				B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */,
 				51977CC4D41C9D8BB3B28C4D /* ContentView.swift */,
+				A1B2C3D4E5F6071829384756 /* Models */,
+				A6B5C4D3E2F1897061524738 /* Services */,
 			);
 			name = App;
+			sourceTree = "<group>";
+		};
+		A1B2C3D4E5F6071829384756 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1B97018D171778322754574B /* Repository.swift */,
+				925160EB5C5E561373968382 /* BuildScript.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		A6B5C4D3E2F1897061524738 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				16F0A7F761D84D0548A244BA /* RepositoryStore.swift */,
+				E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */,
+			);
+			name = Services;
 			sourceTree = "<group>";
 		};
 		96D8A2840BD6F8C71B5C2396 /* Products */ = {
@@ -169,6 +197,10 @@
 			files = (
 				861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */,
 				DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */,
+				9DD375B6E51F32764D466AAF /* Repository.swift in Sources */,
+				2069CF7280E3EFC8FE58FDDF /* BuildScript.swift in Sources */,
+				FEEDFCE5AA26DC939D4E44DE /* RepositoryStore.swift in Sources */,
+				251FCCFB1823E848C6967B7C /* BuildScriptScanner.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

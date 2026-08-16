@@ -20,7 +20,8 @@ This folder contains the macOS-side BRM workspace folders.
 
 ## Index Files
 
-- `LXC-BRM-worklog/todo-2026-08-16.md`
+- `LXC-BRM-context/requirements.md` — full functional requirements, in-repo copy of the source PDF
+- `LXC-BRM-worklog/todo-2026-08-16.md` — phased build plan and tracking against those requirements
 - `LXC-BRM-context/rules-context.md`
 - `LXC-BRM-context/architecture.md`
 - `LXC-BRM-context/decisions/decision-2026-08-16.md`
