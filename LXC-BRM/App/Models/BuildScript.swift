@@ -195,6 +195,14 @@ struct BuildScript: Identifiable, Hashable {
         self.parameters = parameters
         self.isRemote = isRemote
     }
+
+    /// Name of the directory containing the script. Shown in the scripts table in place of the
+    /// full path, which is too long for the row and lives in the Detail View Window instead.
+    var folderName: String {
+        let folder = (path as NSString).deletingLastPathComponent
+        let name = (folder as NSString).lastPathComponent
+        return name.isEmpty ? "—" : name
+    }
 }
 
 enum BuildScanResult: Equatable {

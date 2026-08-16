@@ -317,6 +317,7 @@ private struct LogPane: View {
     @State private var isExpanded = false
     @State private var autoScroll = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
 
     init(
         title: String,
@@ -361,6 +362,14 @@ private struct LogPane: View {
         return .custom(preferences.consoleFontName, size: size)
     }
 
+    private var pastelBackgroundColor: Color {
+        if colorScheme == .dark {
+            return Color.black.opacity(0.82)
+        } else {
+            return Color(red: 244/255, green: 246/255, blue: 255/255, opacity: 0.82)
+        }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -403,8 +412,13 @@ private struct LogPane: View {
                     .buttonStyle(.borderless)
                 }
                 if let onExport {
-                    Button { onExport() } label: { Label("Save Log", systemImage: "square.and.arrow.down") }
-                        .disabled(lines.isEmpty)
+                    Button { onExport() } label: {
+                        Label("Save Log", systemImage: "square.and.arrow.down")
+                    }
+                    .tint(Color(red: 166/255, green: 209/255, blue: 247/255)) // pastel blue tone
+                    .disabled(lines.isEmpty)
+                    .accessibilityLabel("Save Log to file")
+                    .help("Export the full output to a file.")
                 }
             }
 
@@ -413,18 +427,23 @@ private struct LogPane: View {
                 TextField("Search log…", text: $searchText)
                     .textFieldStyle(.plain)
                     .onChange(of: searchText) { _, _ in currentMatchIndex = 0 }
+                    .accessibilityLabel("Search log")
+                    .accessibilityHint("Enter text to filter log lines")
                 if !searchText.isEmpty {
                     Text(matches.isEmpty ? "0 matches" : "\(currentMatchIndex + 1) of \(matches.count)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Button { step(-1) } label: { Image(systemName: "chevron.up") }
                         .disabled(matches.isEmpty)
+                        .accessibilityLabel("Previous match")
                     Button { step(1) } label: { Image(systemName: "chevron.down") }
                         .disabled(matches.isEmpty)
+                        .accessibilityLabel("Next match")
                 }
             }
             .padding(6)
             .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 6))
+            .cornerRadius(6)
 
             ScrollViewReader { proxy in
                 ScrollView {
@@ -435,6 +454,7 @@ private struct LogPane: View {
                                     Text("\(index + 1)")
                                         .foregroundStyle(.white.opacity(0.35))
                                         .frame(width: 34, alignment: .trailing)
+                                        .accessibilityLabel("Line number \(index + 1)")
                                 }
                                 if !line.timestampText.isEmpty {
                                     Text(line.timestampText)
@@ -446,6 +466,7 @@ private struct LogPane: View {
                                     .lineLimit(preferences.wordWrap ? nil : 1)
                                     .truncationMode(.tail)
                                     .foregroundStyle(color(for: line))
+                                    .font(.system(size: CGFloat(preferences.consoleFontSize), design: .monospaced))
                             }
                             .font(logFont)
                             .padding(.horizontal, 6)
@@ -465,9 +486,9 @@ private struct LogPane: View {
                     .padding(8)
                 }
                 .frame(minHeight: 220, maxHeight: isExpanded ? 720 : 420)
-                .background(Color.black.opacity(0.88))
+                .background(pastelBackgroundColor)
                 .foregroundStyle(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
                 .onAppear {
                     if autoScroll, let last = filtered.last {
                         proxy.scrollTo(last.id, anchor: .bottom)
@@ -492,6 +513,7 @@ private struct LogPane: View {
                 Toggle("Auto-scroll", isOn: $autoScroll)
                     .toggleStyle(.checkbox)
                     .font(.caption)
+                    .accessibilityLabel("Auto-scroll")
                     .accessibilityHint("Turn this off to read earlier output without following new lines.")
                 Spacer()
                 Text("\(filtered.count) lines")
@@ -500,7 +522,11 @@ private struct LogPane: View {
             }
         }
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("\(title) terminal output")
+        .accessibilityLabel("Build output log area")
+        .background(
+            Color.clear
+                .background(.thinMaterial)
+        )
     }
 
     @ViewBuilder
@@ -596,8 +622,10 @@ private struct BuildScriptTableRow: View {
                 Text(script.label)
                     .font(.body.weight(.medium))
                     .lineLimit(1)
-                Text(script.path)
-                    .font(.caption.monospaced())
+                // Folder name only. The full path is long enough to squeeze the action
+                // columns off-screen, so it lives in the Detail View Window instead.
+                Label(script.folderName, systemImage: "folder")
+                    .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -699,7 +727,11 @@ private struct RepositoryDetailView: View {
     @State private var scanResult: BuildScanResult?
     @State private var isScanning = false
     @State private var selectedLogRecordID: BuildRecord.ID?
+    /// Shared with the "Show Detail View Window (Right Side)" menu item, so the toolbar
+    /// button and the View menu can never disagree about the panel state.
+    private var showInspector: Binding<Bool> { preferencesStore.binding(\.showDetailInspector) }
     @State private var buildTabError: BuildWorkspaceError?
+    @State private var isAutoFindingScripts = false
     @State private var pickerError: String?
 
     init(
@@ -740,10 +772,6 @@ private struct RepositoryDetailView: View {
         }
     }
 
-    /// Shared with the "Show Detail View Window (Right Side)" menu item, so the
-    /// toolbar button and the View menu can never disagree about the panel state.
-    private var showInspector: Binding<Bool> { preferencesStore.binding(\.showDetailInspector) }
-
     private var records: [BuildRecord] { historyStore.records(for: repository.id) }
     private var stats: RepositoryStats { historyStore.stats(for: repository.id) }
 
@@ -774,6 +802,16 @@ private struct RepositoryDetailView: View {
             }
         }
         .background(.background)
+        .sheet(isPresented: $isAutoFindingScripts) {
+            if let rootPath = repository.localPath {
+                AutoFindScriptsSheet(
+                    repositoryRootPath: rootPath,
+                    existingPaths: existingScriptPaths,
+                    onAdd: { paths in importScripts(paths) },
+                    isPresented: $isAutoFindingScripts
+                )
+            }
+        }
         .task(id: repository.id) { await scan() }
         .onChange(of: runner.finishedAt) { _, newValue in
             guard newValue != nil else { return }
@@ -795,20 +833,61 @@ private struct RepositoryDetailView: View {
                 Button {
                     showInspector.wrappedValue.toggle()
                 } label: {
-                    Label("Toggle Build Panel", systemImage: "sidebar.right")
+                    Label("Toggle Detail View", systemImage: "sidebar.right")
                 }
             }
         }
         .inspector(isPresented: showInspector) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    // Parameters and the selected script's full path moved here from the
+                    // centre column, so the Detail View Window carries the detail.
+                    if case .success(let scripts) = scanResult,
+                       let selectedScript = selectedScript(in: scripts) {
+                        selectedScriptPathCard(for: selectedScript)
+                        buildParametersPanel(for: selectedScript)
+                    }
                     buildStatusCard
                     buildHistoryCard
                     quickActionsCard
                 }
                 .padding(16)
             }
-            .inspectorColumnWidth(min: 240, ideal: 280, max: 340)
+            // Wide enough to host parameter controls and a wrapped command preview.
+            .inspectorColumnWidth(min: 320, ideal: 460, max: 900)
+        }
+    }
+
+    /// Full path of the selected script, wrapped rather than truncated. The scripts table
+    /// only shows the folder name, so this is where the complete path is readable.
+    private func selectedScriptPathCard(for script: BuildScript) -> some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Selected Script").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                Text(script.label)
+                    .font(.body.weight(.medium))
+                Label(script.location.label, systemImage: "folder")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text("Full path").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                Text(script.path)
+                    .font(.caption.monospaced())
+                    .textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(8)
+                    .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 6))
+                    .accessibilityLabel("Full script path: \(script.path)")
+                Button {
+                    copy(script.path)
+                } label: {
+                    Label("Copy Path", systemImage: "doc.on.doc")
+                }
+                .buttonStyle(.borderless)
+                .font(.caption)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 4)
         }
     }
 
@@ -961,12 +1040,36 @@ private struct RepositoryDetailView: View {
                     Label("Copy Path", systemImage: "doc.on.doc")
                 }
             }
-            Text(repository.source.displayPath)
-                .font(.callout.monospaced())
-                .foregroundStyle(.secondary)
+            // Local folder first, GitHub URL below it. Whichever does not apply is omitted
+            // entirely rather than rendered blank.
+            if let localPath = repository.localPath {
+                sourceLine(label: "Local folder", value: localPath, icon: "folder")
+            }
+            if let gitHubURL = repository.resolvedGitHubURL {
+                sourceLine(label: "GitHub", value: gitHubURL, icon: "link")
+            }
         }
         .padding(24)
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func sourceLine(label: String, value: String, icon: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 6) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text("\(label):")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.callout.monospaced())
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .textSelection(.enabled)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 
     @ViewBuilder
@@ -991,10 +1094,9 @@ private struct RepositoryDetailView: View {
     private var buildTab: some View {
         switch scanResult {
         case .success(let scripts):
+            // Parameters and the resolved command now live in the Detail View Window
+            // (right panel). The centre column is the scripts table over the live output.
             buildScriptsPanel(scripts)
-            if let selectedScript = selectedScript(in: scripts) {
-                buildParametersPanel(for: selectedScript)
-            }
             buildOutputPanel
         case .missingBuildFolder:
             VStack(alignment: .leading, spacing: 16) {
@@ -1030,16 +1132,30 @@ private struct RepositoryDetailView: View {
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
-                    if isScanning {
-                        ProgressView().controlSize(.small)
-                        Text("Refreshing…").font(.caption).foregroundStyle(.secondary)
+                    Button { isAutoFindingScripts = true } label: {
+                        Label("Auto Find", systemImage: "sparkle.magnifyingglass")
                     }
-                    Button { addBuildScript() } label: {
+                    .buttonStyle(.bordered)
+                    .disabled(!repository.source.isLocal || isScanning)
+                    .accessibilityHint("Search every folder in this repository for shell scripts.")
+
+                    Menu {
+                        Button { addBuildScript() } label: {
+                            Label("Add Build Script…", systemImage: "doc")
+                        }
+                        .disabled(!repository.source.isLocal)
+                        Button { addBuildScriptFolder() } label: {
+                            Label("Add Build Script Folder…", systemImage: "folder.badge.plus")
+                        }
+                        .disabled(!repository.source.isLocal)
+                    } label: {
                         Label("Add Build Script", systemImage: "plus")
                     }
-                    .buttonStyle(.borderedProminent)
+                    .menuStyle(.borderlessButton)
+                    .fixedSize()
                     .disabled(!repository.source.isLocal)
-                    .accessibilityHint("Choose a local shell script to add to this repository's Build tab.")
+                    .accessibilityHint("Add a single shell script, or every script in a folder.")
+
                     Button { Task { await scan() } } label: {
                         Label("Refresh Scripts", systemImage: "arrow.clockwise")
                     }
@@ -1102,14 +1218,6 @@ private struct RepositoryDetailView: View {
             }
             .padding(.vertical, 5)
         }
-        .background(
-            LinearGradient(
-                colors: [Color.blue.opacity(0.05), Color.pink.opacity(0.045)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: RoundedRectangle(cornerRadius: 12)
-        )
     }
 
     private var buildScriptsFallbackActions: some View {
@@ -1118,6 +1226,16 @@ private struct RepositoryDetailView: View {
                 Label("Add Build Script", systemImage: "plus")
             }
             .buttonStyle(.borderedProminent)
+            .disabled(!repository.source.isLocal)
+            Button { addBuildScriptFolder() } label: {
+                Label("Add Folder", systemImage: "folder.badge.plus")
+            }
+            .buttonStyle(.bordered)
+            .disabled(!repository.source.isLocal)
+            Button { isAutoFindingScripts = true } label: {
+                Label("Auto Find", systemImage: "sparkle.magnifyingglass")
+            }
+            .buttonStyle(.bordered)
             .disabled(!repository.source.isLocal)
             Button { Task { await scan() } } label: {
                 Label("Refresh Scripts", systemImage: "arrow.clockwise")
@@ -1248,27 +1366,16 @@ private struct RepositoryDetailView: View {
                     Text(commandPreview(for: script))
                         .font(.caption.monospaced())
                         .textSelection(.enabled)
-                        .lineLimit(2)
-                        .truncationMode(.middle)
+                        // Wrapped, not truncated — the panel is wide enough to read it now.
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding(8)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 6))
                         .accessibilityLabel("Resolved build command")
-                    Text(environmentSummary)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
                 }
             }
             .padding(.vertical, 5)
         }
-        .background(
-            LinearGradient(
-                colors: [Color.pink.opacity(0.035), Color.blue.opacity(0.045)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: RoundedRectangle(cornerRadius: 12)
-        )
     }
 
     @ViewBuilder
@@ -1358,13 +1465,6 @@ private struct RepositoryDetailView: View {
         let values = workspaceStateStore.values(for: script.id, repositoryID: repository.id)
         return (try? BuildCommandBuilder.invocation(for: script, values: values).commandPreview)
             ?? script.path
-    }
-
-    private var environmentSummary: String {
-        let overrides = preferencesStore.preferences.environmentVariables.filter { !$0.key.isEmpty }.count
-        return overrides == 0
-            ? "Environment: inherited from the configured shell."
-            : "Environment: inherited shell values plus \(overrides) configured override\(overrides == 1 ? "" : "s")."
     }
 
     private var buildOutputPanel: some View {
@@ -1643,6 +1743,63 @@ private struct RepositoryDetailView: View {
         Task { await scan() }
     }
 
+    /// Script paths already present, so Auto Find can flag duplicates instead of re-adding them.
+    private var existingScriptPaths: Set<String> {
+        guard case .success(let scripts) = scanResult else { return [] }
+        return Set(scripts.map(\.path))
+    }
+
+    /// Adds every runnable script in a chosen folder, rather than one file at a time.
+    private func addBuildScriptFolder() {
+        guard case .local(let repositoryPath) = repository.source else { return }
+        guard let folderPath = presentLocalFolderPickerPath() else { return }
+
+        let isInsideRepository = BuildScriptPathResolver.isWithin(folderPath, rootPath: repositoryPath)
+        guard isInsideRepository || preferencesStore.preferences.allowScriptsOutsideBuildScripts else {
+            pickerError = "That folder is outside this repository. Enable that option in Preferences to add it."
+            return
+        }
+
+        let fileManager = FileManager.default
+        guard let entries = try? fileManager.contentsOfDirectory(atPath: folderPath) else {
+            pickerError = "That folder could not be read."
+            return
+        }
+
+        let scriptPaths = entries
+            .filter { $0.hasSuffix(".sh") }
+            .map { (folderPath as NSString).appendingPathComponent($0) }
+            .sorted()
+
+        guard !scriptPaths.isEmpty else {
+            pickerError = "No .sh scripts were found in that folder."
+            return
+        }
+
+        importScripts(scriptPaths)
+    }
+
+    /// Shared import path for the folder picker and the Auto Find grid.
+    private func importScripts(_ paths: [String]) {
+        let newPaths = paths.filter { !existingScriptPaths.contains($0) }
+        guard !newPaths.isEmpty else {
+            pickerError = "Those scripts are already in this repository."
+            return
+        }
+
+        for path in newPaths {
+            workspaceStateStore.add(scriptPath: path, for: repository.id)
+        }
+        if let first = newPaths.first {
+            workspaceStateStore.select(
+                scriptID: BuildScriptPathResolver.canonicalIdentifier(for: first),
+                for: repository.id
+            )
+        }
+        pickerError = nil
+        Task { await scan() }
+    }
+
     private func revealInFinder() {
         guard case .local(let path) = repository.source else { return }
         NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
@@ -1679,5 +1836,16 @@ private struct RepositoryDetailView: View {
 }
 
 #Preview {
-    ContentView()
+    LogPane(
+        title: "Example Log Output",
+        lines: [
+            DisplayLine(id: UUID(), timestampText: "10:15:01", text: "Build started...", stream: .stdout, ansiColor: nil),
+            DisplayLine(id: UUID(), timestampText: "10:15:03", text: "Compiling main.swift", stream: .stdout, ansiColor: nil),
+            DisplayLine(id: UUID(), timestampText: "10:15:10", text: "\u{001B}[32mBuild succeeded.\u{001B}[0m", stream: .stdout, ansiColor: .green),
+            DisplayLine(id: UUID(), timestampText: "10:15:11", text: "[stderr] Warning: Deprecated API usage", stream: .stderr, ansiColor: .yellow)
+        ],
+        preferences: Preferences.recommendedDefaults
+    )
+    .frame(width: 800, height: 500)
+    .padding()
 }

@@ -146,3 +146,135 @@ Worth revisiting with an `NSSplitViewItem.isCollapsed` bridge if the persistence
 - Sidebar toggle round-tripped off→on→off cleanly after the binding was made single-source.
 - The original bug is fixed and visually confirmed: the "Preferences" button in the sidebar
   footer was being clipped by the status bar, and now renders fully above it.
+
+---
+
+# Pass 2 — Build Screen Layout (v0.1.2 continued)
+
+Added 2026-08-16 from a second verbal request. Same version, same shell-and-layout theme:
+move detail-ish content out of the centre column into the right **Detail View Window**, and
+stop the centre column from carrying long paths it has no room for.
+
+## Current State (verified in code before planning)
+
+| Thing | Where it lives now | Problem |
+| --- | --- | --- |
+| Script table row | `ContentView.swift:595-605` — `script.label` over `script.path` | Row prints the **full absolute path**, truncated in the middle. Unreadable, and it is what makes the table feel cramped. |
+| Repo header | `ContentView.swift:945-970` — name + badge, then `repository.source.displayPath` | One line only. `RepositorySource` is an **either/or enum** (`.local(path:)` / `.github(url:)`), so a repo can never show both a local folder and a GitHub URL. |
+| Build Parameters | `ContentView.swift:1208-1263` — `buildParametersPanel`, rendered in the centre `buildTab` | Sits in the centre column between the scripts table and the live output. Requested to move to the right panel. |
+| Resolved Command | `ContentView.swift:1248-1252` — `.lineLimit(2)` + `.truncationMode(.middle)` | Truncated instead of wrapped. |
+| Inspector width | `ContentView.swift:811` — `.inspectorColumnWidth(min: 240, ideal: 280, max: 340)` | Caps at 340pt. Far too narrow to host parameters and a wrapped command. |
+| Add script | `ContentView.swift:1037` — single "Add Build Script" file picker | No way to add a whole **folder** of scripts. |
+
+## Phase 8 — Build Scripts Table Shows Names, Not Paths
+
+- [x] Replace the full `script.path` line in `BuildScriptTableRow` with the script's **folder name** only.
+- [x] Keep the script filename as the primary line exactly as it reads today.
+- [x] Confirm the row still fits the Source / Parameters / Last run / Actions columns without truncation at the default sidebar width.
+- [x] Keep "Copy Script Path" and "Reveal in Finder" working off the real full path even though it is no longer displayed.
+- [x] Confirm long folder names degrade gracefully rather than pushing the action buttons off-screen.
+
+## Phase 9 — Full Paths Move To The Detail View Window
+
+- [x] Show the selected script's **full path** in the right-hand Detail View Window.
+- [x] Render it as **wrapped** text, not single-line truncated.
+- [x] Keep it selectable/copyable.
+- [x] Confirm it re-renders when the selected script changes.
+
+## Phase 11 — Add Build Script *Folder*
+
+- [x] Add an "Add Build Script Folder" action next to the existing "Add Build Script".
+- [x] Use a native folder picker (`NSOpenPanel` with `canChooseDirectories`).
+- [x] Import every runnable script found in the chosen folder, not just the first.
+- [x] Reuse the existing script-scanning and location-classification logic rather than duplicating path parsing.
+- [x] Reflect the imported scripts in the table without a full rescan where possible.
+- [ ] Handle cancel, permission-denied, empty-folder, and duplicate-script cases with a visible message. **Code paths written, not GUI-exercised.**
+- [x] Mirror the new action into the empty-state `buildScriptsFallbackActions` row.
+
+## Phase 12 — Build Parameters Move To The Detail View Window
+
+- [x] Move the whole `buildParametersPanel` out of the centre `buildTab` into the right-hand inspector.
+- [x] Widen the inspector substantially — raise `.inspectorColumnWidth` well past the current 340pt cap.
+- [x] Make **Resolved Command** wrap instead of truncating (drop `.lineLimit(2)` / `.truncationMode(.middle)`).
+- [x] Keep a **Run Build** button in the right panel next to the parameters, in addition to the per-row Run button in the table.
+- [x] Keep the centre column as: scripts table on top, **Live Output below** (unchanged).
+- [x] Confirm parameter editing still writes through to `workspaceStateStore` from its new location.
+- [x] Confirm validation errors still surface somewhere the user will actually see them.
+- [x] Confirm the existing Build Status / Build History / Quick Actions cards still fit alongside the parameters.
+- [x] Confirm the panel behaves when it is hidden via the View menu — parameters must stay reachable.
+
+## Resolved Decisions (answered 2026-08-16)
+
+1. **Local folder *and* GitHub URL on one repo — YES, real model change.** A repository gains
+   an optional GitHub URL alongside its local path, so a cloned repo remembers its origin.
+   Existing saved repos must still decode.
+2. **Run Build lives in both places** — the per-row Run button in the scripts table (already
+   exists) *and* one in the right Detail View Window next to the parameters.
+3. **The "auto detect" note was a new feature request, not a caption move** — see Phase 13.
+
+## Phase 10 — Repository Header: Local Folder And GitHub URL (unblocked)
+
+- [x] Add an optional `gitHubURL` to `Repository`, defaulted so existing `projects.json` still decodes.
+- [x] Keep `RepositorySource` as the origin-of-record; the new field is supplementary, not a replacement.
+- [ ] Surface a way to set/clear the GitHub URL for a local repo (repo Settings tab is the natural home). **Model + header render done; no editing UI yet.**
+- [x] Header line 1: repository title + Connected/status badge (unchanged).
+- [x] Header line 2: **Local folder** path, labelled.
+- [x] Header line 3: **GitHub URL**, labelled, below the local folder.
+- [x] Hide (not blank-render) whichever line does not apply.
+- [x] Keep both lines wrapped or middle-truncated so a deep path cannot break the header.
+
+## Phase 13 — Deep Script Search ("Auto Find")
+
+A dig/search tool that walks **every folder** of the repository for `.sh` files, then presents
+them in a grid for the user to choose from. This replaces the vaguer "auto-detect" wording.
+
+- [x] Add an "Auto Find Scripts" button to the Available Build Scripts header row.
+- [x] Walk the whole repository tree recursively for `.sh` files — not just `/build/scripts/`.
+- [x] Skip noise directories (`.git`, `node_modules`, `.build`, `DerivedData`, `Pods`, build output).
+- [x] Run the walk off the main thread so a large repo cannot freeze the UI.
+- [ ] Show progress while the search runs, and allow it to be cancelled. **Progress view written; the walk finished too fast on this repo to observe it.**
+- [x] Present results in a **grid window** (sheet) with one selectable cell per discovered script.
+- [x] Show enough per cell to disambiguate: filename, containing folder, and whether it is already added.
+- [x] Support multi-selection in the grid.
+- [x] Grid buttons: **Add All**, **Add Selected**, **Search Again**, **Cancel**.
+- [x] "Search Again" re-runs the walk from scratch without closing the sheet.
+- [x] Mark scripts already present so the user cannot silently add duplicates.
+- [x] Reuse the existing script-scanning / location-classification logic rather than duplicating path parsing.
+- [x] Show a clear empty state when the walk finds nothing.
+- [x] Refresh the scripts table with whatever was added, preserving the current selection.
+
+## Tracking — Pass 2
+
+| Phase | Checked / Total | Status |
+| --- | --- | --- |
+| 8 — Table Shows Names | 5 / 5 | Done |
+| 9 — Paths In Detail View | 4 / 4 | Done |
+| 10 — Header Local + GitHub | 7 / 8 | Done (no edit UI yet) |
+| 11 — Add Script Folder | 6 / 7 | Done (error paths untested) |
+| 12 — Parameters To Detail View | 9 / 9 | Done |
+| 13 — Deep Script Search | 13 / 14 | Done (progress UI unobserved) |
+| **Pass 2 Total** | **44 / 47** | **Shipped** |
+
+## Pass 2 Verification Evidence
+
+- `BUILD SUCCEEDED`, no new warnings.
+- Scripts table rows now read `macos_apim_run` over `lxc-mhh-executables` (folder name), not the full path.
+- Header renders `LXC-MyHealthHub ✓ Connected` over a labelled `Local folder:` line.
+- Detail View Window shows Selected Script → **Full path wrapped across lines** → Copy Path,
+  then Build Parameters with its own **Run Build** button, then a **wrapped Resolved Command**,
+  then Build Status / History / Quick Actions. Column widened to min 320 / ideal 460 / max 900.
+- Centre column is now scripts table over Live Output, with parameters gone from it.
+- "Add Build Script" is now a menu offering **Add Build Script…** and **Add Build Script Folder…**.
+- Auto Find opened, walked the whole repo, and found **20 scripts vs the 5 in /build/scripts**,
+  correctly flagging **6 as "Already added"**. Selecting two updated the footer to
+  "20 scripts found · 6 already added · 2 selected" and enabled **Add Selected**.
+  Buttons present and behaving: Add All / Add Selected / Search Again / Cancel.
+
+## Note On Concurrent Edits
+
+The Pass 1 fixes (status bar as a `VStack` sibling, derived `columnVisibility` binding, and the
+shared `showInspector` binding) were **reverted twice** by another agent session editing
+`ContentView.swift` at the same time, which silently re-broke the Preferences-button clipping
+and the View-menu detail-panel toggle. They have been re-applied. That session also committed a
+syntactically invalid `Button` and a `Preferences.default` reference that does not exist; both
+were repaired here to get the target compiling again.
