@@ -34,7 +34,7 @@ jobs:
           json_key="project"
         fi
         file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-        scheme=$(xcodebuild -list -json | tr -d "\n" | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['$json_key']['targets'][0]")
+        scheme=$(xcodebuild -list -json | tr -d "\n" | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)[\"$json_key\"]['targets'][0]")
         echo "filetype_parameter=$filetype_parameter" >> "$GITHUB_OUTPUT"
         echo "file_to_build=$file_to_build" >> "$GITHUB_OUTPUT"
         echo "scheme=$scheme" >> "$GITHUB_OUTPUT"
