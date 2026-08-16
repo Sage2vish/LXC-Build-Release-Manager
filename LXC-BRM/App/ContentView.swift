@@ -3,6 +3,8 @@ import AppKit
 
 struct ContentView: View {
     @StateObject private var store = RepositoryStore()
+    @StateObject private var historyStore = BuildHistoryStore()
+    @StateObject private var runners = BuildRunnerRegistry()
     @State private var isAddingRepository = false
 
     var body: some View {
@@ -10,7 +12,13 @@ struct ContentView: View {
             sidebar
         } detail: {
             if let repository = store.selectedRepository {
-                RepositoryDetailView(repository: repository)
+                RepositoryDetailView(
+                    repository: repository,
+                    store: store,
+                    historyStore: historyStore,
+                    runner: runners.runner(for: repository.id)
+                )
+                .id(repository.id)
             } else {
                 ContentUnavailableView(
                     "Select a Repository",
@@ -25,6 +33,13 @@ struct ContentView: View {
         }
     }
 
+    private var sortedRepositories: [Repository] {
+        store.repositories.sorted { lhs, rhs in
+            if lhs.isPinned != rhs.isPinned { return lhs.isPinned && !rhs.isPinned }
+            return lhs.lastAccessed > rhs.lastAccessed
+        }
+    }
+
     private var sidebar: some View {
         List(
             selection: Binding(
@@ -36,7 +51,7 @@ struct ContentView: View {
                 }
             )
         ) {
-            ForEach(store.repositories) { repository in
+            ForEach(sortedRepositories) { repository in
                 RepositoryRow(repository: repository, store: store)
                     .tag(repository.id)
             }
@@ -68,32 +83,43 @@ private struct RepositoryRow: View {
     @ObservedObject var store: RepositoryStore
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack(spacing: 6) {
-                Image(systemName: repository.source.isLocal ? "folder" : "chevron.left.forwardslash.chevron.right")
-                    .foregroundStyle(.secondary)
-                Text(repository.name)
-                    .font(.headline)
-                if repository.isPinned {
-                    Image(systemName: "pin.fill")
-                        .font(.caption2)
+        HStack(alignment: .top, spacing: 8) {
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Image(systemName: repository.source.isLocal ? "folder" : "chevron.left.forwardslash.chevron.right")
                         .foregroundStyle(.secondary)
+                    Text(repository.name)
+                        .font(.headline)
                 }
+                Text(repository.source.displayPath)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Text("Last accessed \(repository.lastAccessed.relativeDescription)")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
             }
-            Text(repository.source.displayPath)
-                .font(.caption)
+            Spacer(minLength: 4)
+            VStack(spacing: 6) {
+                Button {
+                    store.togglePin(repository)
+                } label: {
+                    Image(systemName: repository.isPinned ? "pin.fill" : "pin")
+                }
+                .buttonStyle(.borderless)
+                .help(repository.isPinned ? "Unpin" : "Pin")
+
+                Button {
+                    store.remove(repository)
+                } label: {
+                    Image(systemName: "xmark.circle")
+                }
+                .buttonStyle(.borderless)
                 .foregroundStyle(.secondary)
-                .lineLimit(1)
+                .help("Remove from list")
+            }
         }
         .padding(.vertical, 4)
-        .contextMenu {
-            Button(repository.isPinned ? "Unpin" : "Pin") {
-                store.togglePin(repository)
-            }
-            Button("Remove", role: .destructive) {
-                store.remove(repository)
-            }
-        }
     }
 }
 
@@ -101,6 +127,15 @@ private struct AddRepositorySheet: View {
     @ObservedObject var store: RepositoryStore
     @Binding var isPresented: Bool
     @State private var githubURL: String = ""
+
+    private var trimmedURL: String {
+        githubURL.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var isValidGitHubURL: Bool {
+        guard let url = URL(string: trimmedURL), let host = url.host, host.contains("github.com") else { return false }
+        return url.pathComponents.filter { $0 != "/" }.count >= 2
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -124,13 +159,16 @@ private struct AddRepositorySheet: View {
                     .font(.callout.weight(.medium))
                 TextField("https://github.com/user/repo", text: $githubURL)
                     .textFieldStyle(.roundedBorder)
+                if !trimmedURL.isEmpty && !isValidGitHubURL {
+                    Text("Enter a full GitHub repo URL, like https://github.com/user/repo")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
                 Button("Add GitHub Repository") {
-                    let trimmed = githubURL.trimmingCharacters(in: .whitespacesAndNewlines)
-                    guard !trimmed.isEmpty else { return }
-                    store.addGitHubRepository(urlString: trimmed)
+                    store.addGitHubRepository(urlString: trimmedURL)
                     isPresented = false
                 }
-                .disabled(githubURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .disabled(!isValidGitHubURL)
             }
 
             HStack {
@@ -154,11 +192,161 @@ private struct AddRepositorySheet: View {
     }
 }
 
+private struct DisplayLine: Identifiable, Hashable {
+    let id: UUID
+    let timestampText: String
+    let text: String
+}
+
+private enum LogFilter: String, CaseIterable, Identifiable {
+    case all = "All"
+    case errors = "Errors"
+    case warnings = "Warnings"
+    case info = "Info"
+    var id: String { rawValue }
+
+    func matches(_ text: String) -> Bool {
+        let errorWords = ["error", "Error", "ERROR", "failed", "Failed"]
+        let warningWords = ["warning", "Warning", "WARNING"]
+        switch self {
+        case .all: return true
+        case .errors: return errorWords.contains { text.contains($0) }
+        case .warnings: return warningWords.contains { text.contains($0) }
+        case .info:
+            return !errorWords.contains { text.contains($0) } && !warningWords.contains { text.contains($0) }
+        }
+    }
+}
+
+private func displayLines(from logLines: [LogLine]) -> [DisplayLine] {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "HH:mm:ss"
+    return logLines.map { DisplayLine(id: $0.id, timestampText: formatter.string(from: $0.timestamp), text: $0.text) }
+}
+
+private func displayLines(fromFileContent content: String) -> [DisplayLine] {
+    content
+        .split(separator: "\n", omittingEmptySubsequences: false)
+        .filter { !$0.hasPrefix("#") && !$0.isEmpty }
+        .map { line -> DisplayLine in
+            if line.hasPrefix("["), let closeBracket = line.firstIndex(of: "]") {
+                let timestamp = String(line[line.index(after: line.startIndex)..<closeBracket])
+                let rest = line[line.index(after: closeBracket)...].trimmingCharacters(in: .whitespaces)
+                return DisplayLine(id: UUID(), timestampText: timestamp, text: String(rest))
+            }
+            return DisplayLine(id: UUID(), timestampText: "", text: String(line))
+        }
+}
+
+private struct LogPane: View {
+    let title: String
+    let lines: [DisplayLine]
+    var onExport: (() -> Void)?
+
+    @State private var searchText = ""
+    @State private var filter: LogFilter = .all
+    @State private var currentMatchIndex = 0
+
+    private var filtered: [DisplayLine] {
+        lines.filter { filter.matches($0.text) }
+    }
+
+    private var matchIDs: [UUID] {
+        guard !searchText.isEmpty else { return [] }
+        return filtered.filter { $0.text.localizedCaseInsensitiveContains(searchText) }.map(\.id)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(title).font(.headline)
+                Spacer()
+                Picker("", selection: $filter) {
+                    ForEach(LogFilter.allCases) { item in Text(item.rawValue).tag(item) }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .frame(width: 260)
+                if let onExport {
+                    Button { onExport() } label: { Label("Export", systemImage: "square.and.arrow.down") }
+                        .disabled(lines.isEmpty)
+                }
+            }
+
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                TextField("Search log…", text: $searchText)
+                    .textFieldStyle(.plain)
+                    .onChange(of: searchText) { _, _ in currentMatchIndex = 0 }
+                if !searchText.isEmpty {
+                    Text(matchIDs.isEmpty ? "0 matches" : "\(currentMatchIndex + 1) of \(matchIDs.count)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Button { step(-1) } label: { Image(systemName: "chevron.up") }
+                        .disabled(matchIDs.isEmpty)
+                    Button { step(1) } label: { Image(systemName: "chevron.down") }
+                        .disabled(matchIDs.isEmpty)
+                }
+            }
+            .padding(6)
+            .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 6))
+
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 2) {
+                        ForEach(filtered) { line in
+                            HStack(alignment: .top, spacing: 8) {
+                                Text(line.timestampText)
+                                    .foregroundStyle(.white.opacity(0.55))
+                                Text(line.text)
+                                    .textSelection(.enabled)
+                            }
+                            .font(.system(.caption, design: .monospaced))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(
+                                !searchText.isEmpty && line.text.localizedCaseInsensitiveContains(searchText)
+                                    ? Color.yellow.opacity(0.3) : .clear
+                            )
+                            .id(line.id)
+                        }
+                        if filtered.isEmpty {
+                            Text("No log lines to show.")
+                                .foregroundStyle(.white.opacity(0.6))
+                                .padding()
+                        }
+                    }
+                    .padding(8)
+                }
+                .frame(minHeight: 220, maxHeight: 420)
+                .background(Color.black.opacity(0.88))
+                .foregroundStyle(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .onChange(of: currentMatchIndex) { _, newValue in
+                    guard matchIDs.indices.contains(newValue) else { return }
+                    withAnimation { proxy.scrollTo(matchIDs[newValue], anchor: .center) }
+                }
+            }
+        }
+    }
+
+    private func step(_ delta: Int) {
+        guard !matchIDs.isEmpty else { return }
+        currentMatchIndex = (currentMatchIndex + delta + matchIDs.count) % matchIDs.count
+    }
+}
+
 private struct RepositoryDetailView: View {
     let repository: Repository
+    @ObservedObject var store: RepositoryStore
+    @ObservedObject var historyStore: BuildHistoryStore
+    @ObservedObject var runner: BuildRunner
+
     @State private var selectedTab: DetailTab = .build
     @State private var scanResult: BuildScanResult?
     @State private var isScanning = false
+    @State private var selectedLogRecordID: BuildRecord.ID?
 
     enum DetailTab: String, CaseIterable, Identifiable {
         case build = "Build"
@@ -169,10 +357,12 @@ private struct RepositoryDetailView: View {
         var id: String { rawValue }
     }
 
+    private var records: [BuildRecord] { historyStore.records(for: repository.id) }
+    private var stats: RepositoryStats { historyStore.stats(for: repository.id) }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
-
             Picker("", selection: $selectedTab) {
                 ForEach(DetailTab.allCases) { tab in
                     Text(tab.rawValue).tag(tab)
@@ -185,16 +375,11 @@ private struct RepositoryDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     switch selectedTab {
-                    case .build:
-                        buildTab
-                    case .logs:
-                        comingSoon("Phase 3 — log storage, search, filters, and export.")
-                    case .history:
-                        comingSoon("Phase 4 — per-repo build history and stats.")
-                    case .overview:
-                        comingSoon("Phase 4 — repo overview and quick stats.")
-                    case .settings:
-                        comingSoon("Phase 5 — multi-repo pin and favorite management.")
+                    case .build: buildTab
+                    case .logs: logsTab
+                    case .history: historyTab
+                    case .overview: overviewTab
+                    case .settings: settingsTab
                     }
                 }
                 .padding(24)
@@ -233,23 +418,19 @@ private struct RepositoryDetailView: View {
     private var statusBadge: some View {
         switch scanResult {
         case .success:
-            Label("Connected", systemImage: "checkmark.circle.fill")
-                .foregroundStyle(.green)
+            Label("Connected", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
         case .missingBuildFolder:
-            Label("No /build folder", systemImage: "xmark.circle.fill")
-                .foregroundStyle(.red)
+            Label("No /build folder", systemImage: "xmark.circle.fill").foregroundStyle(.red)
         case .emptyScripts:
-            Label("No scripts found", systemImage: "exclamationmark.circle.fill")
-                .foregroundStyle(.orange)
+            Label("No scripts found", systemImage: "exclamationmark.circle.fill").foregroundStyle(.orange)
         case .unreachable:
-            Label("Unreachable", systemImage: "wifi.slash")
-                .foregroundStyle(.red)
+            Label("Unreachable", systemImage: "wifi.slash").foregroundStyle(.red)
         case nil:
-            if isScanning {
-                ProgressView().controlSize(.small)
-            }
+            if isScanning { ProgressView().controlSize(.small) }
         }
     }
+
+    // MARK: Build
 
     @ViewBuilder
     private var buildTab: some View {
@@ -258,49 +439,221 @@ private struct RepositoryDetailView: View {
             GroupBox("Available Build Scripts") {
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(scripts) { script in
-                        HStack {
-                            Image(systemName: "play.circle")
-                            Text(script.label).font(.body.weight(.medium))
-                            Spacer()
-                            Text(script.fileName)
-                                .font(.caption.monospaced())
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding(8)
-                        .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 6))
+                        scriptRow(script)
                     }
-                    Text("Detected, not yet runnable — execution wiring is Phase 2.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    if !repository.source.isLocal {
+                        Text("Execution requires a local repository — GitHub-sourced repos can only detect scripts for now.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.vertical, 4)
             }
+
+            if runner.isRunning || !runner.logLines.isEmpty {
+                LogPane(title: "Live Output", lines: displayLines(from: runner.logLines))
+            }
         case .missingBuildFolder:
-            ContentUnavailableView(
-                "No /build Folder Found",
-                systemImage: "folder.badge.questionmark",
-                description: Text("This repository doesn't have a /build folder at its root.")
-            )
+            ContentUnavailableView("No /build Folder Found", systemImage: "folder.badge.questionmark", description: Text("This repository doesn't have a /build folder at its root."))
         case .emptyScripts:
-            ContentUnavailableView(
-                "No Build Scripts Found",
-                systemImage: "doc.text.magnifyingglass",
-                description: Text("No .sh files found in /build/scripts/.")
-            )
+            ContentUnavailableView("No Build Scripts Found", systemImage: "doc.text.magnifyingglass", description: Text("No .sh files found in /build/scripts/."))
         case .unreachable(let message):
-            ContentUnavailableView(
-                "Repository Unreachable",
-                systemImage: "wifi.slash",
-                description: Text(message)
-            )
+            ContentUnavailableView("Repository Unreachable", systemImage: "wifi.slash", description: Text(message))
         case nil:
             ProgressView("Scanning…")
         }
     }
 
-    private func comingSoon(_ note: String) -> some View {
-        ContentUnavailableView("Coming Soon", systemImage: "hammer", description: Text(note))
+    private func scriptRow(_ script: BuildScript) -> some View {
+        let lastRun = historyStore.lastRun(for: repository.id, scriptFileName: script.fileName)
+        let isThisRunning = runner.isRunning && runner.runningScript?.fileName == script.fileName
+
+        return HStack {
+            Image(systemName: "play.circle")
+            VStack(alignment: .leading, spacing: 2) {
+                Text(script.label).font(.body.weight(.medium))
+                Text(lastRunDescription(lastRun, isRunning: isThisRunning))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Text(script.fileName)
+                .font(.caption.monospaced())
+                .foregroundStyle(.secondary)
+
+            if isThisRunning {
+                ProgressView().controlSize(.small)
+                Button("Cancel") { runner.cancel() }
+                    .buttonStyle(.bordered)
+            } else {
+                Button("Run") {
+                    runner.start(script: script, repository: repository, historyStore: historyStore)
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(!repository.source.isLocal || runner.isRunning)
+            }
+        }
+        .padding(8)
+        .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 6))
+    }
+
+    private func lastRunDescription(_ record: BuildRecord?, isRunning: Bool) -> String {
+        if isRunning { return "Building…" }
+        guard let record else { return "Never run" }
+        let icon = record.status == .success ? "✓" : (record.status == .cancelled ? "⊘" : "✗")
+        return "Last run: \(record.startedAt.relativeDescription) \(icon)"
+    }
+
+    // MARK: Logs
+
+    private var logsTab: some View {
+        Group {
+            if runner.isRunning {
+                LogPane(title: "Live Output — \(runner.runningScript?.label ?? "")", lines: displayLines(from: runner.logLines))
+            } else if let record = selectedRecord {
+                LogPane(
+                    title: "\(record.scriptLabel) — \(record.startedAt.formatted(date: .abbreviated, time: .shortened))",
+                    lines: logLines(for: record),
+                    onExport: {
+                        LogFileService.export(content: logContent(for: record), suggestedName: record.logFileName)
+                    }
+                )
+            } else {
+                ContentUnavailableView("No Logs Yet", systemImage: "doc.text", description: Text("Run a build to see live output and saved logs here."))
+            }
+        }
+    }
+
+    private var selectedRecord: BuildRecord? {
+        if let id = selectedLogRecordID, let match = records.first(where: { $0.id == id }) {
+            return match
+        }
+        return records.first
+    }
+
+    private func logContent(for record: BuildRecord) -> String {
+        LogFileService.read(fileName: record.logFileName, repository: repository) ?? ""
+    }
+
+    private func logLines(for record: BuildRecord) -> [DisplayLine] {
+        displayLines(fromFileContent: logContent(for: record))
+    }
+
+    // MARK: History
+
+    private var historyTab: some View {
+        GroupBox("Build History") {
+            if records.isEmpty {
+                Text("No builds run yet for this repository.")
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical, 4)
+            } else {
+                VStack(alignment: .leading, spacing: 6) {
+                    ForEach(records) { record in
+                        Button {
+                            selectedLogRecordID = record.id
+                            selectedTab = .logs
+                        } label: {
+                            HStack {
+                                statusIcon(record.status)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(record.scriptLabel).font(.body.weight(.medium))
+                                    Text(record.startedAt.formatted(date: .abbreviated, time: .shortened))
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Text(durationDescription(record.durationSeconds))
+                                    .font(.caption.monospaced())
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(8)
+                            .background(.quaternary.opacity(0.25), in: RoundedRectangle(cornerRadius: 6))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+    }
+
+    private func statusIcon(_ status: BuildStatus) -> some View {
+        switch status {
+        case .success: return Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+        case .failed: return Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
+        case .cancelled: return Image(systemName: "slash.circle.fill").foregroundStyle(.orange)
+        case .running: return Image(systemName: "circle.dotted").foregroundStyle(.blue)
+        }
+    }
+
+    // MARK: Overview
+
+    private var overviewTab: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            GroupBox("Repository") {
+                VStack(alignment: .leading, spacing: 6) {
+                    LabeledContent("Name", value: repository.name)
+                    LabeledContent("Path/URL", value: repository.source.displayPath)
+                    LabeledContent("Connection") {
+                        statusBadge
+                    }
+                    LabeledContent("Total Builds", value: "\(stats.totalBuilds)")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 4)
+            }
+
+            HStack(spacing: 12) {
+                statCard(title: "Total Builds", value: "\(stats.totalBuilds)")
+                statCard(title: "Success Rate", value: stats.totalBuilds > 0 ? "\(Int(stats.successRate * 100))%" : "—")
+                statCard(title: "Avg Duration", value: stats.totalBuilds > 0 ? durationDescription(stats.averageDuration) : "—")
+            }
+
+            if let mostRecent = stats.mostRecent {
+                Text("Most recently run: \(mostRecent.scriptLabel) — \(mostRecent.startedAt.relativeDescription)")
+                    .font(.callout)
+            }
+            if let lastFailed = stats.lastFailed {
+                Text("Last failed build: \(lastFailed.scriptLabel) — \(lastFailed.startedAt.relativeDescription)")
+                    .font(.callout)
+                    .foregroundStyle(.red)
+            }
+        }
+    }
+
+    private func statCard(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title).font(.caption).foregroundStyle(.secondary)
+            Text(value).font(.title2.weight(.semibold))
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 8))
+    }
+
+    private func durationDescription(_ seconds: TimeInterval) -> String {
+        let minutes = Int(seconds) / 60
+        let remainder = Int(seconds) % 60
+        return minutes > 0 ? "\(minutes)m \(remainder)s" : "\(remainder)s"
+    }
+
+    // MARK: Settings
+
+    private var settingsTab: some View {
+        GroupBox("Repository Settings") {
+            VStack(alignment: .leading, spacing: 12) {
+                Toggle("Pinned", isOn: Binding(
+                    get: { repository.isPinned },
+                    set: { _ in store.togglePin(repository) }
+                ))
+                Button("Remove from List", role: .destructive) {
+                    store.remove(repository)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 4)
+        }
     }
 
     private func scan() async {
@@ -312,5 +665,13 @@ private struct RepositoryDetailView: View {
             scanResult = await BuildScriptScanner.scanGitHub(urlString: url)
         }
         isScanning = false
+    }
+}
+
+private extension Date {
+    var relativeDescription: String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: self, relativeTo: Date())
     }
 }
