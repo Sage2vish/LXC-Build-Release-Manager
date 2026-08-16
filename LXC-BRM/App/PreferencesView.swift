@@ -460,3 +460,10 @@ struct PreferencesView: View {
         }
     }
 }
+#Preview {
+    PreferencesView(
+        store: PreferencesStore.shared,
+        historyStore: BuildHistoryStore.shared
+    )
+}
+
