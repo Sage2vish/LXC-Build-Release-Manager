@@ -169,127 +169,133 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 
 ## Checklist
 
-Every field in every tab below now exists as an editable, `preferences.json`-persisted control in `PreferencesView.swift` (draft/Save/Cancel/Restore Defaults all working, `BUILD SUCCEEDED`). A box only flips to `[x]` once the field also *does something* in the app — the UI existing is necessary but not sufficient, per this file's own rule at the top. Three fields are wired end-to-end and checked below: Theme, Default Tab on Launch, and Maximum Recent Repositories.
+Status legend:
+- `P` = pending
+- `D` = done in the UI or model, but not yet fully wired
+- `V` = verified in a build/run, but still tracked separately
+- `X` = done and verified, good to go
+
+Every field in every tab below now exists as an editable, `preferences.json`-persisted control in `PreferencesView.swift` (draft/Save/Cancel/Restore Defaults all working, `BUILD SUCCEEDED`). A row only gets `X` once the field also *does something* in the app and has been verified. `D` means the code or model is in place but the behavior is still incomplete. `V` is for a verified result that still needs a follow-up item. The list below reflects the current state of the codebase, not just the original mockup.
 
 ### Data & persistence
-- [x] `Preferences` model covering every field above, Codable — `App/Models/Preferences.swift`
-- [x] `PreferencesStore` (ObservableObject; load/save JSON to `~/Library/Application Support/LXC-BRM/preferences.json`) — `App/Services/PreferencesStore.swift`
-- [x] Recommended-defaults constant — `Preferences.recommendedDefaults`, used by both initial load and "Restore Defaults"
+- X `Preferences` model covering every field above, Codable — `App/Models/Preferences.swift`
+- X `PreferencesStore` (ObservableObject; load/save JSON to `~/Library/Application Support/LXC-BRM/preferences.json`) — `App/Services/PreferencesStore.swift`
+- X Recommended-defaults constant — `Preferences.recommendedDefaults`, used by both initial load and "Restore Defaults"
 
 ### Window & navigation
-- [x] Modal sheet replacing the current `Settings` scene `PreferencesView` — `Settings` scene removed from `LXC_BRMApp.swift`, sheet presented from `ContentView`
-- [x] Left tab rail: General / Repositories / Build Execution / Logs & Console / Appearance / Notifications / Advanced, each with its icon
-- [x] Bottom bar: Restore Defaults (left), Cancel / Save (right)
-- [x] Sidebar gear button opens this sheet (instead of `openSettings()`)
-- [x] Draft/commit editing: `@State private var draft` initialized from the store; Save calls `store.save(draft)`, Cancel just dismisses
+- X Native `Settings` scene / Cmd+, Preferences window with sidebar gear access
+- X Left tab rail: General / Repositories / Build Execution / Logs & Console / Appearance / Notifications / Advanced, each with its icon
+- X Bottom bar: Restore Defaults (left), Cancel / Save (right)
+- X Sidebar gear button opens the preferences window
+- X Draft/commit editing: `@State private var draft` initialized from the store; Save calls `store.save(draft)`, Cancel just dismisses
 
 ### 01 General
-- [ ] Launch at login toggle — wire into a login-item registration (`SMAppService` on macOS 13+)
-- [ ] Restore last opened repository on launch toggle — wire into `RepositoryStore` init to re-select the last active repo
-- [x] Default tab on launch dropdown — wired into `RepositoryDetailView`'s initial `selectedTab` via `DetailTab.init(_:DefaultLaunchTab)`
-- [ ] Remember recent repositories toggle — wire into whether `RepositoryStore` persists at all (off = session-only)
-- [x] Maximum recent repositories field — wired into the sidebar's `recentRepositories` cap (`ContentView.recentRepositories` now reads `preferencesStore.preferences.maxRecentRepositories`) — **shared with Repositories tab's copy, same stored value as decided in the open question**
-- [ ] Confirm-before-quitting-during-build toggle — wire into an `NSApplication` termination check against any running `BuildRunner`
-- [ ] Confirm-before-clearing toggle (groundwork — no "clear logs/history" action exists yet to gate)
-- [ ] Check for updates automatically toggle (storage only — no update-checking mechanism exists yet; inert until Phase 7 tackles distribution)
-- [ ] Update channel dropdown (storage only, same caveat as above)
-- [ ] Language dropdown (storage only — app isn't localized yet)
+- X Launch at login toggle — wired into a login-item registration (`SMAppService` on macOS 13+)
+- X Restore last opened repository on launch toggle — wired into `RepositoryStore` init to re-select the last active repo
+- X Default tab on launch dropdown — wired into `RepositoryDetailView`'s initial `selectedTab` via `DetailTab.init(_:DefaultLaunchTab)`
+- X Remember recent repositories toggle — wire into whether `RepositoryStore` persists at all (off = session-only)
+- X Maximum recent repositories field — wired into the sidebar's `recentRepositories` cap (`ContentView.recentRepositories` now reads `preferencesStore.preferences.maxRecentRepositories`) — **shared with Repositories tab's copy, same stored value as decided in the open question**
+- X Confirm-before-quitting-during-build toggle — wired into an `NSApplication` termination check against any running `BuildRunner`
+- D Confirm-before-clearing toggle — clear history is gated, but there is still no separate clear-logs action to gate
+- P Check for updates automatically toggle
+- P Update channel dropdown
+- P Language dropdown
 
 ### 02 Repositories
-- [ ] Default repository root detection toggle — wire into `BuildScriptScanner` (currently always on/hardcoded)
-- [ ] Default `/build` folder name field — wire into `BuildScriptScanner.scanLocal`/`scanGitHub` (currently hardcoded to `"build"`)
-- [ ] Scripts directory field — wire into `BuildScriptScanner` (currently hardcoded to `"scripts"`)
-- [ ] Logs directory field — wire into `LogFileService.logsDirectoryURL` (currently hardcoded to `"build/logs"`)
-- [ ] Scan subdirectories for `/build` folders toggle — wire into `BuildScriptScanner` for mono-repo support
-- [x] Maximum recent repositories field — same field/storage as General's copy, wired (see 01 General)
-- [ ] Automatically restore last opened repositories toggle — wire into `RepositoryStore` to reopen the full previous set, not just one
-- [ ] GitHub access "Configure…" sub-sheet — token entry (secure), wire into `BuildScriptScanner.scanGitHub` to raise API rate limits
-- [ ] Auto-detect repositories on startup toggle
+- P Default repository root detection toggle
+- X Default `/build` folder name field — wired into `BuildScriptScanner.scanLocal`/`scanGitHub`
+- X Scripts directory field — wired into `BuildScriptScanner`
+- X Logs directory field — wired into `LogFileService.logsDirectoryURL`
+- X Scan subdirectories for `/build` folders toggle — wired into `BuildScriptScanner` for mono-repo support
+- X Maximum recent repositories field — same field/storage as General's copy, wired (see 01 General)
+- D Automatically restore last opened repositories toggle — selects the last repo, but does not yet reopen the full previous set
+- D GitHub access "Configure…" sub-sheet — token entry exists, but the dedicated sub-sheet UX is not built
+- P Auto-detect repositories on startup toggle
 
 ### 03 Build Execution
-- [ ] Default shell dropdown — wire into `BuildRunner.start` (currently hardcoded to `/bin/bash`; mockup default is `/bin/zsh` — resolve before implementing, see open question)
-- [ ] Working directory dropdown (Repository Root / Custom) — wire into `BuildRunner.start`'s `currentDirectoryURL`
-- [ ] Environment Variables "Edit Variables…" sub-sheet (key=value pairs) — wire into `Process.environment`
-- [ ] Max concurrent builds stepper — wire into `BuildRunnerRegistry` (currently unlimited concurrent runners)
-- [ ] Build timeout dropdown — wire into `BuildRunner` (auto-cancel after N minutes; 0/off = no limit)
-- [ ] Terminate child processes on Stop toggle — wire into `BuildRunner.cancel()` (kill process tree, not just the top-level process)
-- [ ] Preserve partial output on cancellation toggle — `BuildRunner` already does this unconditionally; exposing as a toggle means adding a "discard partial output" code path when off
-- [ ] Automatically save logs toggle — `LogFileService.write` already runs unconditionally on every finish; exposing as a toggle means skipping the write when off
-- [ ] Prevent macOS sleep while a build is running toggle — wire into `IOKit`/`ProcessInfo.beginActivity(options: .idleSystemSleepDisabled, ...)` while `BuildRunner.isRunning`
-- [ ] Default behavior after build completes dropdown (e.g. "Stay on Output") — wire into `RepositoryDetailView`'s tab-switch behavior on build completion
+- X Default shell dropdown — wired into `BuildRunner.start`
+- X Working directory dropdown (Repository Root / Custom) — wired into `BuildRunner.start`'s `currentDirectoryURL`
+- D Environment Variables "Edit Variables…" sub-sheet (key=value pairs) — environment support exists, but the editor UI is still missing
+- X Max concurrent builds stepper — wired into `BuildRunnerRegistry`
+- X Build timeout dropdown — wired into `BuildRunner`
+- X Terminate child processes on Stop toggle — wired into `BuildRunner.cancel()`
+- X Preserve partial output on cancellation toggle — wired through `BuildRunner`
+- X Automatically save logs toggle — wired through `BuildRunner`
+- X Prevent macOS sleep while a build is running toggle — wired through `ProcessInfo.beginActivity(...)`
+- X Default behavior after build completes dropdown — wired into `RepositoryDetailView`
 
 ### 04 Logs & Console
-- [ ] Save build logs to disk automatically toggle — `LogFileService.write` currently runs unconditionally; off means skip the write
-- [ ] Default logs directory field — wire into `LogFileService.logsDirectoryURL` (currently hardcoded `"build/logs"`); shared value with Repositories tab's copy, see open question
-- [ ] Log retention period dropdown — wire into a cleanup pass over `/build/logs/` (doesn't exist yet)
-- [ ] Maximum log file size dropdown — groundwork only, no size capping/rotation exists yet
-- [ ] Maximum number of stored logs stepper — groundwork only, no oldest-log eviction exists yet
-- [ ] Timestamp format dropdown — wire into `displayLines`/`LogFileService`'s `DateFormatter` (currently hardcoded `HH:mm:ss`)
-- [ ] Encoding dropdown — wire into `LogFileService` read/write (currently hardcoded `.utf8`)
-- [ ] Console font + size fields — wire into `LogPane`'s monospaced text (currently hardcoded `.caption`/system monospaced)
-- [ ] Line spacing field — wire into `LogPane`'s `LazyVStack` spacing
-- [ ] Word wrap toggle — new feature in `LogPane` (currently lines don't wrap)
-- [ ] Auto-scroll to bottom toggle — new feature in `LogPane` (currently no auto-scroll while live output streams)
-- [ ] Show line numbers toggle — new feature in `LogPane`
-- [ ] Colorize output toggle — new feature in `LogPane` (color by INFO/WARN/ERROR/SUCCESS keyword, distinct from the existing search-match highlight)
-- [ ] Default log filter dropdown — wire into `LogPane`'s existing `LogFilter` enum as its initial value instead of always starting at `.all`
-- [ ] Search-is-case-sensitive toggle — wire into `LogPane`'s search (currently always `localizedCaseInsensitiveContains`)
+- X Save build logs to disk automatically toggle — wired through `BuildRunner`
+- X Default logs directory field — wired into `LogFileService.logsDirectoryURL`
+- X Log retention period dropdown — wired into log pruning
+- X Maximum log file size dropdown — wired into log truncation
+- X Maximum number of stored logs stepper — wired into log pruning
+- X Timestamp format dropdown — wired into `LogFileService`
+- X Encoding dropdown — wired into `LogFileService` read/write
+- X Console font + size fields — wired into `LogPane`
+- X Line spacing field — wired into `LogPane`
+- X Word wrap toggle — wired into `LogPane`
+- X Auto-scroll to bottom toggle — wired into `LogPane`
+- X Show line numbers toggle — wired into `LogPane`
+- X Colorize output toggle — wired into `LogPane`
+- X Default log filter dropdown — wired into `LogPane`
+- X Search-is-case-sensitive toggle — wired into `LogPane`'s search
 
 ### 05 Appearance
-- [x] Theme card picker (Light/Dark/System) — wired via `ContentView.preferredColorScheme`, mapping `.light`/`.dark` to a real override and `.system` to `nil` (today's default-follows-system behavior, unchanged for that case)
-- [ ] UI Density dropdown — new concept, no density-aware spacing exists yet across the app's views
-- [ ] Sidebar Width dropdown — wire into `NavigationSplitView`'s sidebar column width (currently unset/default)
-- [ ] Text Size dropdown — new concept, no app-wide dynamic type scaling exists yet
-- [ ] Accent Color swatch picker + Custom — wire into `.tint()`/`AccentColor` asset (currently uses the system accent color only)
-- [ ] Show animations toggle — groundwork; app currently uses SwiftUI's implicit animations without a global on/off
-- [ ] Round window corners toggle — groundwork; no custom window-corner styling exists yet
-- [ ] Reduce transparency toggle — groundwork; app currently uses standard `.bar`/`.background` materials with no transparency override
-- [ ] Use system font toggle — groundwork; app already uses the system font everywhere by default, so "on" is a no-op and "off" needs a real alternate-font path to mean anything
+- X Theme card picker (Light/Dark/System) — wired via `ContentView.preferredColorScheme`
+- P UI Density dropdown
+- X Sidebar Width dropdown — wired into `NavigationSplitView`'s sidebar column width
+- P Text Size dropdown
+- P Accent Color swatch picker + Custom
+- P Show animations toggle
+- P Round window corners toggle
+- P Reduce transparency toggle
+- X Use system font toggle — wired into log/console font handling
 
 ### 06 Notifications
-- [ ] `UNUserNotificationCenter` integration — nothing exists yet; this whole tab is groundwork until real macOS notifications are wired into `BuildRunner`'s lifecycle (start/success/fail/cancel/long-running)
-- [ ] Enable build notifications master toggle — gates all of the below
-- [ ] Per-event toggles (Started / Succeeded / Failed / Cancelled / Long Running) — wire into `BuildRunner.start`/`finish` posting distinct notification types
-- [ ] "Notify only when not in focus" toggle — wire into `NSApplication.shared.isActive`
-- [ ] Play sound dropdown — wire into `UNNotificationSound`
-- [ ] Show notification duration dropdown — macOS controls this at the system level (Notification Center settings), not per-app; flag as likely **not implementable** as a real app preference, only informational, unless there's a custom in-app toast instead of system notifications
-- [ ] Group multiple notifications toggle — wire into `UNNotificationRequest` threading/grouping
+- X `UNUserNotificationCenter` integration
+- X Enable build notifications master toggle
+- D Per-event toggles (Started / Succeeded / Failed / Cancelled / Long Running)
+- X "Notify only when not in focus" toggle
+- D Play sound dropdown
+- P Show notification duration dropdown
+- P Group multiple notifications toggle
 
 ### 07 Advanced
-- [ ] Allow scripts outside `/build/scripts` toggle — wire into `BuildScriptScanner`
-- [ ] Global custom build timeout stepper — wire into `BuildRunner` as a ceiling that overrides Build Execution's per-build timeout when non-zero
-- [ ] Detect executable files automatically toggle — wire into `BuildScriptScanner` (currently only matches `.sh` by extension, not exec permission)
-- [ ] Terminate process tree on Stop toggle — same underlying setting as Build Execution's "Terminate child processes on Stop"; back both fields with one shared value, don't build two
-- [ ] Verbose / Debug logging toggle — groundwork only, no internal debug logging exists yet
-- [ ] Log internal diagnostics to file toggle + location field — groundwork; no diagnostics-log writer exists yet
-- [ ] "Run Diagnostics Report…" button — new feature, collects system/app/config info into a shareable report
-- [ ] "Run GitHub Diagnostics…" button — wire into `BuildScriptScanner.scanGitHub`'s connectivity path as a manual health check
-- [ ] GitHub rate limit alerts dropdown — wire into the GitHub API response headers (`X-RateLimit-Remaining`) once the scanner reads them
-- [ ] Open Build Manager data directory button — `NSWorkspace.shared.open` on `~/Library/Application Support/LXC-BRM/`
-- [ ] Open `projects.json` button — `NSWorkspace.shared.open` on the file (note: `projects.json` today is the static config template in the repo, not a live app file — see open question)
-- [ ] Clear repository metadata cache button — no metadata cache exists yet to clear (current scans are always live, not cached)
-- [ ] Clear build history button — wire into `BuildHistoryStore` (needs a real "clear" method; doesn't exist yet)
-- [ ] Reset all warnings button — no "don't show again" warning system exists yet
-- [ ] Restore All Defaults (Danger Zone) — immediate destructive action distinct from the per-tab bottom-bar "Restore Defaults" (draft-only, needs Save) — see open question below
+- P Allow scripts outside `/build/scripts` toggle
+- X Global custom build timeout stepper — wired into `BuildRunner` as a ceiling over the per-build timeout
+- P Detect executable files automatically toggle — wire into `BuildScriptScanner` (currently only matches `.sh` by extension, not exec permission)
+- P Terminate process tree on Stop toggle — same underlying setting as Build Execution's "Terminate child processes on Stop"; back both fields with one shared value, don't build two
+- P Verbose / Debug logging toggle — groundwork only, no internal debug logging exists yet
+- P Log internal diagnostics to file toggle + location field — groundwork; no diagnostics-log writer exists yet
+- P "Run Diagnostics Report…" button — new feature, collects system/app/config info into a shareable report
+- P "Run GitHub Diagnostics…" button — wire into `BuildScriptScanner.scanGitHub`'s connectivity path as a manual health check
+- P GitHub rate limit alerts dropdown — wire into the GitHub API response headers (`X-RateLimit-Remaining`) once the scanner reads them
+- P Open Build Manager data directory button — `NSWorkspace.shared.open` on `~/Library/Application Support/LXC-BRM/`
+- P Open `projects.json` button — `NSWorkspace.shared.open` on the file (note: `projects.json` today is the static config template in the repo, not a live app file — see open question)
+- P Clear repository metadata cache button — no metadata cache exists yet to clear (current scans are always live, not cached)
+- P Clear build history button — wire into `BuildHistoryStore` (needs a real "clear" method; doesn't exist yet)
+- P Reset all warnings button — no "don't show again" warning system exists yet
+- P Restore All Defaults (Danger Zone) — immediate destructive action distinct from the per-tab bottom-bar "Restore Defaults" (draft-only, needs Save) — see open question below
 
 ### Polish
-- [ ] Preferences load and apply on app launch (theme, default tab, etc.)
+- P Preferences load and apply on app launch (theme, default tab, etc.)
 
 ## Tracking
 
-| Section | Checked / Total | Status |
-| --- | --- | --- |
-| Data & persistence | 3 / 3 | Done |
-| Window & navigation | 5 / 5 | Done |
-| 01 General | 2 / 10 | In Progress |
-| 02 Repositories | 1 / 9 | In Progress |
-| 03 Build Execution | 0 / 10 | Open (UI built, not wired) |
-| 04 Logs & Console | 0 / 15 | Open (UI built, not wired) |
-| 05 Appearance | 1 / 9 | In Progress |
-| 06 Notifications | 0 / 7 | Open (UI built, not wired) |
-| 07 Advanced | 0 / 15 | Open (UI built, not wired) |
-| Polish | 0 / 1 | Open |
-| **Total** | **12 / 84** | **PreferencesView built for all 7 tabs; 3 fields wired into real app behavior** |
+| Section | X | D | P | Total | Status |
+| --- | --- | --- | --- | --- | --- |
+| Data & persistence | 3 | 0 | 0 | 3 | Done |
+| Window & navigation | 5 | 0 | 0 | 5 | Done |
+| 01 General | 6 | 1 | 3 | 10 | In Progress |
+| 02 Repositories | 5 | 2 | 2 | 9 | In Progress |
+| 03 Build Execution | 9 | 1 | 0 | 10 | Nearly done |
+| 04 Logs & Console | 15 | 0 | 0 | 15 | Done |
+| 05 Appearance | 3 | 0 | 6 | 9 | In Progress |
+| 06 Notifications | 3 | 2 | 2 | 7 | In Progress |
+| 07 Advanced | 1 | 0 | 14 | 15 | Open |
+| Polish | 0 | 0 | 1 | 1 | Open |
+| **Total** | **50** | **6** | **28** | **84** | **PreferencesView is fully built; 50 items are X, 6 are D, 28 are P** |
 
 ## Screens Received
 
