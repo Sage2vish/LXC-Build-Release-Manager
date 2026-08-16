@@ -18,8 +18,7 @@ struct ContentView: View {
             get: { preferencesStore.preferences.showRepositorySidebar ? .all : .detailOnly },
             set: { newValue in
                 let isVisible = newValue != .detailOnly
-                guard didRestoreLayout,
-                      preferencesStore.preferences.showRepositorySidebar != isVisible else { return }
+                guard preferencesStore.preferences.showRepositorySidebar != isVisible else { return }
                 var updated = preferencesStore.preferences
                 updated.showRepositorySidebar = isVisible
                 preferencesStore.save(updated)
@@ -53,10 +52,6 @@ struct ContentView: View {
             let delegate = NSApp.delegate as? AppDelegate
             delegate?.runners = runners
             delegate?.preferencesStore = preferencesStore
-        }
-        .task {
-            try? await Task.sleep(for: .milliseconds(400))
-            didRestoreLayout = true
         }
     }
 
