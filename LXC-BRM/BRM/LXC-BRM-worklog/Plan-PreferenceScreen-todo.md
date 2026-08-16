@@ -8,8 +8,9 @@ Sources:
 - **Screen 3 — Build Execution tab**, same fidelity. Superseded the early Build Execution field guesses.
 - **Screen 4 — Logs & Console tab**, same fidelity. Superseded the early Logs & Console field guesses.
 - **Screen 5 — Appearance tab**, same fidelity. Superseded the early Appearance field guess (was a single "App Theme" line; the real tab is much larger).
+- **Screen 6 — Notifications tab**, same fidelity. Superseded the early Notifications field guess.
 
-Image files: `assets/Preference-Screen-1.png` through `assets/Preference-Screen-5.png` — still not on disk. Checked again just now (searched the whole home folder, Application Support, and the system temp dirs for anything created in the last five minutes) — nothing. This is a hard tool limitation, not a choice: a chat-pasted image reaches me only as something I can look at, never as file bytes, and no tool available to me exports it. The only way these land in `assets/` is you saving them from Finder (drag the image out of the chat, or right-click → Save Image As) under the exact names above. Everything else below is written directly from reading each screen.
+Image files: `assets/Preference-Screen-1.png` through `assets/Preference-Screen-6.png` — still not on disk. This is a hard tool limitation: a chat-pasted image reaches me only as something I can look at, never as file bytes, and nothing in my toolset exports it — I've checked every location I can justify checking. The only way these land in `assets/` is saving them from Finder (drag the image out of the chat, or right-click → Save Image As) under the exact names above. Everything else below is written directly from reading each screen.
 
 This is a **plan document**, not a duplicate todo list — the single active todo file is still `todo-2026-08-16.md`. This file holds the detailed design + checklist for one feature (the Preferences screen); the master todo links to it as one line item so tracking still has one home.
 
@@ -101,9 +102,23 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 - Reduce transparency (off) — "Minimize transparency effects for better readability."
 - Use system font (San Francisco) (on) — "Use macOS system font for a native look."
 
-### 06 🔔 Notifications
-- Show toast notifications for build events
-- Show build summary notification on completion
+### 06 🔔 Notifications — *finalized from Screen 6*
+
+**Notification Settings**
+- Enable build notifications (on) — "Show notifications for build events." *(master toggle for the whole tab)*
+- Build Started (on) — "Notify when a build starts."
+- Build Succeeded (on) — "Notify when a build completes successfully."
+- Build Failed (on) — "Notify when a build fails."
+- Build Cancelled / Stopped (on) — "Notify when a build is cancelled or stopped."
+- Long Running Build Completed (on) — "Notify when a long running build finishes."
+
+**Notification Behavior**
+- Notify only when Build Manager is not in focus (on) — "Avoid interrupting you while you're already in the app."
+- Play sound — dropdown, default "Glass" — "Play a system sound with notifications."
+- Show notification duration — dropdown, default "5 seconds" — "How long notifications stay visible."
+
+**Advanced (Optional)**
+- Group multiple notifications (off) — "Combine multiple events into a single notification."
 
 ### 07 🛠 Advanced
 - Allow script execution from outside `/build/scripts` (default off)
@@ -197,8 +212,13 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 - [ ] Use system font toggle — groundwork; app already uses the system font everywhere by default, so "on" is a no-op and "off" needs a real alternate-font path to mean anything
 
 ### 06 Notifications
-- [ ] Toast notifications toggle — no toast/notification system exists yet; build the minimal version needed to honor this toggle
-- [ ] Build summary notification toggle — same, groundwork until a notification system exists
+- [ ] `UNUserNotificationCenter` integration — nothing exists yet; this whole tab is groundwork until real macOS notifications are wired into `BuildRunner`'s lifecycle (start/success/fail/cancel/long-running)
+- [ ] Enable build notifications master toggle — gates all of the below
+- [ ] Per-event toggles (Started / Succeeded / Failed / Cancelled / Long Running) — wire into `BuildRunner.start`/`finish` posting distinct notification types
+- [ ] "Notify only when not in focus" toggle — wire into `NSApplication.shared.isActive`
+- [ ] Play sound dropdown — wire into `UNNotificationSound`
+- [ ] Show notification duration dropdown — macOS controls this at the system level (Notification Center settings), not per-app; flag as likely **not implementable** as a real app preference, only informational, unless there's a custom in-app toast instead of system notifications
+- [ ] Group multiple notifications toggle — wire into `UNNotificationRequest` threading/grouping
 
 ### 07 Advanced
 - [ ] Allow script execution from outside `/build/scripts` toggle — wire into `BuildScriptScanner`
@@ -219,10 +239,10 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 | 03 Build Execution | 0 / 10 | Open |
 | 04 Logs & Console | 0 / 15 | Open |
 | 05 Appearance | 0 / 9 | Open |
-| 06 Notifications | 0 / 2 | Open (pending Screen 6) |
+| 06 Notifications | 0 / 7 | Open |
 | 07 Advanced | 0 / 3 | Open (pending Screen 7) |
 | Polish | 0 / 1 | Open |
-| **Total** | **0 / 67** | **Not started** |
+| **Total** | **0 / 72** | **Not started** |
 
 ## Screens Received
 
@@ -233,8 +253,8 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 | 3 | Build Execution | ✅ Read and incorporated (image not yet saved to `assets/`) |
 | 4 | Logs & Console | ✅ Read and incorporated (image not yet saved to `assets/`) |
 | 5 | Appearance | ✅ Read and incorporated (image not yet saved to `assets/`) |
-| 6 | Notifications | ⏳ Waiting — fields below are still the early guesses from the concept mockup |
-| 7 | Advanced | ⏳ Waiting — same |
+| 6 | Notifications | ✅ Read and incorporated (image not yet saved to `assets/`) |
+| 7 | Advanced | ⏳ Waiting — fields below are still the early guesses from the concept mockup |
 
 ## Notes / Open Questions
 
