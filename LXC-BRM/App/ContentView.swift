@@ -117,19 +117,23 @@ struct ContentView: View {
                 } label: {
                     Label("Open Repository…", systemImage: "folder")
                         .frame(maxWidth: .infinity)
+                        .frame(minHeight: 34)
                 }
                 .buttonStyle(.bordered)
+                .controlSize(.large)
 
                 Button {
                     openSettings()
                 } label: {
                     Label("Preferences", systemImage: "gearshape")
                         .frame(maxWidth: .infinity)
+                        .frame(minHeight: 34)
                 }
                 .buttonStyle(.borderless)
                 .foregroundStyle(.secondary)
             }
-            .padding(10)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 12)
             .background(.bar)
         }
         .overlay {
@@ -165,11 +169,16 @@ private struct StatusBar: View {
     }
 
     var body: some View {
-        HStack(spacing: 20) {
-            statusItem("Repository", repository?.name ?? "—")
-            statusItem("Branch", branch)
-            statusItem("Platform", "macOS")
-            statusItem("Auto-detect", preferences.autoDetectRepositoriesOnStartup ? "Enabled" : "Disabled")
+        HStack(spacing: 12) {
+            statusItem("Repository", repository?.name ?? "—", icon: "folder.fill", tint: .blue)
+            statusItem("Branch", branch, icon: "arrow.triangle.branch", tint: .orange)
+            statusItem("Platform", "macOS", icon: "desktopcomputer", tint: .indigo)
+            statusItem(
+                "Auto-detect",
+                preferences.autoDetectRepositoriesOnStartup ? "Enabled" : "Disabled",
+                icon: preferences.autoDetectRepositoriesOnStartup ? "checkmark.circle.fill" : "pause.circle.fill",
+                tint: preferences.autoDetectRepositoriesOnStartup ? .green : .secondary
+            )
             Spacer()
         }
         .font(.caption)
@@ -179,11 +188,19 @@ private struct StatusBar: View {
         .overlay(alignment: .top) { Divider() }
     }
 
-    private func statusItem(_ label: String, _ value: String) -> some View {
+    private func statusItem(_ label: String, _ value: String, icon: String, tint: Color) -> some View {
         HStack(spacing: 4) {
-            Text("\(label):").foregroundStyle(.secondary)
+            Image(systemName: icon)
+                .foregroundStyle(tint)
+            Text("\(label):")
+                .foregroundStyle(.secondary)
             Text(value)
+                .fontWeight(.medium)
+                .foregroundStyle(tint)
         }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(tint.opacity(0.10), in: Capsule())
     }
 }
 

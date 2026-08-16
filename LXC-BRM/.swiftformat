@@ -1,0 +1,18 @@
+// SwiftFormat configuration for premium Swift/macOS project
+
+--indent 4
+--linebreaks lf
+--commas inline
+--semicolons never
+--wraparguments beforefirst
+--wrapcollections beforefirst
+--stripunusedargs closure-only
+--header ignore
+--self remove
+--disable redundantSelf
+--enable sortedImports, consecutiveSpaces, trailingCommas
+
+exclude:
+  - Pods
+  - build
+  - DerivedData

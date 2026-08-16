@@ -1,0 +1,38 @@
+# SwiftLint Configuration for Premium SwiftUI/macOS Project
+
+opt_in_rules:
+  - closure_spacing
+  - empty_count
+  - explicit_init
+  - force_unwrapping
+  - multiline_arguments
+  - sorted_imports
+  - unused_declaration
+
+excluded:
+  - Pods
+  - Carthage
+  - build
+  - DerivedData
+
+line_length: 120
+indentation: 4
+trailing_whitespace: true
+trailing_newline: true
+function_body_length:
+  warning: 50
+  error: 100
+file_length:
+  warning: 400
+  error: 600
+identifier_name:
+  min_length: 3
+  excluded:
+    - id
+    - x
+    - y
+    - UI
+    - OS
+    - VM
+
+reporter: xcode
