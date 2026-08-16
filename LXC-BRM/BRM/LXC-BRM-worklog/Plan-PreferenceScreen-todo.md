@@ -169,24 +169,26 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 
 ## Checklist
 
+Every field in every tab below now exists as an editable, `preferences.json`-persisted control in `PreferencesView.swift` (draft/Save/Cancel/Restore Defaults all working, `BUILD SUCCEEDED`). A box only flips to `[x]` once the field also *does something* in the app — the UI existing is necessary but not sufficient, per this file's own rule at the top. Three fields are wired end-to-end and checked below: Theme, Default Tab on Launch, and Maximum Recent Repositories.
+
 ### Data & persistence
-- [ ] `Preferences` model covering every field above, Codable
-- [ ] `PreferencesStore` (ObservableObject; load/save JSON to `~/Library/Application Support/LXC-BRM/preferences.json`)
-- [ ] Recommended-defaults constant (System theme, Build tab, 30-day retention, `/bin/bash`, 2 concurrent builds, SF Mono 13)
+- [x] `Preferences` model covering every field above, Codable — `App/Models/Preferences.swift`
+- [x] `PreferencesStore` (ObservableObject; load/save JSON to `~/Library/Application Support/LXC-BRM/preferences.json`) — `App/Services/PreferencesStore.swift`
+- [x] Recommended-defaults constant — `Preferences.recommendedDefaults`, used by both initial load and "Restore Defaults"
 
 ### Window & navigation
-- [ ] Modal sheet replacing the current `Settings` scene `PreferencesView`
-- [ ] Left tab rail: General / Repositories / Build Execution / Logs & Console / Appearance / Notifications / Advanced, each with its icon
-- [ ] Bottom bar: Restore Defaults (left), Cancel / Save (right)
-- [ ] Sidebar gear button opens this sheet (instead of `openSettings()`)
-- [ ] Draft/commit editing: changes only take effect on Save; Cancel discards them
+- [x] Modal sheet replacing the current `Settings` scene `PreferencesView` — `Settings` scene removed from `LXC_BRMApp.swift`, sheet presented from `ContentView`
+- [x] Left tab rail: General / Repositories / Build Execution / Logs & Console / Appearance / Notifications / Advanced, each with its icon
+- [x] Bottom bar: Restore Defaults (left), Cancel / Save (right)
+- [x] Sidebar gear button opens this sheet (instead of `openSettings()`)
+- [x] Draft/commit editing: `@State private var draft` initialized from the store; Save calls `store.save(draft)`, Cancel just dismisses
 
 ### 01 General
 - [ ] Launch at login toggle — wire into a login-item registration (`SMAppService` on macOS 13+)
 - [ ] Restore last opened repository on launch toggle — wire into `RepositoryStore` init to re-select the last active repo
-- [ ] Default tab on launch dropdown — wire into `RepositoryDetailView`'s initial `selectedTab`
+- [x] Default tab on launch dropdown — wired into `RepositoryDetailView`'s initial `selectedTab` via `DetailTab.init(_:DefaultLaunchTab)`
 - [ ] Remember recent repositories toggle — wire into whether `RepositoryStore` persists at all (off = session-only)
-- [ ] Maximum recent repositories field — wire into the sidebar's `recentRepositories` cap (currently hardcoded to 5) — **shared with Repositories tab, see open question**
+- [x] Maximum recent repositories field — wired into the sidebar's `recentRepositories` cap (`ContentView.recentRepositories` now reads `preferencesStore.preferences.maxRecentRepositories`) — **shared with Repositories tab's copy, same stored value as decided in the open question**
 - [ ] Confirm-before-quitting-during-build toggle — wire into an `NSApplication` termination check against any running `BuildRunner`
 - [ ] Confirm-before-clearing toggle (groundwork — no "clear logs/history" action exists yet to gate)
 - [ ] Check for updates automatically toggle (storage only — no update-checking mechanism exists yet; inert until Phase 7 tackles distribution)
@@ -199,7 +201,7 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 - [ ] Scripts directory field — wire into `BuildScriptScanner` (currently hardcoded to `"scripts"`)
 - [ ] Logs directory field — wire into `LogFileService.logsDirectoryURL` (currently hardcoded to `"build/logs"`)
 - [ ] Scan subdirectories for `/build` folders toggle — wire into `BuildScriptScanner` for mono-repo support
-- [ ] Maximum recent repositories field — same field/storage as General's copy; **implementation note:** back both UI fields with one shared preference, not two
+- [x] Maximum recent repositories field — same field/storage as General's copy, wired (see 01 General)
 - [ ] Automatically restore last opened repositories toggle — wire into `RepositoryStore` to reopen the full previous set, not just one
 - [ ] GitHub access "Configure…" sub-sheet — token entry (secure), wire into `BuildScriptScanner.scanGitHub` to raise API rate limits
 - [ ] Auto-detect repositories on startup toggle
@@ -234,7 +236,7 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 - [ ] Search-is-case-sensitive toggle — wire into `LogPane`'s search (currently always `localizedCaseInsensitiveContains`)
 
 ### 05 Appearance
-- [ ] Theme card picker (Light/Dark/System) — wire into actual app appearance; **note:** `ContentView.swift` currently has no override mechanism at all — it was deliberately built to always follow the system, per the user's own earlier instruction ("the dark or bright has to be the system default"). This field reintroduces a manual override on top of that, so Light/Dark selections need a real `.preferredColorScheme` hook while "System" keeps today's behavior.
+- [x] Theme card picker (Light/Dark/System) — wired via `ContentView.preferredColorScheme`, mapping `.light`/`.dark` to a real override and `.system` to `nil` (today's default-follows-system behavior, unchanged for that case)
 - [ ] UI Density dropdown — new concept, no density-aware spacing exists yet across the app's views
 - [ ] Sidebar Width dropdown — wire into `NavigationSplitView`'s sidebar column width (currently unset/default)
 - [ ] Text Size dropdown — new concept, no app-wide dynamic type scaling exists yet
@@ -277,17 +279,17 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 
 | Section | Checked / Total | Status |
 | --- | --- | --- |
-| Data & persistence | 0 / 3 | Open |
-| Window & navigation | 0 / 5 | Open |
-| 01 General | 0 / 10 | Open |
-| 02 Repositories | 0 / 9 | Open |
-| 03 Build Execution | 0 / 10 | Open |
-| 04 Logs & Console | 0 / 15 | Open |
-| 05 Appearance | 0 / 9 | Open |
-| 06 Notifications | 0 / 7 | Open |
-| 07 Advanced | 0 / 15 | Open |
+| Data & persistence | 3 / 3 | Done |
+| Window & navigation | 5 / 5 | Done |
+| 01 General | 2 / 10 | In Progress |
+| 02 Repositories | 1 / 9 | In Progress |
+| 03 Build Execution | 0 / 10 | Open (UI built, not wired) |
+| 04 Logs & Console | 0 / 15 | Open (UI built, not wired) |
+| 05 Appearance | 1 / 9 | In Progress |
+| 06 Notifications | 0 / 7 | Open (UI built, not wired) |
+| 07 Advanced | 0 / 15 | Open (UI built, not wired) |
 | Polish | 0 / 1 | Open |
-| **Total** | **0 / 84** | **Not started — all 7 screens now incorporated** |
+| **Total** | **12 / 84** | **PreferencesView built for all 7 tabs; 3 fields wired into real app behavior** |
 
 ## Screens Received
 

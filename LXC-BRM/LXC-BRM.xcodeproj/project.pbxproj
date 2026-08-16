@@ -20,6 +20,8 @@
 		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
 		2F3B4B4C450DA1992E367F86 /* GitBranchReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */; };
 		77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BE8CB1B631110E0A535F54 /* PreferencesView.swift */; };
+		55BA48F23D7D589AEBE85E1D /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ABC2F1F39F8FB25110771D4 /* Preferences.swift */; };
+		5D97B5F6FBFEF4DFB4D2AFE8 /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C39837CDF536B7DA795EDC /* PreferencesStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +50,8 @@
 		1A3DA0FF6648759940B42148 /* BuildRunner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRunner.swift; path = App/Services/BuildRunner.swift; sourceTree = "<group>"; };
 		D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GitBranchReader.swift; path = App/Services/GitBranchReader.swift; sourceTree = "<group>"; };
 		06BE8CB1B631110E0A535F54 /* PreferencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesView.swift; path = App/PreferencesView.swift; sourceTree = "<group>"; };
+		9ABC2F1F39F8FB25110771D4 /* Preferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = App/Models/Preferences.swift; sourceTree = "<group>"; };
+		80C39837CDF536B7DA795EDC /* PreferencesStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesStore.swift; path = App/Services/PreferencesStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +128,7 @@
 				1B97018D171778322754574B /* Repository.swift */,
 				925160EB5C5E561373968382 /* BuildScript.swift */,
 				D42A86DDBD972CFA5981609E /* BuildRecord.swift */,
+				9ABC2F1F39F8FB25110771D4 /* Preferences.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -137,6 +142,7 @@
 				6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */,
 				9911BF5D489D90AE02811CB3 /* LogFileService.swift */,
 				D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */,
+				80C39837CDF536B7DA795EDC /* PreferencesStore.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -225,6 +231,8 @@
 				E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */,
 				2F3B4B4C450DA1992E367F86 /* GitBranchReader.swift in Sources */,
 				77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */,
+				55BA48F23D7D589AEBE85E1D /* Preferences.swift in Sources */,
+				5D97B5F6FBFEF4DFB4D2AFE8 /* PreferencesStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

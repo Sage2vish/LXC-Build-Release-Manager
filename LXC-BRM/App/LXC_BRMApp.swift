@@ -7,9 +7,5 @@ struct LXC_BRMApp: App {
             ContentView()
         }
         .windowStyle(.titleBar)
-
-        Settings {
-            PreferencesView()
-        }
     }
 }

@@ -5,8 +5,17 @@ struct ContentView: View {
     @StateObject private var store = RepositoryStore()
     @StateObject private var historyStore = BuildHistoryStore()
     @StateObject private var runners = BuildRunnerRegistry()
+    @StateObject private var preferencesStore = PreferencesStore()
     @State private var isAddingRepository = false
-    @Environment(\.openSettings) private var openSettings
+    @State private var isShowingPreferences = false
+
+    private var preferredColorScheme: ColorScheme? {
+        switch preferencesStore.preferences.theme {
+        case .light: return .light
+        case .dark: return .dark
+        case .system: return nil
+        }
+    }
 
     var body: some View {
         NavigationSplitView {
@@ -17,7 +26,8 @@ struct ContentView: View {
                     repository: repository,
                     store: store,
                     historyStore: historyStore,
-                    runner: runners.runner(for: repository.id)
+                    runner: runners.runner(for: repository.id),
+                    initialTab: RepositoryDetailView.DetailTab(preferencesStore.preferences.defaultLaunchTab)
                 )
                 .id(repository.id)
             } else {
@@ -32,8 +42,12 @@ struct ContentView: View {
         .safeAreaInset(edge: .bottom) {
             StatusBar(repository: store.selectedRepository)
         }
+        .preferredColorScheme(preferredColorScheme)
         .sheet(isPresented: $isAddingRepository) {
             AddRepositorySheet(store: store, isPresented: $isAddingRepository)
+        }
+        .sheet(isPresented: $isShowingPreferences) {
+            PreferencesView(store: preferencesStore, isPresented: $isShowingPreferences)
         }
     }
 
@@ -45,7 +59,8 @@ struct ContentView: View {
     }
 
     private var recentRepositories: [Repository] {
-        Array(store.repositories.sorted { $0.lastAccessed > $1.lastAccessed }.prefix(5))
+        let cap = max(0, preferencesStore.preferences.maxRecentRepositories)
+        return Array(store.repositories.sorted { $0.lastAccessed > $1.lastAccessed }.prefix(cap))
     }
 
     private var sidebar: some View {
@@ -101,7 +116,7 @@ struct ContentView: View {
                 .buttonStyle(.bordered)
 
                 Button {
-                    openSettings()
+                    isShowingPreferences = true
                 } label: {
                     Label("Preferences", systemImage: "gearshape")
                         .frame(maxWidth: .infinity)
@@ -450,11 +465,19 @@ private struct RepositoryDetailView: View {
     @ObservedObject var historyStore: BuildHistoryStore
     @ObservedObject var runner: BuildRunner
 
-    @State private var selectedTab: DetailTab = .build
+    @State private var selectedTab: DetailTab
     @State private var scanResult: BuildScanResult?
     @State private var isScanning = false
     @State private var selectedLogRecordID: BuildRecord.ID?
     @State private var showInspector = true
+
+    init(repository: Repository, store: RepositoryStore, historyStore: BuildHistoryStore, runner: BuildRunner, initialTab: DetailTab = .build) {
+        self.repository = repository
+        self.store = store
+        self.historyStore = historyStore
+        self.runner = runner
+        self._selectedTab = State(initialValue: initialTab)
+    }
 
     enum DetailTab: String, CaseIterable, Identifiable {
         case build = "Build"
@@ -463,6 +486,15 @@ private struct RepositoryDetailView: View {
         case overview = "Overview"
         case settings = "Settings"
         var id: String { rawValue }
+
+        init(_ launchTab: DefaultLaunchTab) {
+            switch launchTab {
+            case .build: self = .build
+            case .logs: self = .logs
+            case .history: self = .history
+            case .overview: self = .overview
+            }
+        }
     }
 
     private var records: [BuildRecord] { historyStore.records(for: repository.id) }
