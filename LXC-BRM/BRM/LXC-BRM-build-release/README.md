@@ -15,3 +15,4 @@ Build and release orchestration for the macOS app.
 - PDF requirements define the requested scope.
 - Context decisions define the implementation path.
 - If they conflict, follow the decision log and keep the conflict visible.
+- The todo file is a working checklist, not a completion report.
