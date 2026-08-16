@@ -15,8 +15,11 @@ This folder contains the macOS-side BRM workspace folders.
 
 ## Index Files
 
-- `LXC-BRM-shared/to-do-26-08-16.md`
-- `LXC-BRM-frameworks/to-do-26-08-16.md`
-- `LXC-BRM-build-release/to-do-26-08-16.md`
-- `LXC-BRM-worklog/to-do-26-08-16.md`
-- `LXC-BRM-context/to-do-26-08-16.md`
+- `LXC-BRM-shared/todo-2026-08-16.md`
+- `LXC-BRM-frameworks/todo-2026-08-16.md`
+- `LXC-BRM-build-release/todo-2026-08-16.md`
+- `LXC-BRM-worklog/todo-2026-08-16.md`
+- `LXC-BRM-context/todo-2026-08-16.md`
+- `LXC-BRM-context/rules-context.md`
+- `LXC-BRM-context/architecture.md`
+- `LXC-BRM-context/decisions/decision-2026-08-16.md`

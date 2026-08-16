@@ -16,18 +16,18 @@
 		0BB529CB33F756E7C7E65ACF /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = BRM/README.md; sourceTree = "<group>"; };
 		1006ABB94DB1B0FE8DED20CE /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = "BRM/LXC-BRM-shared/README.md"; sourceTree = "<group>"; };
 		363495766860C99A9A8A3A95 /* LXC-BRM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LXC-BRM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3AD121A19BC945A59F97CD33 /* 2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "2026-08-16.md"; path = "BRM/LXC-BRM-context/todo/2026-08-16.md"; sourceTree = "<group>"; };
-		3C3B80DA60154E5F2AA57611 /* 2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "2026-08-16.md"; path = "BRM/LXC-BRM-frameworks/todo/2026-08-16.md"; sourceTree = "<group>"; };
+		3AD121A19BC945A59F97CD33 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-context/todo-2026-08-16.md"; sourceTree = "<group>"; };
+		3C3B80DA60154E5F2AA57611 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-frameworks/todo-2026-08-16.md"; sourceTree = "<group>"; };
 		4A0E68398EE182DD668C41B4 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = "BRM/LXC-BRM-worklog/README.md"; sourceTree = "<group>"; };
 		51977CC4D41C9D8BB3B28C4D /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = App/ContentView.swift; sourceTree = "<group>"; };
-		55B27D8A3CBC4CD03F74B4A9 /* 2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "2026-08-16.md"; path = "BRM/LXC-BRM-worklog/todo/2026-08-16.md"; sourceTree = "<group>"; };
+		55B27D8A3CBC4CD03F74B4A9 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-worklog/todo-2026-08-16.md"; sourceTree = "<group>"; };
 		ADA05C37EBB9D97D71511B26 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = "BRM/LXC-BRM-frameworks/README.md"; sourceTree = "<group>"; };
 		B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LXC_BRMApp.swift; path = App/LXC_BRMApp.swift; sourceTree = "<group>"; };
-		BC1C69A77D6AEDDE678E3704 /* 2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "2026-08-16.md"; path = "BRM/LXC-BRM-build-release/todo/2026-08-16.md"; sourceTree = "<group>"; };
+		BC1C69A77D6AEDDE678E3704 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-build-release/todo-2026-08-16.md"; sourceTree = "<group>"; };
 		D8BC40DDA4B60A43DF0450C1 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = "BRM/LXC-BRM-build-release/README.md"; sourceTree = "<group>"; };
 		EC7DCB9FFFC45B14143505CA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = "BRM/LXC-BRM-context/README.md"; sourceTree = "<group>"; };
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
-		F8A35B40DE5743548135AE5E /* 2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "2026-08-16.md"; path = "BRM/LXC-BRM-shared/todo/2026-08-16.md"; sourceTree = "<group>"; };
+		F8A35B40DE5743548135AE5E /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-shared/todo-2026-08-16.md"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,15 +55,15 @@
 			children = (
 				0BB529CB33F756E7C7E65ACF /* README.md */,
 				1006ABB94DB1B0FE8DED20CE /* README.md */,
-				F8A35B40DE5743548135AE5E /* 2026-08-16.md */,
+				F8A35B40DE5743548135AE5E /* todo-2026-08-16.md */,
 				ADA05C37EBB9D97D71511B26 /* README.md */,
-				3C3B80DA60154E5F2AA57611 /* 2026-08-16.md */,
+				3C3B80DA60154E5F2AA57611 /* todo-2026-08-16.md */,
 				D8BC40DDA4B60A43DF0450C1 /* README.md */,
-				BC1C69A77D6AEDDE678E3704 /* 2026-08-16.md */,
+				BC1C69A77D6AEDDE678E3704 /* todo-2026-08-16.md */,
 				4A0E68398EE182DD668C41B4 /* README.md */,
-				55B27D8A3CBC4CD03F74B4A9 /* 2026-08-16.md */,
+				55B27D8A3CBC4CD03F74B4A9 /* todo-2026-08-16.md */,
 				EC7DCB9FFFC45B14143505CA /* README.md */,
-				3AD121A19BC945A59F97CD33 /* 2026-08-16.md */,
+				3AD121A19BC945A59F97CD33 /* todo-2026-08-16.md */,
 			);
 			name = BRM;
 			sourceTree = "<group>";

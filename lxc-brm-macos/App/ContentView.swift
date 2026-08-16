@@ -10,11 +10,11 @@ struct BRMArea: Identifiable {
 }
 
 private let brmAreas: [BRMArea] = [
-    .init(name: "LXC-BRM-shared", purpose: "Shared utilities and conventions.", todoPath: "to-do-26-08-16.md", outputPath: nil, extraPath: nil),
-    .init(name: "LXC-BRM-frameworks", purpose: "Framework-specific assets only.", todoPath: "to-do-26-08-16.md", outputPath: nil, extraPath: nil),
-    .init(name: "LXC-BRM-build-release", purpose: "Build and release orchestration.", todoPath: "to-do-26-08-16.md", outputPath: "version/", extraPath: "scripts/ · logs/ · projects.json"),
-    .init(name: "LXC-BRM-worklog", purpose: "Daily worklog and execution notes.", todoPath: "to-do-26-08-16.md", outputPath: nil, extraPath: nil),
-    .init(name: "LXC-BRM-context", purpose: "Context, decisions, and references.", todoPath: "to-do-26-08-16.md", outputPath: nil, extraPath: nil)
+    .init(name: "LXC-BRM-shared", purpose: "Shared utilities and conventions.", todoPath: "todo-2026-08-16.md", outputPath: nil, extraPath: nil),
+    .init(name: "LXC-BRM-frameworks", purpose: "Framework-specific assets only.", todoPath: "todo-2026-08-16.md", outputPath: nil, extraPath: nil),
+    .init(name: "LXC-BRM-build-release", purpose: "Build and release orchestration.", todoPath: "todo-2026-08-16.md", outputPath: "version/", extraPath: "scripts/ · logs/ · projects.json"),
+    .init(name: "LXC-BRM-worklog", purpose: "Daily worklog and execution notes.", todoPath: "todo-2026-08-16.md", outputPath: nil, extraPath: nil),
+    .init(name: "LXC-BRM-context", purpose: "Context, decisions, and references.", todoPath: "todo-2026-08-16.md", outputPath: nil, extraPath: nil)
 ]
 
 struct ContentView: View {
@@ -94,8 +94,9 @@ struct ContentView: View {
     private var todoCard: some View {
         GroupBox("Todo Convention") {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Each area keeps a dated note in `to-do-YY-MM-DD.md` format.")
-                Text("Starter note: `to-do-26-08-16.md`.")
+                Text("Each area keeps a dated note in `todo-YYYY-MM-DD.md` format.")
+                Text("Starter note: `todo-2026-08-16.md`.")
+                Text("Inside each note, use Task A/B/C and matching subtasks plus tracking.")
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 4)
