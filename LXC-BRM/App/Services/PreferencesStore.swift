@@ -1,5 +1,6 @@
 import Foundation
 import ServiceManagement
+import SwiftUI
 
 @MainActor
 final class PreferencesStore: ObservableObject {
@@ -31,6 +32,19 @@ final class PreferencesStore: ObservableObject {
         if launchAtLoginChanged {
             applyLaunchAtLogin(enabled: updated.launchAtLogin)
         }
+    }
+
+    /// Two-way binding onto a single preference, so menu commands and views can
+    /// toggle one flag without rebuilding the whole `Preferences` value at each call site.
+    func binding<Value>(_ keyPath: WritableKeyPath<Preferences, Value>) -> Binding<Value> {
+        Binding(
+            get: { self.preferences[keyPath: keyPath] },
+            set: { newValue in
+                var updated = self.preferences
+                updated[keyPath: keyPath] = newValue
+                self.save(updated)
+            }
+        )
     }
 
     private func persist() {

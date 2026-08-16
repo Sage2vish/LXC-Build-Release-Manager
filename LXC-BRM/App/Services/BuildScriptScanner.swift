@@ -4,14 +4,22 @@ struct BuildScanOptions {
     var buildFolderName = "build"
     var scriptsSubdirectory = "scripts"
     var scanSubdirectories = false
+    var allowScriptsOutsideBuildScripts = false
     var gitHubToken = ""
 
     static let `default` = BuildScanOptions()
 
-    init(buildFolderName: String = "build", scriptsSubdirectory: String = "scripts", scanSubdirectories: Bool = false, gitHubToken: String = "") {
+    init(
+        buildFolderName: String = "build",
+        scriptsSubdirectory: String = "scripts",
+        scanSubdirectories: Bool = false,
+        allowScriptsOutsideBuildScripts: Bool = false,
+        gitHubToken: String = ""
+    ) {
         self.buildFolderName = buildFolderName.isEmpty ? "build" : buildFolderName
         self.scriptsSubdirectory = scriptsSubdirectory.isEmpty ? "scripts" : scriptsSubdirectory
         self.scanSubdirectories = scanSubdirectories
+        self.allowScriptsOutsideBuildScripts = allowScriptsOutsideBuildScripts
         self.gitHubToken = gitHubToken
     }
 
@@ -20,8 +28,76 @@ struct BuildScanOptions {
             buildFolderName: preferences.defaultBuildFolderName,
             scriptsSubdirectory: preferences.scriptsSubdirectory,
             scanSubdirectories: preferences.scanSubdirectoriesForBuild,
+            allowScriptsOutsideBuildScripts: preferences.allowScriptsOutsideBuildScripts,
             gitHubToken: preferences.gitHubToken
         )
+    }
+}
+
+/// Resolves script paths before presentation or execution so status badges cannot be spoofed by display text.
+enum BuildScriptPathResolver {
+    static func canonicalIdentifier(for path: String, isRemote: Bool = false) -> String {
+        if isRemote { return "remote:\(path.lowercased())" }
+
+        let url = URL(fileURLWithPath: path).resolvingSymlinksInPath().standardizedFileURL
+        if let values = try? url.resourceValues(forKeys: [.fileResourceIdentifierKey]),
+           let identifier = values.fileResourceIdentifier {
+            return "file:\(String(describing: identifier))"
+        }
+        return "path:\(normalizedPath(path, caseSensitive: false))"
+    }
+
+    static func standardScriptsDirectory(repositoryPath: String, options: BuildScanOptions) -> String {
+        URL(fileURLWithPath: repositoryPath)
+            .appendingPathComponent(options.buildFolderName, isDirectory: true)
+            .appendingPathComponent(options.scriptsSubdirectory, isDirectory: true)
+            .standardizedFileURL
+            .path
+    }
+
+    static func location(
+        for scriptPath: String,
+        repositoryPath: String,
+        options: BuildScanOptions,
+        isPersistedPath: Bool = false,
+        caseSensitive: Bool = false
+    ) -> BuildScriptLocation {
+        guard FileManager.default.fileExists(atPath: scriptPath) else {
+            return isPersistedPath ? .stale : .missing
+        }
+
+        let parentPath = URL(fileURLWithPath: scriptPath)
+            .resolvingSymlinksInPath()
+            .deletingLastPathComponent()
+            .standardizedFileURL
+            .path
+        let standardPath = standardScriptsDirectory(repositoryPath: repositoryPath, options: options)
+        if pathsEqual(parentPath, standardPath, caseSensitive: caseSensitive) {
+            return .standardFolder
+        }
+        if isWithin(scriptPath, rootPath: repositoryPath, caseSensitive: caseSensitive) {
+            return .repository
+        }
+        return .outsideRepository
+    }
+
+    static func isWithin(_ candidatePath: String, rootPath: String, caseSensitive: Bool = false) -> Bool {
+        let candidate = normalizedPath(candidatePath, caseSensitive: caseSensitive)
+        let root = normalizedPath(rootPath, caseSensitive: caseSensitive)
+        return candidate == root || candidate.hasPrefix(root.hasSuffix("/") ? root : "\(root)/")
+    }
+
+    static func normalizedPath(_ path: String, caseSensitive: Bool = false) -> String {
+        let normalized = URL(fileURLWithPath: path)
+            .resolvingSymlinksInPath()
+            .standardizedFileURL
+            .path
+            .precomposedStringWithCanonicalMapping
+        return caseSensitive ? normalized : normalized.lowercased()
+    }
+
+    static func pathsEqual(_ lhs: String, _ rhs: String, caseSensitive: Bool = false) -> Bool {
+        normalizedPath(lhs, caseSensitive: caseSensitive) == normalizedPath(rhs, caseSensitive: caseSensitive)
     }
 }
 
@@ -30,59 +106,41 @@ enum BuildScriptScanner {
         fileName.hasSuffix(".sh") ? String(fileName.dropLast(3)) : fileName
     }
 
-    static func scanLocal(path: String, options: BuildScanOptions = .default) -> BuildScanResult {
-        if let direct = scanLocalRoot(path: path, options: options) {
-            return direct
+    static func scanLocal(
+        path: String,
+        options: BuildScanOptions = .default,
+        additionalScriptPaths: [String] = []
+    ) -> BuildScanResult {
+        let rootResult = scanLocalRoot(path: path, repositoryPath: path, options: options)
+        let discoveredResult: BuildScanResult
+
+        if case .missingBuildFolder = rootResult, options.scanSubdirectories {
+            discoveredResult = scanFirstNestedBuildFolder(path: path, repositoryPath: path, options: options) ?? rootResult
+        } else {
+            discoveredResult = rootResult
         }
 
-        guard options.scanSubdirectories else {
-            return .missingBuildFolder
-        }
+        var scripts: [BuildScript] = {
+            if case .success(let scripts) = discoveredResult { return scripts }
+            return []
+        }()
 
-        let fileManager = FileManager.default
-        guard let entries = try? fileManager.contentsOfDirectory(atPath: path) else {
-            return .missingBuildFolder
-        }
-
-        for entry in entries.sorted() {
-            let subPath = (path as NSString).appendingPathComponent(entry)
-            var isDirectory: ObjCBool = false
-            guard fileManager.fileExists(atPath: subPath, isDirectory: &isDirectory), isDirectory.boolValue else { continue }
-            if let found = scanLocalRoot(path: subPath, options: options) {
-                return found
+        for scriptPath in additionalScriptPaths.sorted() {
+            let script = localScript(
+                at: URL(fileURLWithPath: scriptPath),
+                repositoryPath: path,
+                options: options,
+                isPersistedPath: true
+            )
+            if !scripts.contains(where: { $0.id == script.id || $0.path == script.path }) {
+                scripts.append(script)
             }
         }
-        return .missingBuildFolder
-    }
 
-    /// Scans exactly `path` (no subdirectory recursion) for the configured build/scripts layout.
-    /// Returns nil only when `path` itself has no build folder, so callers can fall back to scanning subdirectories.
-    private static func scanLocalRoot(path: String, options: BuildScanOptions) -> BuildScanResult? {
-        let fileManager = FileManager.default
-        let buildFolder = (path as NSString).appendingPathComponent(options.buildFolderName)
-        var isDirectory: ObjCBool = false
-
-        guard fileManager.fileExists(atPath: buildFolder, isDirectory: &isDirectory), isDirectory.boolValue else {
-            return nil
+        if !scripts.isEmpty {
+            return .success(scripts: scripts.sorted { $0.label.localizedStandardCompare($1.label) == .orderedAscending })
         }
-
-        let scriptsFolder = (buildFolder as NSString).appendingPathComponent(options.scriptsSubdirectory)
-        guard fileManager.fileExists(atPath: scriptsFolder, isDirectory: &isDirectory), isDirectory.boolValue,
-              let entries = try? fileManager.contentsOfDirectory(atPath: scriptsFolder) else {
-            return .emptyScripts
-        }
-
-        let shFiles = entries.filter { $0.hasSuffix(".sh") }.sorted()
-        guard !shFiles.isEmpty else { return .emptyScripts }
-
-        let scripts = shFiles.map { fileName in
-            BuildScript(
-                fileName: fileName,
-                label: label(for: fileName),
-                path: (scriptsFolder as NSString).appendingPathComponent(fileName)
-            )
-        }
-        return .success(scripts: scripts)
+        return discoveredResult
     }
 
     static func scanGitHub(urlString: String, options: BuildScanOptions = .default) async -> BuildScanResult {
@@ -94,15 +152,22 @@ enum BuildScriptScanner {
         let scriptsResult = await fetchContents(owner: owner, repo: repo, path: scriptsPath, token: options.gitHubToken)
         switch scriptsResult {
         case .found(let entries):
-            let shFiles = entries
+            let shellFiles = entries
                 .filter { $0.type == "file" && $0.name.hasSuffix(".sh") }
                 .map(\.name)
                 .sorted()
-            guard !shFiles.isEmpty else { return .emptyScripts }
-            let scripts = shFiles.map { fileName in
-                BuildScript(fileName: fileName, label: label(for: fileName), path: "\(scriptsPath)/\(fileName)")
-            }
-            return .success(scripts: scripts)
+            guard !shellFiles.isEmpty else { return .emptyScripts }
+            return .success(scripts: shellFiles.map { fileName in
+                let scriptPath = "\(scriptsPath)/\(fileName)"
+                return BuildScript(
+                    fileName: fileName,
+                    label: label(for: fileName),
+                    path: scriptPath,
+                    id: "github:\(owner.lowercased())/\(repo.lowercased())/\(scriptPath.lowercased())",
+                    location: .standardFolder,
+                    isRemote: true
+                )
+            })
 
         case .notFound:
             let buildResult = await fetchContents(owner: owner, repo: repo, path: options.buildFolderName, token: options.gitHubToken)
@@ -118,6 +183,127 @@ enum BuildScriptScanner {
         case .error(let message):
             return .unreachable(message)
         }
+    }
+
+    private static func scanLocalRoot(path: String, repositoryPath: String, options: BuildScanOptions) -> BuildScanResult {
+        let scriptsFolderPath = BuildScriptPathResolver.standardScriptsDirectory(repositoryPath: path, options: options)
+        let buildFolderPath = URL(fileURLWithPath: path)
+            .appendingPathComponent(options.buildFolderName, isDirectory: true)
+            .standardizedFileURL
+            .path
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: buildFolderPath, isDirectory: &isDirectory), isDirectory.boolValue else {
+            return .missingBuildFolder
+        }
+        guard FileManager.default.fileExists(atPath: scriptsFolderPath, isDirectory: &isDirectory), isDirectory.boolValue,
+              let entries = try? FileManager.default.contentsOfDirectory(
+                  at: URL(fileURLWithPath: scriptsFolderPath),
+                  includingPropertiesForKeys: [.isRegularFileKey],
+                  options: [.skipsHiddenFiles]
+              ) else {
+            return .emptyScripts
+        }
+
+        let scripts = entries
+            .filter(isRunnableScript)
+            .map { localScript(at: $0, repositoryPath: repositoryPath, options: options) }
+            .sorted { $0.label.localizedStandardCompare($1.label) == .orderedAscending }
+        return scripts.isEmpty ? .emptyScripts : .success(scripts: scripts)
+    }
+
+    private static func scanFirstNestedBuildFolder(path: String, repositoryPath: String, options: BuildScanOptions) -> BuildScanResult? {
+        guard let entries = try? FileManager.default.contentsOfDirectory(
+            at: URL(fileURLWithPath: path),
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
+        ) else { return nil }
+
+        for entry in entries.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+            let values = try? entry.resourceValues(forKeys: [.isDirectoryKey])
+            guard values?.isDirectory == true else { continue }
+            let result = scanLocalRoot(path: entry.path, repositoryPath: repositoryPath, options: options)
+            if result != .missingBuildFolder { return result }
+        }
+        return nil
+    }
+
+    private static func isRunnableScript(_ url: URL) -> Bool {
+        url.pathExtension == "sh" || FileManager.default.isExecutableFile(atPath: url.path)
+    }
+
+    private static func localScript(
+        at url: URL,
+        repositoryPath: String,
+        options: BuildScanOptions,
+        isPersistedPath: Bool = false
+    ) -> BuildScript {
+        let path = url.standardizedFileURL.path
+        return BuildScript(
+            fileName: url.lastPathComponent,
+            label: displayLabel(for: url),
+            path: path,
+            location: BuildScriptPathResolver.location(
+                for: path,
+                repositoryPath: repositoryPath,
+                options: options,
+                isPersistedPath: isPersistedPath
+            ),
+            parameters: parameterDefinitions(in: url)
+        )
+    }
+
+    private static func displayLabel(for url: URL) -> String {
+        guard let content = try? String(contentsOf: url, encoding: .utf8) else {
+            return label(for: url.lastPathComponent)
+        }
+        for line in content.split(separator: "\n").prefix(40) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.lowercased().hasPrefix("# lxc:label ") {
+                return String(trimmed.dropFirst("# lxc:label ".count)).trimmingCharacters(in: .whitespaces)
+            }
+        }
+        return label(for: url.lastPathComponent)
+    }
+
+    private static func parameterDefinitions(in url: URL) -> [BuildParameterDefinition] {
+        guard let content = try? String(contentsOf: url, encoding: .utf8) else { return [] }
+        return content
+            .split(separator: "\n")
+            .prefix(80)
+            .compactMap { parameterDefinition(from: String($0)) }
+    }
+
+    private static func parameterDefinition(from line: String) -> BuildParameterDefinition? {
+        let prefix = "# lxc:param "
+        let trimmed = line.trimmingCharacters(in: .whitespaces)
+        guard trimmed.lowercased().hasPrefix(prefix) else { return nil }
+
+        let parts = trimmed.dropFirst(prefix.count).split(separator: " ", omittingEmptySubsequences: true)
+        guard let keyPart = parts.first, !keyPart.isEmpty else { return nil }
+        var attributes: [String: String] = [:]
+        for part in parts.dropFirst() {
+            let pair = part.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
+            if pair.count == 2 {
+                attributes[String(pair[0]).lowercased()] = String(pair[1])
+            } else if part.lowercased() == "required" {
+                attributes["required"] = "true"
+            }
+        }
+
+        let kind = BuildParameterKind(rawValue: attributes["type"]?.lowercased() ?? "text") ?? .text
+        let options = attributes["options"]?.split(separator: ",").map { String($0) } ?? []
+        return BuildParameterDefinition(
+            key: String(keyPart),
+            label: attributes["label"]?.replacingOccurrences(of: "_", with: " "),
+            kind: kind,
+            options: options,
+            isRequired: attributes["required"] == "true",
+            defaultValue: attributes["default"] ?? "",
+            placeholder: attributes["placeholder"]?.replacingOccurrences(of: "_", with: " ") ?? "",
+            helpText: attributes["help"]?.replacingOccurrences(of: "_", with: " ") ?? "",
+            dependsOnKey: attributes["depends_on"],
+            visibleWhenValue: attributes["visible_when"]
+        )
     }
 
     private struct GitHubContentEntry: Decodable {
@@ -146,14 +332,11 @@ enum BuildScriptScanner {
             guard let http = response as? HTTPURLResponse else {
                 return .error("No response from GitHub")
             }
-            if http.statusCode == 404 {
-                return .notFound
-            }
+            if http.statusCode == 404 { return .notFound }
             guard http.statusCode == 200 else {
                 return .error("GitHub API returned status \(http.statusCode)")
             }
-            let entries = try JSONDecoder().decode([GitHubContentEntry].self, from: data)
-            return .found(entries)
+            return .found(try JSONDecoder().decode([GitHubContentEntry].self, from: data))
         } catch {
             return .error(error.localizedDescription)
         }

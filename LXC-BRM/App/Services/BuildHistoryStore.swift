@@ -8,11 +8,16 @@ final class BuildHistoryStore: ObservableObject {
 
     private let storeURL: URL
 
-    init() {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let folder = appSupport.appendingPathComponent("LXC-BRM", isDirectory: true)
-        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        storeURL = folder.appendingPathComponent("build-history.json")
+    init(storeURL: URL? = nil) {
+        if let storeURL {
+            self.storeURL = storeURL
+            try? FileManager.default.createDirectory(at: storeURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        } else {
+            let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            let folder = appSupport.appendingPathComponent("LXC-BRM", isDirectory: true)
+            try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            self.storeURL = folder.appendingPathComponent("build-history.json")
+        }
         load()
     }
 
@@ -65,6 +70,9 @@ final class BuildHistoryStore: ObservableObject {
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         guard let data = try? encoder.encode(recordsByRepository) else { return }
-        try? data.write(to: storeURL, options: .atomic)
+        let destination = storeURL
+        DispatchQueue.global(qos: .utility).async {
+            try? data.write(to: destination, options: .atomic)
+        }
     }
 }

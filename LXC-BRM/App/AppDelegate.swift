@@ -19,4 +19,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         return alert.runModal() == .alertFirstButtonReturn ? .terminateNow : .terminateCancel
     }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        guard let preferences = preferencesStore?.preferences else { return }
+        runners?.cancelAll(preferences: preferences)
+    }
 }

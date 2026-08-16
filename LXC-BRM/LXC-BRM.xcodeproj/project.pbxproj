@@ -7,12 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A11E00000000000000000001 /* BuildWorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E00000000000000000003 /* BuildWorkspaceTests.swift */; };
+		A11E0000000000000000000F /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11E0000000000000000000E /* XCTest.framework */; };
 		2069CF7280E3EFC8FE58FDDF /* BuildScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925160EB5C5E561373968382 /* BuildScript.swift */; };
 		251FCCFB1823E848C6967B7C /* BuildScriptScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */; };
 		2F3B4B4C450DA1992E367F86 /* GitBranchReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */; };
 		32AFC59C44ABE8B95311B6F4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */; };
 		4B5590D2F6DE9F6ACEEB834A /* BuildRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42A86DDBD972CFA5981609E /* BuildRecord.swift */; };
 		4C6B8D1F2A3E4C5D6F708192 /* BuildNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */; };
+		C3A1B2C3D4E5F60718293847 /* BuildWorkspaceStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A1B2C3D4E5F60718293846 /* BuildWorkspaceStateStore.swift */; };
 		50CC22F6B112137092256122 /* BuildHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */; };
 		5248C1C125D21068689EBB27 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C275B291A8197FDA9F65B /* AppDelegate.swift */; };
 		55BA48F23D7D589AEBE85E1D /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ABC2F1F39F8FB25110771D4 /* Preferences.swift */; };
@@ -23,12 +26,60 @@
 		A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9911BF5D489D90AE02811CB3 /* LogFileService.swift */; };
 		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
 		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
-		F50575EB30318AE700601A4A /* AddRepositorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EA30318AE700601A4A /* AddRepositorySheet.swift */; };
-		F50575ED30318AE800601A4A /* RepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EC30318AE800601A4A /* RepositoryRow.swift */; };
-		F50575EF30318AEB00601A4A /* RecentRepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EE30318AEB00601A4A /* RecentRepositoryRow.swift */; };
-		F50575F130318AEE00601A4A /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575F030318AEE00601A4A /* StatusBar.swift */; };
+		F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */; };
+		F50575ED30318AE800601A4A /* App/Views/RepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EC30318AE800601A4A /* App/Views/RepositoryRow.swift */; };
+		F50575EF30318AEB00601A4A /* App/Views/RecentRepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EE30318AEB00601A4A /* App/Views/RecentRepositoryRow.swift */; };
+		F50575F130318AEE00601A4A /* App/Views/StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575F030318AEE00601A4A /* App/Views/StatusBar.swift */; };
+		F50576263031ABBA00601A4A /* build-android.sh in Resources */ = {isa = PBXBuildFile; fileRef = F50575F43031ABBA00601A4A /* build-android.sh */; };
+		F50576273031ABBA00601A4A /* build-ios.sh in Resources */ = {isa = PBXBuildFile; fileRef = F50575F53031ABBA00601A4A /* build-ios.sh */; };
+		F50576283031ABBA00601A4A /* requirements.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576173031ABBA00601A4A /* requirements.md */; };
+		F50576293031ABBA00601A4A /* crap.png in Resources */ = {isa = PBXBuildFile; fileRef = F505760E3031ABBA00601A4A /* crap.png */; };
+		F505762A3031ABBA00601A4A /* architecture.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576153031ABBA00601A4A /* architecture.md */; };
+		F505762B3031ABBA00601A4A /* 05-Screen-Pref-Appearance.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576053031ABBA00601A4A /* 05-Screen-Pref-Appearance.png */; };
+		F505762C3031ABBA00601A4A /* projects.json in Resources */ = {isa = PBXBuildFile; fileRef = F50575FE3031ABBA00601A4A /* projects.json */; };
+		F505762D3031ABBA00601A4A /* release.sh in Resources */ = {isa = PBXBuildFile; fileRef = F50575F63031ABBA00601A4A /* release.sh */; };
+		F505762E3031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576203031ABBA00601A4A /* README.md */; };
+		F505762F3031ABBA00601A4A /* rules-context.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576183031ABBA00601A4A /* rules-context.md */; };
+		F50576303031ABBA00601A4A /* LXC-Release-Build-Manager-workbench.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576103031ABBA00601A4A /* LXC-Release-Build-Manager-workbench.png */; };
+		F50576313031ABBA00601A4A /* 02-Screen-Pref-Repos.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576023031ABBA00601A4A /* 02-Screen-Pref-Repos.png */; };
+		F50576323031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576163031ABBA00601A4A /* README.md */; };
+		F50576333031ABBA00601A4A /* 04-Screen-Pref-Logs-Console.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576043031ABBA00601A4A /* 04-Screen-Pref-Logs-Console.png */; };
+		F50576343031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50575F23031ABBA00601A4A /* README.md */; };
+		F50576353031ABBA00601A4A /* 07-Screen-Pref-advanced.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576073031ABBA00601A4A /* 07-Screen-Pref-advanced.png */; };
+		F50576363031ABBA00601A4A /* 03-Screen-Pref-Build-Exec.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576033031ABBA00601A4A /* 03-Screen-Pref-Build-Exec.png */; };
+		F50576373031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50575FC3031ABBA00601A4A /* README.md */; };
+		F50576383031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F505761A3031ABBA00601A4A /* README.md */; };
+		F50576393031ABBA00601A4A /* worklog-2026-08-16.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576223031ABBA00601A4A /* worklog-2026-08-16.md */; };
+		F505763A3031ABBA00601A4A /* USER_GUIDE.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576003031ABBA00601A4A /* USER_GUIDE.md */; };
+		F505763B3031ABBA00601A4A /* Screen-Pref-Generl-01.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576093031ABBA00601A4A /* Screen-Pref-Generl-01.png */; };
+		F505763C3031ABBA00601A4A /* ui-back-main.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576113031ABBA00601A4A /* ui-back-main.png */; };
+		F505763D3031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50575FF3031ABBA00601A4A /* README.md */; };
+		F505763E3031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576243031ABBA00601A4A /* README.md */; };
+		F505763F3031ABBA00601A4A /* Build-Console-Screen-01.png in Resources */ = {isa = PBXBuildFile; fileRef = F505760B3031ABBA00601A4A /* Build-Console-Screen-01.png */; };
+		F50576403031ABBA00601A4A /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = F50575FA3031ABBA00601A4A /* .gitkeep */; };
+		F50576413031ABBA00601A4A /* Prefernce-Screen-Concept.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576083031ABBA00601A4A /* Prefernce-Screen-Concept.png */; };
+		F50576423031ABBA00601A4A /* 06-Screen-Pref-Notifcation.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576063031ABBA00601A4A /* 06-Screen-Pref-Notifcation.png */; };
+		F50576433031ABBA00601A4A /* decision-2026-08-16.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576133031ABBA00601A4A /* decision-2026-08-16.md */; };
+		F50576443031ABBA00601A4A /* Build-Console-Screen-Concept-02a.png in Resources */ = {isa = PBXBuildFile; fileRef = F505760C3031ABBA00601A4A /* Build-Console-Screen-Concept-02a.png */; };
+		F50576453031ABBA00601A4A /* LXC-BuildManager.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F505760F3031ABBA00601A4A /* LXC-BuildManager.pdf */; };
+		F50576463031ABBA00601A4A /* LXC-BRM.app in Resources */ = {isa = PBXBuildFile; fileRef = F50575F83031ABBA00601A4A /* LXC-BRM.app */; };
+		F50576473031ABBA00601A4A /* Plan-PreferenceScreen-todo.md in Resources */ = {isa = PBXBuildFile; fileRef = F505761F3031ABBA00601A4A /* Plan-PreferenceScreen-todo.md */; };
+		F50576483031ABBA00601A4A /* LXC-BRM-2026-08-16.dmg in Resources */ = {isa = PBXBuildFile; fileRef = F50575FB3031ABBA00601A4A /* LXC-BRM-2026-08-16.dmg */; };
+		F50576493031ABBA00601A4A /* todo-2026-08-16.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576213031ABBA00601A4A /* todo-2026-08-16.md */; };
+		F505764A3031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F505761C3031ABBA00601A4A /* README.md */; };
+		F505764B3031ABBA00601A4A /* Build-Console-Screen-Concept-02b.png in Resources */ = {isa = PBXBuildFile; fileRef = F505760D3031ABBA00601A4A /* Build-Console-Screen-Concept-02b.png */; };
 		FEEDFCE5AA26DC939D4E44DE /* RepositoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F0A7F761D84D0548A244BA /* RepositoryStore.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A11E00000000000000000009 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D84DE3DCEEE3F1B08BD25C91 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FD878CCC2F9C954410FD53F6;
+			remoteInfo = "LXC-BRM";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		06BE8CB1B631110E0A535F54 /* PreferencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesView.swift; path = App/PreferencesView.swift; sourceTree = "<group>"; };
@@ -43,16 +94,58 @@
 		925160EB5C5E561373968382 /* BuildScript.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScript.swift; path = App/Models/BuildScript.swift; sourceTree = "<group>"; };
 		9911BF5D489D90AE02811CB3 /* LogFileService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogFileService.swift; path = App/Services/LogFileService.swift; sourceTree = "<group>"; };
 		9ABC2F1F39F8FB25110771D4 /* Preferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = App/Models/Preferences.swift; sourceTree = "<group>"; };
+		A11E00000000000000000002 /* LXC-BRMTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "LXC-BRMTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A11E00000000000000000003 /* BuildWorkspaceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BuildWorkspaceTests.swift; sourceTree = "<group>"; };
+		A11E0000000000000000000E /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
 		B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LXC_BRMApp.swift; path = App/LXC_BRMApp.swift; sourceTree = "<group>"; };
 		C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildNotificationService.swift; path = App/Services/BuildNotificationService.swift; sourceTree = "<group>"; };
+		C3A1B2C3D4E5F60718293846 /* BuildWorkspaceStateStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildWorkspaceStateStore.swift; path = App/Services/BuildWorkspaceStateStore.swift; sourceTree = "<group>"; };
 		D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GitBranchReader.swift; path = App/Services/GitBranchReader.swift; sourceTree = "<group>"; };
 		D42A86DDBD972CFA5981609E /* BuildRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRecord.swift; path = App/Models/BuildRecord.swift; sourceTree = "<group>"; };
 		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
-		F50575EA30318AE700601A4A /* AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
-		F50575EC30318AE800601A4A /* RepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RepositoryRow.swift; sourceTree = "<group>"; };
-		F50575EE30318AEB00601A4A /* RecentRepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RecentRepositoryRow.swift; sourceTree = "<group>"; };
-		F50575F030318AEE00601A4A /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/StatusBar.swift; sourceTree = "<group>"; };
+		F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
+		F50575EC30318AE800601A4A /* App/Views/RepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RepositoryRow.swift; sourceTree = "<group>"; };
+		F50575EE30318AEB00601A4A /* App/Views/RecentRepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RecentRepositoryRow.swift; sourceTree = "<group>"; };
+		F50575F030318AEE00601A4A /* App/Views/StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/StatusBar.swift; sourceTree = "<group>"; };
+		F50575F23031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F50575F43031ABBA00601A4A /* build-android.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-android.sh"; sourceTree = "<group>"; };
+		F50575F53031ABBA00601A4A /* build-ios.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-ios.sh"; sourceTree = "<group>"; };
+		F50575F63031ABBA00601A4A /* release.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = release.sh; sourceTree = "<group>"; };
+		F50575F83031ABBA00601A4A /* LXC-BRM.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = "LXC-BRM.app"; sourceTree = "<group>"; };
+		F50575FA3031ABBA00601A4A /* .gitkeep */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
+		F50575FB3031ABBA00601A4A /* LXC-BRM-2026-08-16.dmg */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LXC-BRM-2026-08-16.dmg"; sourceTree = "<group>"; };
+		F50575FC3031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F50575FE3031ABBA00601A4A /* projects.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = projects.json; sourceTree = "<group>"; };
+		F50575FF3031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F50576003031ABBA00601A4A /* USER_GUIDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = USER_GUIDE.md; sourceTree = "<group>"; };
+		F50576023031ABBA00601A4A /* 02-Screen-Pref-Repos.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "02-Screen-Pref-Repos.png"; sourceTree = "<group>"; };
+		F50576033031ABBA00601A4A /* 03-Screen-Pref-Build-Exec.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "03-Screen-Pref-Build-Exec.png"; sourceTree = "<group>"; };
+		F50576043031ABBA00601A4A /* 04-Screen-Pref-Logs-Console.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "04-Screen-Pref-Logs-Console.png"; sourceTree = "<group>"; };
+		F50576053031ABBA00601A4A /* 05-Screen-Pref-Appearance.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "05-Screen-Pref-Appearance.png"; sourceTree = "<group>"; };
+		F50576063031ABBA00601A4A /* 06-Screen-Pref-Notifcation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-Screen-Pref-Notifcation.png"; sourceTree = "<group>"; };
+		F50576073031ABBA00601A4A /* 07-Screen-Pref-advanced.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "07-Screen-Pref-advanced.png"; sourceTree = "<group>"; };
+		F50576083031ABBA00601A4A /* Prefernce-Screen-Concept.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Prefernce-Screen-Concept.png"; sourceTree = "<group>"; };
+		F50576093031ABBA00601A4A /* Screen-Pref-Generl-01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Screen-Pref-Generl-01.png"; sourceTree = "<group>"; };
+		F505760B3031ABBA00601A4A /* Build-Console-Screen-01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Build-Console-Screen-01.png"; sourceTree = "<group>"; };
+		F505760C3031ABBA00601A4A /* Build-Console-Screen-Concept-02a.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Build-Console-Screen-Concept-02a.png"; sourceTree = "<group>"; };
+		F505760D3031ABBA00601A4A /* Build-Console-Screen-Concept-02b.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Build-Console-Screen-Concept-02b.png"; sourceTree = "<group>"; };
+		F505760E3031ABBA00601A4A /* crap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = crap.png; sourceTree = "<group>"; };
+		F505760F3031ABBA00601A4A /* LXC-BuildManager.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "LXC-BuildManager.pdf"; sourceTree = "<group>"; };
+		F50576103031ABBA00601A4A /* LXC-Release-Build-Manager-workbench.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "LXC-Release-Build-Manager-workbench.png"; sourceTree = "<group>"; };
+		F50576113031ABBA00601A4A /* ui-back-main.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ui-back-main.png"; sourceTree = "<group>"; };
+		F50576133031ABBA00601A4A /* decision-2026-08-16.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "decision-2026-08-16.md"; sourceTree = "<group>"; };
+		F50576153031ABBA00601A4A /* architecture.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = architecture.md; sourceTree = "<group>"; };
+		F50576163031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F50576173031ABBA00601A4A /* requirements.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = requirements.md; sourceTree = "<group>"; };
+		F50576183031ABBA00601A4A /* rules-context.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "rules-context.md"; sourceTree = "<group>"; };
+		F505761A3031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F505761C3031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F505761F3031ABBA00601A4A /* Plan-PreferenceScreen-todo.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Plan-PreferenceScreen-todo.md"; sourceTree = "<group>"; };
+		F50576203031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F50576213031ABBA00601A4A /* todo-2026-08-16.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "todo-2026-08-16.md"; sourceTree = "<group>"; };
+		F50576223031ABBA00601A4A /* worklog-2026-08-16.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "worklog-2026-08-16.md"; sourceTree = "<group>"; };
+		F50576243031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +154,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				32AFC59C44ABE8B95311B6F4 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A11E00000000000000000008 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A11E0000000000000000000F /* XCTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,9 +179,11 @@
 		71A7D17D78B11C20BC9E04E0 = {
 			isa = PBXGroup;
 			children = (
+				F50576253031ABBA00601A4A /* Support */,
 				96D8A2840BD6F8C71B5C2396 /* Products */,
 				748E1DB5B7E9272D4C0291D2 /* Frameworks */,
 				8C1A7831A8D550DDFB81DBF5 /* App */,
+				A11E00000000000000000004 /* Tests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -88,6 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				33CE4F1CAC4FE3CB87107A99 /* OS X */,
+				A11E0000000000000000000E /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -106,21 +210,11 @@
 			name = App;
 			sourceTree = "<group>";
 		};
-		F50575F230318AFF00601A4A /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				F50575EA30318AE700601A4A /* AddRepositorySheet.swift */,
-				F50575EC30318AE800601A4A /* RepositoryRow.swift */,
-				F50575EE30318AEB00601A4A /* RecentRepositoryRow.swift */,
-				F50575F030318AEE00601A4A /* StatusBar.swift */,
-			);
-			name = Views;
-			sourceTree = "<group>";
-		};
 		96D8A2840BD6F8C71B5C2396 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				363495766860C99A9A8A3A95 /* LXC-BRM.app */,
+				A11E00000000000000000002 /* LXC-BRMTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -143,12 +237,181 @@
 				E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */,
 				1A3DA0FF6648759940B42148 /* BuildRunner.swift */,
 				C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */,
+				C3A1B2C3D4E5F60718293846 /* BuildWorkspaceStateStore.swift */,
 				6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */,
 				9911BF5D489D90AE02811CB3 /* LogFileService.swift */,
 				D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */,
 				80C39837CDF536B7DA795EDC /* PreferencesStore.swift */,
 			);
 			name = Services;
+			sourceTree = "<group>";
+		};
+		A11E00000000000000000004 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				A11E00000000000000000003 /* BuildWorkspaceTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		F50575F230318AFF00601A4A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */,
+				F50575EC30318AE800601A4A /* App/Views/RepositoryRow.swift */,
+				F50575EE30318AEB00601A4A /* App/Views/RecentRepositoryRow.swift */,
+				F50575F030318AEE00601A4A /* App/Views/StatusBar.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		F50575F33031ABBA00601A4A /* logs */ = {
+			isa = PBXGroup;
+			children = (
+				F50575F23031ABBA00601A4A /* README.md */,
+			);
+			path = logs;
+			sourceTree = "<group>";
+		};
+		F50575F73031ABBA00601A4A /* scripts */ = {
+			isa = PBXGroup;
+			children = (
+				F50575F43031ABBA00601A4A /* build-android.sh */,
+				F50575F53031ABBA00601A4A /* build-ios.sh */,
+				F50575F63031ABBA00601A4A /* release.sh */,
+			);
+			path = scripts;
+			sourceTree = "<group>";
+		};
+		F50575F93031ABBA00601A4A /* staging */ = {
+			isa = PBXGroup;
+			children = (
+				F50575F83031ABBA00601A4A /* LXC-BRM.app */,
+			);
+			path = staging;
+			sourceTree = "<group>";
+		};
+		F50575FD3031ABBA00601A4A /* version */ = {
+			isa = PBXGroup;
+			children = (
+				F50575F93031ABBA00601A4A /* staging */,
+				F50575FA3031ABBA00601A4A /* .gitkeep */,
+				F50575FB3031ABBA00601A4A /* LXC-BRM-2026-08-16.dmg */,
+				F50575FC3031ABBA00601A4A /* README.md */,
+			);
+			path = version;
+			sourceTree = "<group>";
+		};
+		F50576013031ABBA00601A4A /* build-release */ = {
+			isa = PBXGroup;
+			children = (
+				F50575F33031ABBA00601A4A /* logs */,
+				F50575F73031ABBA00601A4A /* scripts */,
+				F50575FD3031ABBA00601A4A /* version */,
+				F50575FE3031ABBA00601A4A /* projects.json */,
+				F50575FF3031ABBA00601A4A /* README.md */,
+				F50576003031ABBA00601A4A /* USER_GUIDE.md */,
+			);
+			path = "build-release";
+			sourceTree = "<group>";
+		};
+		F505760A3031ABBA00601A4A /* Preference-Screen */ = {
+			isa = PBXGroup;
+			children = (
+				F50576023031ABBA00601A4A /* 02-Screen-Pref-Repos.png */,
+				F50576033031ABBA00601A4A /* 03-Screen-Pref-Build-Exec.png */,
+				F50576043031ABBA00601A4A /* 04-Screen-Pref-Logs-Console.png */,
+				F50576053031ABBA00601A4A /* 05-Screen-Pref-Appearance.png */,
+				F50576063031ABBA00601A4A /* 06-Screen-Pref-Notifcation.png */,
+				F50576073031ABBA00601A4A /* 07-Screen-Pref-advanced.png */,
+				F50576083031ABBA00601A4A /* Prefernce-Screen-Concept.png */,
+				F50576093031ABBA00601A4A /* Screen-Pref-Generl-01.png */,
+			);
+			path = "Preference-Screen";
+			sourceTree = "<group>";
+		};
+		F50576123031ABBA00601A4A /* concepts-designs */ = {
+			isa = PBXGroup;
+			children = (
+				F505760A3031ABBA00601A4A /* Preference-Screen */,
+				F505760B3031ABBA00601A4A /* Build-Console-Screen-01.png */,
+				F505760C3031ABBA00601A4A /* Build-Console-Screen-Concept-02a.png */,
+				F505760D3031ABBA00601A4A /* Build-Console-Screen-Concept-02b.png */,
+				F505760E3031ABBA00601A4A /* crap.png */,
+				F505760F3031ABBA00601A4A /* LXC-BuildManager.pdf */,
+				F50576103031ABBA00601A4A /* LXC-Release-Build-Manager-workbench.png */,
+				F50576113031ABBA00601A4A /* ui-back-main.png */,
+			);
+			path = "concepts-designs";
+			sourceTree = "<group>";
+		};
+		F50576143031ABBA00601A4A /* decisions */ = {
+			isa = PBXGroup;
+			children = (
+				F50576133031ABBA00601A4A /* decision-2026-08-16.md */,
+			);
+			path = decisions;
+			sourceTree = "<group>";
+		};
+		F50576193031ABBA00601A4A /* context */ = {
+			isa = PBXGroup;
+			children = (
+				F50576123031ABBA00601A4A /* concepts-designs */,
+				F50576143031ABBA00601A4A /* decisions */,
+				F50576153031ABBA00601A4A /* architecture.md */,
+				F50576163031ABBA00601A4A /* README.md */,
+				F50576173031ABBA00601A4A /* requirements.md */,
+				F50576183031ABBA00601A4A /* rules-context.md */,
+			);
+			path = context;
+			sourceTree = "<group>";
+		};
+		F505761B3031ABBA00601A4A /* frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F505761A3031ABBA00601A4A /* README.md */,
+			);
+			path = frameworks;
+			sourceTree = "<group>";
+		};
+		F505761D3031ABBA00601A4A /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				F505761C3031ABBA00601A4A /* README.md */,
+			);
+			path = shared;
+			sourceTree = "<group>";
+		};
+		F505761E3031ABBA00601A4A /* assets */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
+		F50576233031ABBA00601A4A /* worklog */ = {
+			isa = PBXGroup;
+			children = (
+				F505761E3031ABBA00601A4A /* assets */,
+				F505761F3031ABBA00601A4A /* Plan-PreferenceScreen-todo.md */,
+				F50576203031ABBA00601A4A /* README.md */,
+				F50576213031ABBA00601A4A /* todo-2026-08-16.md */,
+				F50576223031ABBA00601A4A /* worklog-2026-08-16.md */,
+			);
+			path = worklog;
+			sourceTree = "<group>";
+		};
+		F50576253031ABBA00601A4A /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				F50576013031ABBA00601A4A /* build-release */,
+				F50576193031ABBA00601A4A /* context */,
+				F505761B3031ABBA00601A4A /* frameworks */,
+				F505761D3031ABBA00601A4A /* shared */,
+				F50576233031ABBA00601A4A /* worklog */,
+				F50576243031ABBA00601A4A /* README.md */,
+			);
+			path = Support;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -170,6 +433,23 @@
 			productName = "LXC-BRM";
 			productReference = 363495766860C99A9A8A3A95 /* LXC-BRM.app */;
 			productType = "com.apple.product-type.application";
+		};
+		A11E00000000000000000005 /* LXC-BRMTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A11E00000000000000000006 /* Build configuration list for PBXNativeTarget "LXC-BRMTests" */;
+			buildPhases = (
+				A11E00000000000000000007 /* Sources */,
+				A11E00000000000000000008 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A11E0000000000000000000A /* PBXTargetDependency */,
+			);
+			name = "LXC-BRMTests";
+			productName = "LXC-BRMTests";
+			productReference = A11E00000000000000000002 /* LXC-BRMTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -195,6 +475,7 @@
 			projectRoot = "";
 			targets = (
 				FD878CCC2F9C954410FD53F6 /* LXC-BRM */,
+				A11E00000000000000000005 /* LXC-BRMTests */,
 			);
 		};
 /* End PBXProject section */
@@ -204,6 +485,36 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F50576263031ABBA00601A4A /* build-android.sh in Resources */,
+				F50576273031ABBA00601A4A /* build-ios.sh in Resources */,
+				F50576283031ABBA00601A4A /* requirements.md in Resources */,
+				F50576293031ABBA00601A4A /* crap.png in Resources */,
+				F505762A3031ABBA00601A4A /* architecture.md in Resources */,
+				F505762B3031ABBA00601A4A /* 05-Screen-Pref-Appearance.png in Resources */,
+				F505762C3031ABBA00601A4A /* projects.json in Resources */,
+				F505762D3031ABBA00601A4A /* release.sh in Resources */,
+				F505762F3031ABBA00601A4A /* rules-context.md in Resources */,
+				F50576303031ABBA00601A4A /* LXC-Release-Build-Manager-workbench.png in Resources */,
+				F50576313031ABBA00601A4A /* 02-Screen-Pref-Repos.png in Resources */,
+				F50576333031ABBA00601A4A /* 04-Screen-Pref-Logs-Console.png in Resources */,
+				F50576353031ABBA00601A4A /* 07-Screen-Pref-advanced.png in Resources */,
+				F50576363031ABBA00601A4A /* 03-Screen-Pref-Build-Exec.png in Resources */,
+				F50576393031ABBA00601A4A /* worklog-2026-08-16.md in Resources */,
+				F505763A3031ABBA00601A4A /* USER_GUIDE.md in Resources */,
+				F505763B3031ABBA00601A4A /* Screen-Pref-Generl-01.png in Resources */,
+				F505763C3031ABBA00601A4A /* ui-back-main.png in Resources */,
+				F505763F3031ABBA00601A4A /* Build-Console-Screen-01.png in Resources */,
+				F50576403031ABBA00601A4A /* .gitkeep in Resources */,
+				F50576413031ABBA00601A4A /* Prefernce-Screen-Concept.png in Resources */,
+				F50576423031ABBA00601A4A /* 06-Screen-Pref-Notifcation.png in Resources */,
+				F50576433031ABBA00601A4A /* decision-2026-08-16.md in Resources */,
+				F50576443031ABBA00601A4A /* Build-Console-Screen-Concept-02a.png in Resources */,
+				F50576453031ABBA00601A4A /* LXC-BuildManager.pdf in Resources */,
+				F50576463031ABBA00601A4A /* LXC-BRM.app in Resources */,
+				F50576473031ABBA00601A4A /* Plan-PreferenceScreen-todo.md in Resources */,
+				F50576483031ABBA00601A4A /* LXC-BRM-2026-08-16.dmg in Resources */,
+				F50576493031ABBA00601A4A /* todo-2026-08-16.md in Resources */,
+				F505764B3031ABBA00601A4A /* Build-Console-Screen-Concept-02b.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,9 +525,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F50575ED30318AE800601A4A /* RepositoryRow.swift in Sources */,
+				F50575ED30318AE800601A4A /* App/Views/RepositoryRow.swift in Sources */,
 				861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */,
-				F50575EB30318AE700601A4A /* AddRepositorySheet.swift in Sources */,
+				F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */,
 				DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */,
 				9DD375B6E51F32764D466AAF /* Repository.swift in Sources */,
 				2069CF7280E3EFC8FE58FDDF /* BuildScript.swift in Sources */,
@@ -224,12 +535,13 @@
 				251FCCFB1823E848C6967B7C /* BuildScriptScanner.swift in Sources */,
 				4B5590D2F6DE9F6ACEEB834A /* BuildRecord.swift in Sources */,
 				4C6B8D1F2A3E4C5D6F708192 /* BuildNotificationService.swift in Sources */,
+				C3A1B2C3D4E5F60718293847 /* BuildWorkspaceStateStore.swift in Sources */,
 				A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */,
 				50CC22F6B112137092256122 /* BuildHistoryStore.swift in Sources */,
-				F50575EF30318AEB00601A4A /* RecentRepositoryRow.swift in Sources */,
+				F50575EF30318AEB00601A4A /* App/Views/RecentRepositoryRow.swift in Sources */,
 				E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */,
 				2F3B4B4C450DA1992E367F86 /* GitBranchReader.swift in Sources */,
-				F50575F130318AEE00601A4A /* StatusBar.swift in Sources */,
+				F50575F130318AEE00601A4A /* App/Views/StatusBar.swift in Sources */,
 				77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */,
 				55BA48F23D7D589AEBE85E1D /* Preferences.swift in Sources */,
 				5D97B5F6FBFEF4DFB4D2AFE8 /* PreferencesStore.swift in Sources */,
@@ -237,22 +549,72 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A11E00000000000000000007 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A11E00000000000000000001 /* BuildWorkspaceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A11E0000000000000000000A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FD878CCC2F9C954410FD53F6 /* LXC-BRM */;
+			targetProxy = A11E00000000000000000009 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		A11E0000000000000000000B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.brm.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LXC-BRM.app/Contents/MacOS/LXC-BRM";
+			};
+			name = Debug;
+		};
+		A11E0000000000000000000C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.brm.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LXC-BRM.app/Contents/MacOS/LXC-BRM";
+			};
+			name = Release;
+		};
 		05886B6D967D370675EBAC1F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = Support/context;
 				DEVELOPMENT_TEAM = 6EERS23K5D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -263,7 +625,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.brm;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
@@ -334,10 +696,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = Support/context;
 				DEVELOPMENT_TEAM = 6EERS23K5D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -348,7 +712,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.brm;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
@@ -423,6 +787,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A11E00000000000000000006 /* Build configuration list for PBXNativeTarget "LXC-BRMTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A11E0000000000000000000B /* Debug */,
+				A11E0000000000000000000C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		9C25D65151B55BBDD317A401 /* Build configuration list for PBXNativeTarget "LXC-BRM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -27,7 +27,15 @@ enum LogFileService {
             .replacingOccurrences(of: "[", with: "")
             .replacingOccurrences(of: "]", with: "")
         formatter.dateFormat = cleanedFormat.isEmpty ? "HH:mm:ss" : cleanedFormat
-        let renderedLines = lines.map { "[\(formatter.string(from: $0.timestamp))] \($0.text)" }
+        let renderedLines = lines.map { line in
+            let streamPrefix: String
+            switch line.stream {
+            case .stdout: streamPrefix = ""
+            case .stderr: streamPrefix = "[stderr] "
+            case .system: streamPrefix = "[system] "
+            }
+            return "[\(formatter.string(from: line.timestamp))] \(streamPrefix)\(line.text)"
+        }
         return "# \(script.fileName) — \(status.rawValue)\n\n" + renderedLines.joined(separator: "\n")
     }
 

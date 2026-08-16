@@ -1,6 +1,6 @@
-import Foundation
-import Darwin
 import Combine
+import Darwin
+import Foundation
 
 @MainActor
 final class BuildRunner: ObservableObject {
@@ -8,37 +8,108 @@ final class BuildRunner: ObservableObject {
     @Published private(set) var runningScript: BuildScript?
     @Published private(set) var startedAt: Date?
     @Published private(set) var finishedAt: Date?
+    @Published private(set) var phase: BuildExecutionPhase = .idle
+    @Published private(set) var lastError: BuildWorkspaceError?
+    @Published private(set) var lastExitCode: Int32?
+    @Published private(set) var processID: Int32?
+    @Published private(set) var terminationReason = ""
+    @Published private(set) var currentInvocation: BuildInvocation?
 
     private var process: Process?
     private var stdoutHandle: FileHandle?
     private var stderrHandle: FileHandle?
     private var wasCancelled = false
+    private var cancellationReason = ""
     private var sleepActivityToken: NSObjectProtocol?
     private var timeoutWorkItem: DispatchWorkItem?
     private var stdoutBuffer = Data()
     private var stderrBuffer = Data()
+    private var currentRunID: UUID?
+    private var currentLogSessionID: UUID?
 
-    var isRunning: Bool { runningScript != nil }
+    var isRunning: Bool { phase.isActive }
+    var hasOutput: Bool { !logLines.isEmpty }
 
     var duration: TimeInterval {
         guard let startedAt else { return 0 }
         return (finishedAt ?? Date()).timeIntervalSince(startedAt)
     }
 
-    func start(script: BuildScript, repository: Repository, historyStore: BuildHistoryStore, preferences: Preferences) {
-        guard !isRunning, case .local(let repositoryPath) = repository.source else { return }
+    @discardableResult
+    func start(
+        script: BuildScript,
+        parameters: BuildParameterValues = [:],
+        repository: Repository,
+        historyStore: BuildHistoryStore,
+        preferences: Preferences
+    ) -> Bool {
+        do {
+            let invocation = try BuildCommandBuilder.invocation(for: script, values: parameters)
+            return start(invocation: invocation, repository: repository, historyStore: historyStore, preferences: preferences)
+        } catch let error as BuildWorkspaceError {
+            lastError = error
+            return false
+        } catch {
+            lastError = .validation(error.localizedDescription)
+            return false
+        }
+    }
+
+    @discardableResult
+    func start(
+        invocation: BuildInvocation,
+        repository: Repository,
+        historyStore: BuildHistoryStore,
+        preferences: Preferences
+    ) -> Bool {
+        guard !isRunning else {
+            lastError = .execution("A build is already running for this repository.")
+            return false
+        }
+        guard case .local(let repositoryPath) = repository.source else {
+            lastError = .validation("Clone this GitHub repository locally before running a build.")
+            return false
+        }
+        guard invocation.script.location.isRunnable else {
+            lastError = .validation("This script is \(invocation.script.location.label.lowercased()) and cannot be run.")
+            return false
+        }
+        guard invocation.script.location != .outsideRepository || preferences.allowScriptsOutsideBuildScripts else {
+            lastError = .validation("Scripts outside the repository are disabled in Preferences.")
+            return false
+        }
+        guard FileManager.default.fileExists(atPath: invocation.script.path) else {
+            lastError = .validation("The selected build script no longer exists on disk.")
+            return false
+        }
+        guard FileManager.default.isReadableFile(atPath: invocation.script.path) else {
+            lastError = .execution("The selected build script is not readable.")
+            return false
+        }
 
         logLines = []
-        runningScript = script
+        runningScript = invocation.script
+        currentInvocation = invocation
         startedAt = Date()
         finishedAt = nil
+        phase = .starting
+        lastError = nil
+        lastExitCode = nil
+        processID = nil
+        terminationReason = ""
         wasCancelled = false
+        cancellationReason = ""
+        currentRunID = UUID()
+        currentLogSessionID = UUID()
         stdoutBuffer.removeAll(keepingCapacity: true)
         stderrBuffer.removeAll(keepingCapacity: true)
+        appendSystem("Starting \(invocation.script.fileName)")
+        appendSystem("Command: \(invocation.commandPreview)")
+        appendSystem("Working directory: \(workingDirectoryURL(for: repositoryPath, preferences: preferences).path)")
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: preferences.defaultShell)
-        process.arguments = [script.path]
+        process.arguments = [invocation.script.path] + invocation.arguments
         process.currentDirectoryURL = workingDirectoryURL(for: repositoryPath, preferences: preferences)
 
         if !preferences.environmentVariables.isEmpty {
@@ -61,9 +132,16 @@ final class BuildRunner: ObservableObject {
             self?.handleOutput(handle.availableData, stream: .stderr)
         }
 
-        process.terminationHandler = { [weak self] proc in
+        process.terminationHandler = { [weak self] process in
             Task { @MainActor in
-                self?.finish(exitCode: proc.terminationStatus, repository: repository, script: script, historyStore: historyStore, preferences: preferences)
+                self?.finish(
+                    exitCode: process.terminationStatus,
+                    processTerminationReason: process.terminationReason,
+                    repository: repository,
+                    script: invocation.script,
+                    historyStore: historyStore,
+                    preferences: preferences
+                )
             }
         }
 
@@ -74,34 +152,53 @@ final class BuildRunner: ObservableObject {
         if preferences.preventSleepDuringBuild {
             sleepActivityToken = ProcessInfo.processInfo.beginActivity(
                 options: [.idleSystemSleepDisabled],
-                reason: "LXC-BRM build running: \(script.label)"
+                reason: "LXC-BRM build running: \(invocation.script.label)"
             )
         }
 
         BuildNotificationService.shared.notify(
             .started,
             repository: repository,
-            script: script,
+            script: invocation.script,
             preferences: preferences
         )
 
         do {
             try process.run()
+            processID = process.processIdentifier
+            phase = .running
             scheduleTimeout(preferences: preferences)
+            return true
         } catch {
-            logLines.append(LogLine(timestamp: Date(), text: "Failed to start: \(error.localizedDescription)"))
-            finish(exitCode: -1, repository: repository, script: script, historyStore: historyStore, preferences: preferences)
+            lastError = .execution("Failed to start: \(error.localizedDescription)")
+            appendSystem(lastError?.errorDescription ?? "Failed to start the build process.")
+            finish(
+                exitCode: -1,
+                processTerminationReason: nil,
+                repository: repository,
+                script: invocation.script,
+                historyStore: historyStore,
+                preferences: preferences
+            )
+            return false
         }
     }
 
-    func cancel(preferences: Preferences) {
+    func cancel(preferences: Preferences, reason: String = "Stopped by user") {
         guard let process, isRunning else { return }
         wasCancelled = true
+        cancellationReason = reason
+        phase = .stopping
+        appendSystem("Stop requested: \(reason).")
         if preferences.terminateChildProcessesOnStop {
             Self.killProcessTree(rootPID: process.processIdentifier)
         } else {
             process.terminate()
         }
+    }
+
+    func clearOutput() {
+        logLines.removeAll(keepingCapacity: true)
     }
 
     private func scheduleTimeout(preferences: Preferences) {
@@ -117,7 +214,7 @@ final class BuildRunner: ObservableObject {
 
         let workItem = DispatchWorkItem { [weak self] in
             guard let self, self.isRunning else { return }
-            self.cancel(preferences: preferences)
+            self.cancel(preferences: preferences, reason: "Timed out after \(effectiveMinutes) minute(s)")
         }
         timeoutWorkItem = workItem
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(effectiveMinutes * 60), execute: workItem)
@@ -126,6 +223,13 @@ final class BuildRunner: ObservableObject {
     private enum OutputStream {
         case stdout
         case stderr
+
+        var logStream: LogStream {
+            switch self {
+            case .stdout: return .stdout
+            case .stderr: return .stderr
+            }
+        }
     }
 
     nonisolated private func handleOutput(_ data: Data, stream: OutputStream) {
@@ -142,7 +246,7 @@ final class BuildRunner: ObservableObject {
         while let newline = buffer.firstIndex(of: 0x0A) {
             let lineData = buffer[..<newline]
             let line = String(decoding: lineData.last == 0x0D ? lineData.dropLast() : lineData, as: UTF8.self)
-            logLines.append(LogLine(timestamp: Date(), text: line))
+            logLines.append(LogLine(timestamp: Date(), text: line, stream: stream.logStream))
             buffer.removeSubrange(...newline)
         }
 
@@ -153,15 +257,30 @@ final class BuildRunner: ObservableObject {
     }
 
     private func flushOutputBuffers() {
-        for buffer in [stdoutBuffer, stderrBuffer] where !buffer.isEmpty {
-            let line = String(decoding: buffer.last == 0x0D ? buffer.dropLast() : buffer, as: UTF8.self)
-            logLines.append(LogLine(timestamp: Date(), text: line))
+        if !stdoutBuffer.isEmpty {
+            let line = String(decoding: stdoutBuffer.last == 0x0D ? stdoutBuffer.dropLast() : stdoutBuffer, as: UTF8.self)
+            logLines.append(LogLine(timestamp: Date(), text: line, stream: .stdout))
+        }
+        if !stderrBuffer.isEmpty {
+            let line = String(decoding: stderrBuffer.last == 0x0D ? stderrBuffer.dropLast() : stderrBuffer, as: UTF8.self)
+            logLines.append(LogLine(timestamp: Date(), text: line, stream: .stderr))
         }
         stdoutBuffer.removeAll(keepingCapacity: true)
         stderrBuffer.removeAll(keepingCapacity: true)
     }
 
-    private func finish(exitCode: Int32, repository: Repository, script: BuildScript, historyStore: BuildHistoryStore, preferences: Preferences) {
+    private func appendSystem(_ text: String) {
+        logLines.append(LogLine(timestamp: Date(), text: text, stream: .system))
+    }
+
+    private func finish(
+        exitCode: Int32,
+        processTerminationReason: Process.TerminationReason?,
+        repository: Repository,
+        script: BuildScript,
+        historyStore: BuildHistoryStore,
+        preferences: Preferences
+    ) {
         guard runningScript != nil else { return }
         stdoutHandle?.readabilityHandler = nil
         stderrHandle?.readabilityHandler = nil
@@ -176,14 +295,20 @@ final class BuildRunner: ObservableObject {
         }
 
         let finalStatus: BuildStatus = wasCancelled ? .cancelled : (exitCode == 0 ? .success : .failed)
-        let notificationKind: BuildNotificationService.Kind = {
-            switch finalStatus {
-            case .success: return .succeeded
-            case .failed: return .failed
-            case .cancelled: return .cancelled
-            case .running: return .started
-            }
+        let resolvedTerminationReason: String = {
+            if wasCancelled { return cancellationReason.isEmpty ? "Cancelled" : cancellationReason }
+            if processTerminationReason == .uncaughtSignal { return "Terminated by signal" }
+            return exitCode == 0 ? "Completed successfully" : "Exited with code \(exitCode)"
         }()
+        terminationReason = resolvedTerminationReason
+        lastExitCode = exitCode
+        switch finalStatus {
+        case .success: phase = .succeeded
+        case .failed: phase = .failed
+        case .cancelled: phase = .cancelled
+        case .running: phase = .running
+        }
+        appendSystem("Build \(statusText(finalStatus)): \(resolvedTerminationReason) in \(durationDescription(duration)).")
 
         if wasCancelled && !preferences.preservePartialOutputOnCancellation {
             logLines = []
@@ -210,26 +335,40 @@ final class BuildRunner: ObservableObject {
 
         historyStore.record(
             BuildRecord(
+                id: currentRunID ?? UUID(),
+                logSessionID: currentLogSessionID ?? UUID(),
                 repositoryID: repository.id,
                 scriptFileName: script.fileName,
                 scriptLabel: script.label,
                 startedAt: startedAt ?? Date(),
                 status: finalStatus,
                 durationSeconds: duration,
-                logFileName: logFileName
+                logFileName: logFileName,
+                processID: processID,
+                exitCode: exitCode,
+                terminationReason: resolvedTerminationReason,
+                parameterValues: currentInvocation?.parameterValues ?? [:]
             )
         )
 
-        BuildNotificationService.shared.notify(
-            notificationKind,
-            repository: repository,
-            script: script,
-            preferences: preferences
-        )
+        let notificationKind: BuildNotificationService.Kind = {
+            switch finalStatus {
+            case .success: return .succeeded
+            case .failed: return .failed
+            case .cancelled: return .cancelled
+            case .running: return .started
+            }
+        }()
+        BuildNotificationService.shared.notify(notificationKind, repository: repository, script: script, preferences: preferences)
 
         runningScript = nil
         process = nil
+        processID = nil
+        currentInvocation = nil
+        currentRunID = nil
+        currentLogSessionID = nil
         wasCancelled = false
+        cancellationReason = ""
     }
 
     private func workingDirectoryURL(for repositoryPath: String, preferences: Preferences) -> URL {
@@ -245,6 +384,21 @@ final class BuildRunner: ObservableObject {
         default:
             return repositoryURL
         }
+    }
+
+    private func statusText(_ status: BuildStatus) -> String {
+        switch status {
+        case .success: return "succeeded"
+        case .failed: return "failed"
+        case .cancelled: return "cancelled"
+        case .running: return "running"
+        }
+    }
+
+    private func durationDescription(_ seconds: TimeInterval) -> String {
+        let minutes = Int(seconds) / 60
+        let remainder = Int(seconds) % 60
+        return minutes > 0 ? "\(minutes)m \(remainder)s" : "\(remainder)s"
     }
 
     /// Best-effort recursive kill: Foundation's Process API doesn't expose real process-group
@@ -296,5 +450,11 @@ final class BuildRunnerRegistry: ObservableObject {
 
     var runningCount: Int {
         runners.values.filter(\.isRunning).count
+    }
+
+    func cancelAll(preferences: Preferences) {
+        for runner in runners.values where runner.isRunning {
+            runner.cancel(preferences: preferences, reason: "Application is closing")
+        }
     }
 }

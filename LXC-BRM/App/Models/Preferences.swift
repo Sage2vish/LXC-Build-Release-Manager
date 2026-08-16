@@ -89,6 +89,9 @@ struct Preferences: Codable, Equatable {
     var roundWindowCorners = true
     var reduceTransparency = false
     var useSystemFont = true
+    var showStatusBar = true
+    var showRepositorySidebar = true
+    var showDetailInspector = true
 
     // 06 Notifications
     var enableBuildNotifications = true

@@ -4,4 +4,7 @@
    <FileRef
       location = "group:LXC-BRM.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:BUILD_SCREEN_TODO.md">
+   </FileRef>
 </Workspace>

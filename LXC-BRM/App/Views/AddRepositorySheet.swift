@@ -1,5 +1,6 @@
 import AppKit
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct AddRepositorySheet: View {
     @ObservedObject var store: RepositoryStore
@@ -74,4 +75,29 @@ func presentLocalFolderPickerPath() -> String? {
     panel.prompt = "Open Repository"
     guard panel.runModal() == .OK, let url = panel.url else { return nil }
     return url.path
+}
+
+@MainActor
+func presentBuildScriptPickerPath(repositoryPath: String) -> String? {
+    let panel = NSOpenPanel()
+    panel.canChooseDirectories = false
+    panel.canChooseFiles = true
+    panel.allowsMultipleSelection = false
+    panel.allowedContentTypes = [UTType(filenameExtension: "sh") ?? .shellScript]
+    panel.directoryURL = URL(fileURLWithPath: repositoryPath)
+    panel.message = "Choose a shell script for this repository. Scripts outside the repository are checked before they are added."
+    panel.prompt = "Add Build Script"
+    guard panel.runModal() == .OK, let url = panel.url else { return nil }
+    return url.standardizedFileURL.path
+}
+
+@MainActor
+func presentBuildParameterPath() -> String? {
+    let panel = NSOpenPanel()
+    panel.canChooseDirectories = true
+    panel.canChooseFiles = true
+    panel.allowsMultipleSelection = false
+    panel.prompt = "Choose Path"
+    guard panel.runModal() == .OK, let url = panel.url else { return nil }
+    return url.standardizedFileURL.path
 }

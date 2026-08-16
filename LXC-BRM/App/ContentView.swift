@@ -4,10 +4,31 @@ import AppKit
 struct ContentView: View {
     @StateObject private var store = RepositoryStore.shared
     @StateObject private var historyStore = BuildHistoryStore.shared
+    @StateObject private var workspaceStateStore = BuildWorkspaceStateStore.shared
     @StateObject private var runners = BuildRunnerRegistry.shared
     @StateObject private var preferencesStore = PreferencesStore.shared
     @State private var isAddingRepository = false
+    /// `NavigationSplitView` pushes its own default visibility through the binding during the
+    /// first layout pass, which would overwrite the restored preference. Ignore writes until
+    /// that settles so a sidebar hidden at quit stays hidden on the next launch.
+    @State private var didRestoreLayout = false
     @Environment(\.openSettings) private var openSettings
+
+    /// Derived straight from the preference rather than mirrored into `@State`, so the
+    /// View menu item and the native sidebar control share one source of truth and
+    /// cannot oscillate against each other.
+    private var columnVisibility: Binding<NavigationSplitViewVisibility> {
+        Binding(
+            get: { preferencesStore.preferences.showRepositorySidebar ? .all : .detailOnly },
+            set: { newValue in
+                let isVisible = newValue != .detailOnly
+                guard preferencesStore.preferences.showRepositorySidebar != isVisible else { return }
+                var updated = preferencesStore.preferences
+                updated.showRepositorySidebar = isVisible
+                preferencesStore.save(updated)
+            }
+        )
+    }
 
     private var preferredColorScheme: ColorScheme? {
         switch preferencesStore.preferences.theme {
@@ -18,7 +39,28 @@ struct ContentView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
+        // The status bar is a sibling below the split view, not a `safeAreaInset` on it.
+        // An inset does not propagate into the sidebar column's own safe area, which let the
+        // status bar clip the sidebar's "Open Repository…" / "Preferences" footer.
+        VStack(spacing: 0) {
+            splitView
+            if preferencesStore.preferences.showStatusBar {
+                StatusBar(repository: store.selectedRepository, preferences: preferencesStore.preferences)
+            }
+        }
+        .preferredColorScheme(preferredColorScheme)
+        .sheet(isPresented: $isAddingRepository) {
+            AddRepositorySheet(store: store, isPresented: $isAddingRepository)
+        }
+        .onAppear {
+            let delegate = NSApp.delegate as? AppDelegate
+            delegate?.runners = runners
+            delegate?.preferencesStore = preferencesStore
+        }
+    }
+
+    private var splitView: some View {
+        NavigationSplitView(columnVisibility: columnVisibility) {
             sidebar
         } detail: {
             if let repository = store.selectedRepository {
@@ -26,6 +68,7 @@ struct ContentView: View {
                     repository: repository,
                     store: store,
                     historyStore: historyStore,
+                    workspaceStateStore: workspaceStateStore,
                     preferencesStore: preferencesStore,
                     runners: runners,
                     runner: runners.runner(for: repository.id),
@@ -40,18 +83,6 @@ struct ContentView: View {
                 )
                 .background(.background)
             }
-        }
-        .safeAreaInset(edge: .bottom) {
-            StatusBar(repository: store.selectedRepository, preferences: preferencesStore.preferences)
-        }
-        .preferredColorScheme(preferredColorScheme)
-        .sheet(isPresented: $isAddingRepository) {
-            AddRepositorySheet(store: store, isPresented: $isAddingRepository)
-        }
-        .onAppear {
-            let delegate = NSApp.delegate as? AppDelegate
-            delegate?.runners = runners
-            delegate?.preferencesStore = preferencesStore
         }
     }
 
@@ -106,7 +137,13 @@ struct ContentView: View {
             }
         }
         .navigationTitle("Build Manager")
-        .navigationSplitViewColumnWidth(preferencesStore.preferences.sidebarWidthPoints)
+        // The single-value form pins the column and removes the drag handle.
+        // min/ideal/max keeps the saved width as the starting point while letting the user drag.
+        .navigationSplitViewColumnWidth(
+            min: 180,
+            ideal: preferencesStore.preferences.sidebarWidthPoints,
+            max: 420
+        )
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 8) {
                 Divider()
@@ -152,6 +189,28 @@ private struct DisplayLine: Identifiable, Hashable {
     let id: UUID
     let timestampText: String
     let text: String
+    let stream: LogStream
+    let ansiColor: TerminalLineColor?
+}
+
+private enum TerminalLineColor: Hashable {
+    case red
+    case green
+    case yellow
+    case blue
+    case magenta
+    case cyan
+
+    var color: Color {
+        switch self {
+        case .red: return .red
+        case .green: return .green
+        case .yellow: return .yellow
+        case .blue: return .blue
+        case .magenta: return .pink
+        case .cyan: return .cyan
+        }
+    }
 }
 
 private enum LogFilter: String, CaseIterable, Identifiable {
@@ -177,7 +236,16 @@ private enum LogFilter: String, CaseIterable, Identifiable {
 private func displayLines(from logLines: [LogLine]) -> [DisplayLine] {
     let formatter = DateFormatter()
     formatter.dateFormat = "HH:mm:ss"
-    return logLines.map { DisplayLine(id: $0.id, timestampText: formatter.string(from: $0.timestamp), text: $0.text) }
+    return logLines.map { line in
+        let presentation = terminalPresentation(for: line.text)
+        return DisplayLine(
+            id: line.id,
+            timestampText: formatter.string(from: line.timestamp),
+            text: presentation.text,
+            stream: line.stream,
+            ansiColor: presentation.ansiColor
+        )
+    }
 }
 
 private func displayLines(fromFileContent content: String) -> [DisplayLine] {
@@ -188,10 +256,53 @@ private func displayLines(fromFileContent content: String) -> [DisplayLine] {
             if line.hasPrefix("["), let closeBracket = line.firstIndex(of: "]") {
                 let timestamp = String(line[line.index(after: line.startIndex)..<closeBracket])
                 let rest = line[line.index(after: closeBracket)...].trimmingCharacters(in: .whitespaces)
-                return DisplayLine(id: UUID(), timestampText: timestamp, text: String(rest))
+                let streamPayload = streamPayload(from: String(rest))
+                let presentation = terminalPresentation(for: streamPayload.text)
+                return DisplayLine(
+                    id: UUID(),
+                    timestampText: timestamp,
+                    text: presentation.text,
+                    stream: streamPayload.stream,
+                    ansiColor: presentation.ansiColor
+                )
             }
-            return DisplayLine(id: UUID(), timestampText: "", text: String(line))
+            let streamPayload = streamPayload(from: String(line))
+            let presentation = terminalPresentation(for: streamPayload.text)
+            return DisplayLine(
+                id: UUID(),
+                timestampText: "",
+                text: presentation.text,
+                stream: streamPayload.stream,
+                ansiColor: presentation.ansiColor
+            )
         }
+}
+
+private func terminalPresentation(for rawText: String) -> (text: String, ansiColor: TerminalLineColor?) {
+    let color: TerminalLineColor?
+    if rawText.contains("\u{001B}[31") || rawText.contains("\u{001B}[91") {
+        color = .red
+    } else if rawText.contains("\u{001B}[32") || rawText.contains("\u{001B}[92") {
+        color = .green
+    } else if rawText.contains("\u{001B}[33") || rawText.contains("\u{001B}[93") {
+        color = .yellow
+    } else if rawText.contains("\u{001B}[34") || rawText.contains("\u{001B}[94") {
+        color = .blue
+    } else if rawText.contains("\u{001B}[35") || rawText.contains("\u{001B}[95") {
+        color = .magenta
+    } else if rawText.contains("\u{001B}[36") || rawText.contains("\u{001B}[96") {
+        color = .cyan
+    } else {
+        color = nil
+    }
+    let cleanText = rawText.replacingOccurrences(of: "\u{001B}\\[[0-9;]*m", with: "", options: .regularExpression)
+    return (cleanText, color)
+}
+
+private func streamPayload(from text: String) -> (text: String, stream: LogStream) {
+    if text.hasPrefix("[stderr] ") { return (String(text.dropFirst(9)), .stderr) }
+    if text.hasPrefix("[system] ") { return (String(text.dropFirst(9)), .system) }
+    return (text, .stdout)
 }
 
 private struct LogPane: View {
@@ -199,17 +310,38 @@ private struct LogPane: View {
     let lines: [DisplayLine]
     let preferences: Preferences
     var onExport: (() -> Void)?
+    var onOpenInWindow: (() -> Void)? = nil
+    var onStop: (() -> Void)? = nil
+    var onClear: (() -> Void)? = nil
+    var isRunning = false
 
     @State private var searchText = ""
     @State private var filter: LogFilter
     @State private var currentMatchIndex = 0
+    @State private var isExpanded = false
+    @State private var autoScroll = true
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    init(title: String, lines: [DisplayLine], preferences: Preferences, onExport: (() -> Void)? = nil) {
+    init(
+        title: String,
+        lines: [DisplayLine],
+        preferences: Preferences,
+        onExport: (() -> Void)? = nil,
+        onOpenInWindow: (() -> Void)? = nil,
+        onStop: (() -> Void)? = nil,
+        onClear: (() -> Void)? = nil,
+        isRunning: Bool = false
+    ) {
         self.title = title
         self.lines = lines
         self.preferences = preferences
         self.onExport = onExport
+        self.onOpenInWindow = onOpenInWindow
+        self.onStop = onStop
+        self.onClear = onClear
+        self.isRunning = isRunning
         self._filter = State(initialValue: LogFilter(rawValue: preferences.defaultLogFilter) ?? .all)
+        self._autoScroll = State(initialValue: preferences.autoScrollToBottom)
     }
 
     private var filtered: [DisplayLine] {
@@ -244,8 +376,38 @@ private struct LogPane: View {
                 .pickerStyle(.segmented)
                 .labelsHidden()
                 .frame(width: 260)
+                if let onStop {
+                    Button(role: .destructive) { onStop() } label: {
+                        Label("Stop", systemImage: "stop.fill")
+                    }
+                    .disabled(!isRunning)
+                    .accessibilityHint("Stops the active build process.")
+                }
+                if let onClear {
+                    Button { onClear() } label: {
+                        Label("Clear", systemImage: "trash")
+                    }
+                    .disabled(lines.isEmpty)
+                    .accessibilityHint("Clears visible output without deleting saved build history.")
+                }
+                Button {
+                    isExpanded.toggle()
+                } label: {
+                    Label(
+                        isExpanded ? "Restore Log Pane" : "Maximize Log Pane",
+                        systemImage: isExpanded ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right"
+                    )
+                }
+                .buttonStyle(.borderless)
+                .help(isExpanded ? "Restore log pane" : "Maximize log pane")
+                if let onOpenInWindow {
+                    Button { onOpenInWindow() } label: {
+                        Label("Open in Separate Window", systemImage: "window")
+                    }
+                    .buttonStyle(.borderless)
+                }
                 if let onExport {
-                    Button { onExport() } label: { Label("Export", systemImage: "square.and.arrow.down") }
+                    Button { onExport() } label: { Label("Save Log", systemImage: "square.and.arrow.down") }
                         .disabled(lines.isEmpty)
                 }
             }
@@ -282,11 +444,12 @@ private struct LogPane: View {
                                     Text(line.timestampText)
                                         .foregroundStyle(.white.opacity(0.55))
                                 }
+                                streamBadge(for: line.stream)
                                 Text(line.text)
                                     .textSelection(.enabled)
                                     .lineLimit(preferences.wordWrap ? nil : 1)
                                     .truncationMode(.tail)
-                                    .foregroundStyle(color(for: line.text))
+                                    .foregroundStyle(color(for: line))
                             }
                             .font(logFont)
                             .padding(.horizontal, 6)
@@ -298,38 +461,78 @@ private struct LogPane: View {
                             .id(line.id)
                         }
                         if filtered.isEmpty {
-                            Text("No log lines to show.")
+                            Text(lines.isEmpty ? "Waiting for build output…" : "No log lines match the current filter.")
                                 .foregroundStyle(.white.opacity(0.6))
                                 .padding()
                         }
                     }
                     .padding(8)
                 }
-                .frame(minHeight: 220, maxHeight: 420)
+                .frame(minHeight: 220, maxHeight: isExpanded ? 720 : 420)
                 .background(Color.black.opacity(0.88))
                 .foregroundStyle(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .onAppear {
-                    if preferences.autoScrollToBottom, let last = filtered.last {
+                    if autoScroll, let last = filtered.last {
                         proxy.scrollTo(last.id, anchor: .bottom)
                     }
                 }
                 .onChange(of: filtered.count) { _, _ in
-                    if preferences.autoScrollToBottom, let last = filtered.last {
+                    if autoScroll, let last = filtered.last {
                         proxy.scrollTo(last.id, anchor: .bottom)
                     }
                 }
                 .onChange(of: currentMatchIndex) { _, newValue in
                     guard matches.indices.contains(newValue) else { return }
-                    withAnimation { proxy.scrollTo(matches[newValue].id, anchor: .center) }
+                    if reduceMotion {
+                        proxy.scrollTo(matches[newValue].id, anchor: .center)
+                    } else {
+                        withAnimation { proxy.scrollTo(matches[newValue].id, anchor: .center) }
+                    }
                 }
             }
+
+            HStack {
+                Toggle("Auto-scroll", isOn: $autoScroll)
+                    .toggleStyle(.checkbox)
+                    .font(.caption)
+                    .accessibilityHint("Turn this off to read earlier output without following new lines.")
+                Spacer()
+                Text("\(filtered.count) lines")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(title) terminal output")
+    }
+
+    @ViewBuilder
+    private func streamBadge(for stream: LogStream) -> some View {
+        switch stream {
+        case .stderr:
+            Text("ERR")
+                .font(.caption2.weight(.bold).monospaced())
+                .foregroundStyle(.red.opacity(0.9))
+                .frame(width: 28, alignment: .leading)
+                .accessibilityLabel("Standard error")
+        case .system:
+            Text("SYS")
+                .font(.caption2.weight(.bold).monospaced())
+                .foregroundStyle(.cyan.opacity(0.9))
+                .frame(width: 28, alignment: .leading)
+                .accessibilityLabel("Build system")
+        case .stdout:
+            Color.clear.frame(width: 28, height: 1)
+                .accessibilityHidden(true)
         }
     }
 
-    private func color(for text: String) -> Color {
+    private func color(for line: DisplayLine) -> Color {
         guard preferences.colorizeOutput else { return .white }
-        let lower = text.lowercased()
+        if let ansiColor = line.ansiColor { return ansiColor.color }
+        if line.stream == .stderr { return .orange }
+        let lower = line.text.lowercased()
         if lower.contains("error") || lower.contains("failed") { return .red }
         if lower.contains("warning") { return .orange }
         if lower.contains("success") || lower.contains("succeeded") { return .green }
@@ -342,10 +545,156 @@ private struct LogPane: View {
     }
 }
 
+@MainActor
+private final class LogWindowController {
+    static let shared = LogWindowController()
+    private var window: NSWindow?
+
+    func show(title: String, rootView: some View) {
+        if let window {
+            window.title = title
+            window.contentViewController = NSHostingController(rootView: AnyView(rootView))
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        let newWindow = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 980, height: 720),
+            styleMask: [.titled, .closable, .resizable, .miniaturizable],
+            backing: .buffered,
+            defer: false
+        )
+        newWindow.title = title
+        newWindow.titleVisibility = .visible
+        newWindow.contentViewController = NSHostingController(rootView: AnyView(rootView))
+        newWindow.center()
+        newWindow.makeKeyAndOrderFront(nil)
+        self.window = newWindow
+        NSApp.activate(ignoringOtherApps: true)
+    }
+}
+
+private struct BuildScriptTableRow: View {
+    let script: BuildScript
+    let lastRunText: String
+    let lastRunColor: Color
+    let isSelected: Bool
+    let isRunning: Bool
+    let canRun: Bool
+    let onSelect: () -> Void
+    let onRun: () -> Void
+    let onStop: () -> Void
+    let onReveal: () -> Void
+    let onCopyPath: () -> Void
+
+    @State private var isHovered = false
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: isRunning ? "circle.dotted" : "terminal")
+                .foregroundStyle(isRunning ? .blue : .secondary)
+                .frame(width: 20)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(script.label)
+                    .font(.body.weight(.medium))
+                    .lineLimit(1)
+                Text(script.path)
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+            }
+            .frame(minWidth: 180, maxWidth: .infinity, alignment: .leading)
+
+            locationBadge
+                .frame(width: 122, alignment: .leading)
+
+            Text(script.parameters.isEmpty ? "No parameters" : "\(script.parameters.count) parameter\(script.parameters.count == 1 ? "" : "s")")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(width: 108, alignment: .leading)
+
+            Label(lastRunText, systemImage: isRunning ? "circle.dotted" : "clock")
+                .font(.caption)
+                .foregroundStyle(lastRunColor)
+                .frame(width: 126, alignment: .leading)
+
+            if isRunning {
+                Button("Stop", role: .destructive, action: onStop)
+                    .buttonStyle(.bordered)
+                    .accessibilityLabel("Stop \(script.label)")
+            } else {
+                Button("Run", action: onRun)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!canRun)
+                    .accessibilityLabel("Run \(script.label)")
+            }
+
+            Menu {
+                Button("Select") { onSelect() }
+                Button("Run", action: onRun).disabled(!canRun)
+                Button("Reveal in Finder", action: onReveal).disabled(script.isRemote)
+                Button("Copy Script Path", action: onCopyPath)
+            } label: {
+                Image(systemName: "ellipsis.circle")
+            }
+            .menuStyle(.borderlessButton)
+            .accessibilityLabel("More actions for \(script.label)")
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 9)
+        .contentShape(Rectangle())
+        .onTapGesture(perform: onSelect)
+        .onHover { isHovered = $0 }
+        .focusable()
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(script.label), \(script.location.label), \(lastRunText)")
+        .accessibilityHint("Select this script to review parameters and command preview.")
+        .accessibilityAction(named: "Run") { onRun() }
+        .background(background)
+        .overlay {
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(isSelected ? Color.accentColor : Color.primary.opacity(isHovered ? 0.12 : 0.06), lineWidth: isSelected ? 1.5 : 1)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .contextMenu {
+            Button("Run", action: onRun).disabled(!canRun)
+            Button("Reveal in Finder", action: onReveal).disabled(script.isRemote)
+            Button("Copy Script Path", action: onCopyPath)
+        }
+    }
+
+    private var background: Color {
+        if isSelected { return Color.accentColor.opacity(0.12) }
+        if isHovered { return Color.primary.opacity(0.06) }
+        if !canRun && !isRunning { return Color.secondary.opacity(0.05) }
+        return Color.primary.opacity(0.025)
+    }
+
+    @ViewBuilder
+    private var locationBadge: some View {
+        switch script.location {
+        case .standardFolder:
+            Label("Standard", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
+        case .repository:
+            Label("In repo", systemImage: "folder.fill").foregroundStyle(.blue)
+        case .outsideRepository:
+            Label("Outside", systemImage: "externaldrive.fill").foregroundStyle(.orange)
+        case .missing, .stale:
+            Label(script.location == .stale ? "Stale" : "Missing", systemImage: "exclamationmark.triangle.fill").foregroundStyle(.red)
+        case .unavailable:
+            Label("Remote only", systemImage: "icloud.slash").foregroundStyle(.secondary)
+        }
+    }
+}
+
 private struct RepositoryDetailView: View {
     let repository: Repository
     @ObservedObject var store: RepositoryStore
     @ObservedObject var historyStore: BuildHistoryStore
+    @ObservedObject var workspaceStateStore: BuildWorkspaceStateStore
     @ObservedObject var preferencesStore: PreferencesStore
     @ObservedObject var runners: BuildRunnerRegistry
     @ObservedObject var runner: BuildRunner
@@ -354,12 +703,14 @@ private struct RepositoryDetailView: View {
     @State private var scanResult: BuildScanResult?
     @State private var isScanning = false
     @State private var selectedLogRecordID: BuildRecord.ID?
-    @State private var showInspector = true
+    @State private var buildTabError: BuildWorkspaceError?
+    @State private var pickerError: String?
 
     init(
         repository: Repository,
         store: RepositoryStore,
         historyStore: BuildHistoryStore,
+        workspaceStateStore: BuildWorkspaceStateStore,
         preferencesStore: PreferencesStore,
         runners: BuildRunnerRegistry,
         runner: BuildRunner,
@@ -368,6 +719,7 @@ private struct RepositoryDetailView: View {
         self.repository = repository
         self.store = store
         self.historyStore = historyStore
+        self.workspaceStateStore = workspaceStateStore
         self._preferencesStore = ObservedObject(wrappedValue: preferencesStore)
         self._runners = ObservedObject(wrappedValue: runners)
         self.runner = runner
@@ -391,6 +743,10 @@ private struct RepositoryDetailView: View {
             }
         }
     }
+
+    /// Shared with the "Show Detail View Window (Right Side)" menu item, so the
+    /// toolbar button and the View menu can never disagree about the panel state.
+    private var showInspector: Binding<Bool> { preferencesStore.binding(\.showDetailInspector) }
 
     private var records: [BuildRecord] { historyStore.records(for: repository.id) }
     private var stats: RepositoryStats { historyStore.stats(for: repository.id) }
@@ -436,16 +792,18 @@ private struct RepositoryDetailView: View {
                 } label: {
                     Label("Rescan", systemImage: "arrow.clockwise")
                 }
+                .disabled(isScanning || runner.isRunning)
+                .keyboardShortcut("r", modifiers: [.command])
             }
             ToolbarItem {
                 Button {
-                    showInspector.toggle()
+                    showInspector.wrappedValue.toggle()
                 } label: {
                     Label("Toggle Build Panel", systemImage: "sidebar.right")
                 }
             }
         }
-        .inspector(isPresented: $showInspector) {
+        .inspector(isPresented: showInspector) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     buildStatusCard
@@ -534,7 +892,7 @@ private struct RepositoryDetailView: View {
                     Label("Export Current Log", systemImage: "square.and.arrow.down")
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .disabled(!runner.isRunning && selectedRecord == nil)
+                .disabled(!hasExportableLog)
             }
             .buttonStyle(.bordered)
             .padding(.vertical, 4)
@@ -575,17 +933,17 @@ private struct RepositoryDetailView: View {
     }
 
     private func exportCurrentLog() {
-        if runner.isRunning, let script = runner.runningScript {
-            let content = LogFileService.formattedContent(
-                lines: runner.logLines,
-                script: script,
-                status: .running,
-                startedAt: runner.startedAt ?? Date()
-            )
-            LogFileService.export(content: content, suggestedName: "\(script.fileName)-current.log")
+        if runner.hasOutput {
+            exportLiveLog()
         } else if let record = selectedRecord {
             LogFileService.export(content: logContent(for: record), suggestedName: record.logFileName)
         }
+    }
+
+    private var hasExportableLog: Bool {
+        if runner.hasOutput { return true }
+        guard let record = selectedRecord else { return false }
+        return !logContent(for: record).isEmpty
     }
 
     private var header: some View {
@@ -594,6 +952,18 @@ private struct RepositoryDetailView: View {
                 Text(repository.name)
                     .font(.system(size: 24, weight: .semibold))
                 statusBadge
+                Spacer()
+                Button { revealInFinder() } label: {
+                    Label("Reveal in Finder", systemImage: "folder")
+                }
+                .disabled(!repository.source.isLocal)
+                Button { openInTerminal() } label: {
+                    Label("Open in Terminal", systemImage: "terminal")
+                }
+                .disabled(!repository.source.isLocal)
+                Button { copyPath() } label: {
+                    Label("Copy Path", systemImage: "doc.on.doc")
+                }
             }
             Text(repository.source.displayPath)
                 .font(.callout.monospaced())
@@ -625,83 +995,427 @@ private struct RepositoryDetailView: View {
     private var buildTab: some View {
         switch scanResult {
         case .success(let scripts):
-            GroupBox("Available Build Scripts") {
-                VStack(alignment: .leading, spacing: 8) {
-                    if runners.runningCount >= preferencesStore.preferences.maxConcurrentBuilds {
-                        Text("Maximum concurrent builds reached. Stop one build before starting another.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    ForEach(scripts) { script in
-                        scriptRow(script)
-                    }
-                    if !repository.source.isLocal {
-                        Text("Execution requires a local repository — GitHub-sourced repos can only detect scripts for now.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 4)
+            buildScriptsPanel(scripts)
+            if let selectedScript = selectedScript(in: scripts) {
+                buildParametersPanel(for: selectedScript)
             }
-
-            if runner.isRunning || !runner.logLines.isEmpty {
-                LogPane(title: "Live Output", lines: displayLines(from: runner.logLines), preferences: preferencesStore.preferences)
-            }
+            buildOutputPanel
         case .missingBuildFolder:
-            ContentUnavailableView("No /build Folder Found", systemImage: "folder.badge.questionmark", description: Text("This repository doesn't have a /build folder at its root."))
+            VStack(alignment: .leading, spacing: 16) {
+                ContentUnavailableView("No /build Folder Found", systemImage: "folder.badge.questionmark", description: Text("This repository doesn't have a /build folder at its root."))
+                buildScriptsFallbackActions
+                buildOutputPanel
+            }
         case .emptyScripts:
-            ContentUnavailableView("No Build Scripts Found", systemImage: "doc.text.magnifyingglass", description: Text("No .sh files found in /build/scripts/."))
+            VStack(alignment: .leading, spacing: 16) {
+                ContentUnavailableView("No Build Scripts Found", systemImage: "doc.text.magnifyingglass", description: Text("No runnable scripts were found in /build/scripts/."))
+                buildScriptsFallbackActions
+                buildOutputPanel
+            }
         case .unreachable(let message):
-            ContentUnavailableView("Repository Unreachable", systemImage: "wifi.slash", description: Text(message))
+            VStack(alignment: .leading, spacing: 16) {
+                ContentUnavailableView("Repository Unreachable", systemImage: "wifi.slash", description: Text(message))
+                Button("Retry Scan") { Task { await scan() } }
+                buildOutputPanel
+            }
         case nil:
-            ProgressView("Scanning…")
+            ContentUnavailableView("Scanning Build Scripts", systemImage: "magnifyingglass", description: Text("Checking the repository for runnable build scripts."))
+        }
+    }
+
+    private func buildScriptsPanel(_ scripts: [BuildScript]) -> some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .firstTextBaseline) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Available Build Scripts").font(.headline)
+                        Text("Auto-detected from /\(preferencesStore.preferences.defaultBuildFolderName)/\(preferencesStore.preferences.scriptsSubdirectory)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    if isScanning {
+                        ProgressView().controlSize(.small)
+                        Text("Refreshing…").font(.caption).foregroundStyle(.secondary)
+                    }
+                    Button { addBuildScript() } label: {
+                        Label("Add Build Script", systemImage: "plus")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!repository.source.isLocal)
+                    .accessibilityHint("Choose a local shell script to add to this repository's Build tab.")
+                    Button { Task { await scan() } } label: {
+                        Label("Refresh Scripts", systemImage: "arrow.clockwise")
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(isScanning || runner.isRunning)
+                }
+
+                if let pickerError {
+                    Label(pickerError, systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
+                if let buildTabError {
+                    Label(buildTabError.errorDescription ?? "Build validation failed.", systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .accessibilityLabel("Build error: \(buildTabError.errorDescription ?? "Unknown error")")
+                }
+                if runners.runningCount >= preferencesStore.preferences.maxConcurrentBuilds {
+                    Label("Maximum concurrent builds reached. Stop one build before starting another.", systemImage: "exclamationmark.circle")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                if !repository.source.isLocal {
+                    Label("GitHub repositories can be scanned, but must be cloned locally before they can be run.", systemImage: "icloud.slash")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                HStack(spacing: 12) {
+                    Text("Script").frame(minWidth: 200, maxWidth: .infinity, alignment: .leading)
+                    Text("Source").frame(width: 122, alignment: .leading)
+                    Text("Parameters").frame(width: 108, alignment: .leading)
+                    Text("Last run").frame(width: 126, alignment: .leading)
+                    Text("Actions").frame(width: 118, alignment: .leading)
+                }
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 10)
+
+                ScrollView {
+                    LazyVStack(spacing: 6) {
+                        ForEach(scripts) { script in
+                            scriptRow(script)
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+                .frame(minHeight: 130, maxHeight: 300)
+                .accessibilityLabel("Available build scripts")
+
+                HStack(spacing: 14) {
+                    Label("Standard folder", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
+                    Label("In repository", systemImage: "folder.fill").foregroundStyle(.blue)
+                    Label("Outside repository", systemImage: "externaldrive.fill").foregroundStyle(.orange)
+                    Label("Unavailable", systemImage: "exclamationmark.triangle.fill").foregroundStyle(.red)
+                }
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 5)
+        }
+        .background(
+            LinearGradient(
+                colors: [Color.blue.opacity(0.05), Color.pink.opacity(0.045)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: RoundedRectangle(cornerRadius: 12)
+        )
+    }
+
+    private var buildScriptsFallbackActions: some View {
+        HStack {
+            Button { addBuildScript() } label: {
+                Label("Add Build Script", systemImage: "plus")
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(!repository.source.isLocal)
+            Button { Task { await scan() } } label: {
+                Label("Refresh Scripts", systemImage: "arrow.clockwise")
+            }
+            .buttonStyle(.bordered)
+            Spacer()
         }
     }
 
     private func scriptRow(_ script: BuildScript) -> some View {
         let lastRun = historyStore.lastRun(for: repository.id, scriptFileName: script.fileName)
         let isThisRunning = runner.isRunning && runner.runningScript?.fileName == script.fileName
-
-        return HStack {
-            Image(systemName: "play.circle")
-            VStack(alignment: .leading, spacing: 2) {
-                Text(script.label).font(.body.weight(.medium))
-                Text(lastRunDescription(lastRun, isRunning: isThisRunning))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-            Text(script.fileName)
-                .font(.caption.monospaced())
-                .foregroundStyle(.secondary)
-
-            if isThisRunning {
-                ProgressView().controlSize(.small)
-                Button("Cancel") { runner.cancel(preferences: preferencesStore.preferences) }
-                    .buttonStyle(.bordered)
-            } else {
-                Button("Run") {
-                    runner.start(
-                        script: script,
-                        repository: repository,
-                        historyStore: historyStore,
-                        preferences: preferencesStore.preferences
-                    )
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(!repository.source.isLocal || runner.isRunning || runners.runningCount >= preferencesStore.preferences.maxConcurrentBuilds)
-            }
-        }
-        .padding(8)
-        .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 6))
+        return BuildScriptTableRow(
+            script: script,
+            lastRunText: lastRunDescription(lastRun, isRunning: isThisRunning),
+            lastRunColor: lastRunColor(lastRun, isRunning: isThisRunning),
+            isSelected: selectedScriptID == script.id,
+            isRunning: isThisRunning,
+            canRun: canRun(script),
+            onSelect: { select(script) },
+            onRun: { run(script) },
+            onStop: { runner.cancel(preferences: preferencesStore.preferences) },
+            onReveal: { reveal(script: script) },
+            onCopyPath: { copy(script.path) }
+        )
     }
 
     private func lastRunDescription(_ record: BuildRecord?, isRunning: Bool) -> String {
-        if isRunning { return "Building…" }
+        if isRunning { return runner.phase == .stopping ? "Stopping…" : "Building…" }
         guard let record else { return "Never run" }
         let icon = record.status == .success ? "✓" : (record.status == .cancelled ? "⊘" : "✗")
         return "Last run: \(record.startedAt.relativeDescription) \(icon)"
+    }
+
+    private func lastRunColor(_ record: BuildRecord?, isRunning: Bool) -> Color {
+        if isRunning { return .blue }
+        guard let record else { return .secondary }
+        return statusColor(record.status)
+    }
+
+    private var selectedScriptID: String? {
+        workspaceStateStore.state(for: repository.id).selectedScriptID
+    }
+
+    private func selectedScript(in scripts: [BuildScript]) -> BuildScript? {
+        if let selectedScriptID, let selected = scripts.first(where: { $0.id == selectedScriptID }) {
+            return selected
+        }
+        return scripts.first
+    }
+
+    private func select(_ script: BuildScript) {
+        workspaceStateStore.select(scriptID: script.id, for: repository.id)
+        buildTabError = nil
+    }
+
+    private func canRun(_ script: BuildScript) -> Bool {
+        guard repository.source.isLocal,
+              script.location.isRunnable,
+              !runner.isRunning,
+              runners.runningCount < preferencesStore.preferences.maxConcurrentBuilds else {
+            return false
+        }
+        return script.location != .outsideRepository || preferencesStore.preferences.allowScriptsOutsideBuildScripts
+    }
+
+    private func run(_ script: BuildScript) {
+        select(script)
+        let values = workspaceStateStore.values(for: script.id, repositoryID: repository.id)
+        let validationErrors = BuildCommandBuilder.validate(script: script, values: values)
+        guard validationErrors.isEmpty else {
+            buildTabError = .validation(validationErrors.joined(separator: "\n"))
+            return
+        }
+        guard runner.start(
+            script: script,
+            parameters: values,
+            repository: repository,
+            historyStore: historyStore,
+            preferences: preferencesStore.preferences
+        ) else {
+            buildTabError = runner.lastError
+            return
+        }
+        buildTabError = nil
+    }
+
+    private func buildParametersPanel(for script: BuildScript) -> some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Build Parameters").font(.headline)
+                        Text(script.fileName)
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    if runner.phase == .starting {
+                        ProgressView().controlSize(.small)
+                        Text("Starting…").font(.caption).foregroundStyle(.secondary)
+                    }
+                    Button { run(script) } label: {
+                        Label(runner.isRunning ? "Build Running" : "Run Build", systemImage: "play.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!canRun(script))
+                    .keyboardShortcut(.return, modifiers: [.command])
+                    .accessibilityHint("Runs the selected build with the displayed parameter values.")
+                }
+
+                if script.parameters.isEmpty {
+                    Text("This script does not declare parameters. It will run directly from the repository root.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(BuildCommandBuilder.activeParameters(
+                        for: script,
+                        values: workspaceStateStore.values(for: script.id, repositoryID: repository.id)
+                    )) { parameter in
+                        parameterControl(parameter, for: script)
+                    }
+                }
+
+                Divider()
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Resolved Command").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    Text(commandPreview(for: script))
+                        .font(.caption.monospaced())
+                        .textSelection(.enabled)
+                        .lineLimit(2)
+                        .truncationMode(.middle)
+                        .padding(8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 6))
+                        .accessibilityLabel("Resolved build command")
+                    Text(environmentSummary)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(.vertical, 5)
+        }
+        .background(
+            LinearGradient(
+                colors: [Color.pink.opacity(0.035), Color.blue.opacity(0.045)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: RoundedRectangle(cornerRadius: 12)
+        )
+    }
+
+    @ViewBuilder
+    private func parameterControl(_ parameter: BuildParameterDefinition, for script: BuildScript) -> some View {
+        let validationMessage = validationMessage(for: parameter, script: script)
+        VStack(alignment: .leading, spacing: 5) {
+            HStack(spacing: 4) {
+                Text(parameter.label).font(.callout.weight(.medium))
+                if parameter.isRequired {
+                    Text("Required").font(.caption2.weight(.semibold)).foregroundStyle(.red)
+                }
+                if !parameter.helpText.isEmpty {
+                    Text(parameter.helpText).font(.caption).foregroundStyle(.secondary)
+                }
+            }
+
+            switch parameter.kind {
+            case .text, .number:
+                TextField(parameter.placeholder.isEmpty ? parameter.label : parameter.placeholder, text: parameterBinding(for: parameter, script: script))
+                    .textFieldStyle(.roundedBorder)
+                    .accessibilityLabel(parameter.label)
+            case .boolean:
+                Toggle(parameter.label, isOn: booleanBinding(for: parameter, script: script))
+                    .toggleStyle(.switch)
+                    .accessibilityLabel(parameter.label)
+            case .choice:
+                Picker(parameter.label, selection: parameterBinding(for: parameter, script: script)) {
+                    if !parameter.isRequired {
+                        Text("Not set").tag("")
+                    }
+                    ForEach(parameter.options, id: \.self) { option in
+                        Text(option).tag(option)
+                    }
+                }
+                .pickerStyle(.menu)
+                .accessibilityLabel(parameter.label)
+            case .path:
+                HStack {
+                    TextField(parameter.placeholder.isEmpty ? "Choose a file or folder" : parameter.placeholder, text: parameterBinding(for: parameter, script: script))
+                        .textFieldStyle(.roundedBorder)
+                    Button("Choose…") { choosePath(for: parameter, script: script) }
+                        .buttonStyle(.bordered)
+                }
+                .accessibilityElement(children: .contain)
+            }
+
+            if let validationMessage {
+                Text(validationMessage)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .accessibilityLabel("Validation error: \(validationMessage)")
+            }
+        }
+        .padding(8)
+        .background(validationMessage == nil ? Color.clear : Color.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
+    }
+
+    private func parameterBinding(for parameter: BuildParameterDefinition, script: BuildScript) -> Binding<String> {
+        Binding(
+            get: {
+                workspaceStateStore.values(for: script.id, repositoryID: repository.id)[parameter.key] ?? parameter.defaultValue
+            },
+            set: { value in
+                var values = workspaceStateStore.values(for: script.id, repositoryID: repository.id)
+                values[parameter.key] = value
+                workspaceStateStore.save(values: values, for: script.id, repositoryID: repository.id)
+                buildTabError = nil
+            }
+        )
+    }
+
+    private func booleanBinding(for parameter: BuildParameterDefinition, script: BuildScript) -> Binding<Bool> {
+        Binding(
+            get: { parameterBinding(for: parameter, script: script).wrappedValue == "true" },
+            set: { parameterBinding(for: parameter, script: script).wrappedValue = $0 ? "true" : "false" }
+        )
+    }
+
+    private func validationMessage(for parameter: BuildParameterDefinition, script: BuildScript) -> String? {
+        BuildCommandBuilder.validate(
+            script: script,
+            values: workspaceStateStore.values(for: script.id, repositoryID: repository.id)
+        ).first { $0.localizedCaseInsensitiveContains(parameter.label) }
+    }
+
+    private func commandPreview(for script: BuildScript) -> String {
+        let values = workspaceStateStore.values(for: script.id, repositoryID: repository.id)
+        return (try? BuildCommandBuilder.invocation(for: script, values: values).commandPreview)
+            ?? script.path
+    }
+
+    private var environmentSummary: String {
+        let overrides = preferencesStore.preferences.environmentVariables.filter { !$0.key.isEmpty }.count
+        return overrides == 0
+            ? "Environment: inherited from the configured shell."
+            : "Environment: inherited shell values plus \(overrides) configured override\(overrides == 1 ? "" : "s")."
+    }
+
+    private var buildOutputPanel: some View {
+        LogPane(
+            title: runner.isRunning ? "Live Output — \(runner.runningScript?.label ?? "Build")" : "Live Output",
+            lines: displayLines(from: runner.logLines),
+            preferences: preferencesStore.preferences,
+            onExport: { exportLiveLog() },
+            onOpenInWindow: {
+                openLogWindow(
+                    title: runner.isRunning ? "Live Output — \(runner.runningScript?.label ?? "Build")" : "Live Output",
+                    lines: displayLines(from: runner.logLines),
+                    onExport: { exportLiveLog() }
+                )
+            },
+            onStop: { runner.cancel(preferences: preferencesStore.preferences) },
+            onClear: { runner.clearOutput() },
+            isRunning: runner.isRunning
+        )
+    }
+
+    private func exportLiveLog() {
+        guard let script = runner.runningScript ?? currentBuildScript else { return }
+        let status: BuildStatus = switch runner.phase {
+        case .succeeded: .success
+        case .failed: .failed
+        case .cancelled: .cancelled
+        default: .running
+        }
+        let content = LogFileService.formattedContent(
+            lines: runner.logLines,
+            script: script,
+            status: status,
+            startedAt: runner.startedAt ?? Date(),
+            timestampFormat: preferencesStore.preferences.timestampFormat
+        )
+        LogFileService.export(content: content, suggestedName: "\(script.fileName)-current.log")
+    }
+
+    private var currentBuildScript: BuildScript? {
+        guard case .success(let scripts) = scanResult else { return nil }
+        return selectedScript(in: scripts)
+    }
+
+    private func choosePath(for parameter: BuildParameterDefinition, script: BuildScript) {
+        guard let path = presentBuildParameterPath() else { return }
+        parameterBinding(for: parameter, script: script).wrappedValue = path
     }
 
     // MARK: Logs
@@ -712,7 +1426,18 @@ private struct RepositoryDetailView: View {
                 LogPane(
                     title: "Live Output — \(runner.runningScript?.label ?? "")",
                     lines: displayLines(from: runner.logLines),
-                    preferences: preferencesStore.preferences
+                    preferences: preferencesStore.preferences,
+                    onExport: { exportLiveLog() },
+                    onOpenInWindow: {
+                        openLogWindow(
+                            title: "Live Output — \(runner.runningScript?.label ?? "")",
+                            lines: displayLines(from: runner.logLines),
+                            onExport: { exportLiveLog() }
+                        )
+                    },
+                    onStop: { runner.cancel(preferences: preferencesStore.preferences) },
+                    onClear: { runner.clearOutput() },
+                    isRunning: runner.isRunning
                 )
             } else if let record = selectedRecord {
                 LogPane(
@@ -721,6 +1446,15 @@ private struct RepositoryDetailView: View {
                     preferences: preferencesStore.preferences,
                     onExport: {
                         LogFileService.export(content: logContent(for: record), suggestedName: record.logFileName)
+                    },
+                    onOpenInWindow: {
+                        openLogWindow(
+                            title: "\(record.scriptLabel) — \(record.startedAt.formatted(date: .abbreviated, time: .shortened))",
+                            lines: logLines(for: record),
+                            onExport: {
+                                LogFileService.export(content: logContent(for: record), suggestedName: record.logFileName)
+                            }
+                        )
                     }
                 )
             } else {
@@ -866,12 +1600,14 @@ private struct RepositoryDetailView: View {
 
     private func scan() async {
         isScanning = true
+        pickerError = nil
         let preferences = preferencesStore.preferences
         switch repository.source {
         case .local(let path):
             scanResult = BuildScriptScanner.scanLocal(
                 path: path,
-                options: BuildScanOptions(preferences: preferences)
+                options: BuildScanOptions(preferences: preferences),
+                additionalScriptPaths: workspaceStateStore.state(for: repository.id).addedScriptPaths
             )
         case .github(let url):
             scanResult = await BuildScriptScanner.scanGitHub(
@@ -879,7 +1615,70 @@ private struct RepositoryDetailView: View {
                 options: BuildScanOptions(preferences: preferences)
             )
         }
+        if case .success(let scripts) = scanResult {
+            let savedSelection = workspaceStateStore.state(for: repository.id).selectedScriptID
+            if !scripts.contains(where: { $0.id == savedSelection }) {
+                workspaceStateStore.select(scriptID: scripts.first?.id, for: repository.id)
+            }
+        }
         isScanning = false
+    }
+
+    private func addBuildScript() {
+        guard case .local(let repositoryPath) = repository.source else { return }
+        guard let scriptPath = presentBuildScriptPickerPath(repositoryPath: repositoryPath) else { return }
+        guard scriptPath.hasSuffix(".sh") || FileManager.default.isExecutableFile(atPath: scriptPath) else {
+            pickerError = "Choose a shell script (.sh) or an executable file."
+            return
+        }
+
+        let isInsideRepository = BuildScriptPathResolver.isWithin(scriptPath, rootPath: repositoryPath)
+        guard isInsideRepository || preferencesStore.preferences.allowScriptsOutsideBuildScripts else {
+            pickerError = "The selected script is outside this repository. Enable that option in Preferences to add it."
+            return
+        }
+
+        workspaceStateStore.add(scriptPath: scriptPath, for: repository.id)
+        workspaceStateStore.select(
+            scriptID: BuildScriptPathResolver.canonicalIdentifier(for: scriptPath),
+            for: repository.id
+        )
+        pickerError = nil
+        Task { await scan() }
+    }
+
+    private func revealInFinder() {
+        guard case .local(let path) = repository.source else { return }
+        NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
+    }
+
+    private func openInTerminal() {
+        guard case .local(let path) = repository.source else { return }
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+        process.arguments = ["-a", "Terminal", path]
+        try? process.run()
+    }
+
+    private func copyPath() {
+        copy(repository.source.displayPath)
+    }
+
+    private func reveal(script: BuildScript) {
+        guard !script.isRemote else { return }
+        NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: script.path)])
+    }
+
+    private func copy(_ value: String) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(value, forType: .string)
+    }
+
+    private func openLogWindow(title: String, lines: [DisplayLine], onExport: (() -> Void)? = nil) {
+        LogWindowController.shared.show(
+            title: title,
+            rootView: LogPane(title: title, lines: lines, preferences: preferencesStore.preferences, onExport: onExport)
+        )
     }
 }
 

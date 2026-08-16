@@ -1,6 +1,8 @@
-# Build Manager (LXC-BRM)
+[![Build & Test](https://github.com/Lexvora-Consulting/My-Health-Hub-Space/actions/workflows/ci.yml/badge.svg)](https://github.com/Lexvora-Consulting/My-Health-Hub-Space/actions/workflows/ci.yml)
 
-A native Swift/SwiftUI app for managing, building, and tracking multi-repository projects with local or GitHub sources. 
+# My Health Hub Space
+
+My Health Hub Space is a native Swift/SwiftUI app by Lexvora Consulting for managing, building, and tracking multi-repository projects with local or GitHub sources. 
 
 ## Features
 - Add and manage local folders or GitHub repositories
@@ -29,7 +31,8 @@ A native Swift/SwiftUI app for managing, building, and tracking multi-repository
 - `worklog/` — Project todo/checklist and work tracking
 
 ## Contributing
-PRs and issues are welcome! Please see the requirements and context docs before submitting changes.
-
+PRs and issues are welcome! Please see the requirements and context docs before submitting changes. Please follow the project's Code of Conduct.
+  
 ## License
 See [LICENSE](LICENSE).
+
