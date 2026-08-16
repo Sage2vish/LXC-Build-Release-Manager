@@ -1,6 +1,6 @@
 # Requirements — Build Manager Desktop Tool
 
-Full text of the functional requirements doc (`LXC-BuildManager.pdf`), kept in-repo so it is versioned and doesn't depend on an external file. This is reference input — see `decisions/decision-2026-08-16.md` for where the recorded decisions override it (native Swift/SwiftUI instead of Tauri/React, `projects.json` under `LXC-BRM-build-release/` instead of a generic local JSON path).
+Full text of the functional requirements doc (`LXC-BuildManager.pdf`), kept in-repo so it is versioned and doesn't depend on an external file. This is reference input — see `decisions/decision-2026-08-16.md` for where the recorded decisions override it (native Swift/SwiftUI instead of Tauri/React, `projects.json` under `build-release/` instead of a generic local JSON path).
 
 ## Executive Summary
 
@@ -282,7 +282,7 @@ User can add, remove, and organize multiple repos.
 - [x] Native macOS `.app` package
 - [x] Basic dashboard UI
 
-(Checked = in scope for v1, not yet built — see `../LXC-BRM-worklog/todo-2026-08-16.md` for real build status.)
+(Checked = in scope for v1, not yet built — see `../worklog/todo-2026-08-16.md` for real build status.)
 
 ## Out of Scope (v2+)
 

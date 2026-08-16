@@ -1,4 +1,4 @@
-# LXC-BRM-context
+# context
 
 This folder is the source of truth for rules, architecture, and decisions.
 
@@ -11,5 +11,5 @@ This folder is the source of truth for rules, architecture, and decisions.
 
 ## Tracking
 
-- Active todo tracking lives in `../LXC-BRM-worklog/todo-2026-08-16.md`.
+- Active todo tracking lives in `../worklog/todo-2026-08-16.md`.
 - Context updates are recorded here, but the todo file itself stays in the worklog folder.

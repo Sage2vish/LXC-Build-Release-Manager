@@ -11,21 +11,21 @@
 ## Workspace Architecture
 
 - `LXC-BRM/` is the Xcode-openable native app container.
-- `BRM/` contains the workspace folders and documentation.
-- `LXC-BRM-shared/` holds shared helpers and conventions.
-- `LXC-BRM-frameworks/` holds framework-specific assets only.
-- `LXC-BRM-build-release/` holds build scripts, logs, release mapping, and version output.
-- `LXC-BRM-build-release/version/` is the final `.dmg` staging folder.
+- `Support/` contains the workspace folders and documentation.
+- `shared/` holds shared helpers and conventions.
+- `frameworks/` holds framework-specific assets only.
+- `build-release/` holds build scripts, logs, release mapping, and version output.
+- `build-release/version/` is the final `.dmg` staging folder.
 - Local release builds can skip code signing while staging the DMG, because the release script is only producing a distributable local artifact in this repo.
-- `LXC-BRM-worklog/` records daily activity and progress.
-- `LXC-BRM-context/` records rules, architecture, and decisions.
+- `worklog/` records daily activity and progress.
+- `context/` records rules, architecture, and decisions.
 
 ## Documentation Architecture
 
 - Root `README.md` is the top-level index.
-- Each BRM area has its own `README.md`.
-- Active todo tracking lives only in `LXC-BRM-worklog/todo-2026-08-16.md`.
-- Other BRM areas keep README files and reference notes, not their own todo files.
+- Each support area has its own `README.md`.
+- Active todo tracking lives only in `worklog/todo-2026-08-16.md`.
+- Other support areas keep README files and reference notes, not their own todo files.
 - Decision records go under `decisions/`.
 - Tracking sections must stay short and actionable.
 

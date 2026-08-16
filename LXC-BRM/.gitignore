@@ -18,7 +18,7 @@ Icon
 
 # Build products
 /build/
-LXC-BRM-build-release/version/
+/Support/build-release/version/
 *.app
 *.dmg
 *.ipa
@@ -44,5 +44,5 @@ Package.resolved
 *~
 
 # Ignore context and worklog cache
-LXC-BRM-context/cache/
-worklog/tmp/
+/Support/context/cache/
+/Support/worklog/tmp/

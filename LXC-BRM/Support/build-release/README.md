@@ -1,10 +1,10 @@
-# LXC-BRM-build-release
+# build-release
 
 Build and release orchestration for the macOS app.
 
 ## Output Layout
 
-- Active todo tracking lives in `../LXC-BRM-worklog/todo-2026-08-16.md`.
+- Active todo tracking lives in `../worklog/todo-2026-08-16.md`.
 - `scripts/` for shell entry points
 - `logs/` for timestamped build logs
 - `version/` for the final versioned release package and `.dmg`

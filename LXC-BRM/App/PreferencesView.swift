@@ -400,7 +400,7 @@ struct PreferencesView: View {
         let repoRoot = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent() // App/
             .deletingLastPathComponent() // LXC-BRM/
-            .appendingPathComponent("BRM/LXC-BRM-build-release/projects.json")
+            .appendingPathComponent("Support/build-release/projects.json")
         NSWorkspace.shared.open(repoRoot)
     }
 
