@@ -29,8 +29,21 @@ enum DeepScriptSearch {
         "node_modules", "Pods", "Carthage", "vendor",
         ".build", "build-output", "DerivedData", ".derivedData",
         ".swiftpm", ".gradle", "__pycache__", ".venv", "venv",
-        ".next", "dist", "out", ".cache", ".idea", ".vscode"
+        ".next", "dist", "out", ".cache", ".idea", ".vscode",
+        "Intermediates.noindex"
     ]
+
+    /// Exact-name matching alone is not enough: Xcode names its build trees
+    /// `DerivedData-Device-Release`, `Pods.build`, `react-native-config.build` and similar,
+    /// which are full of generated `Script-<hex>.sh` files that are useless to the user.
+    private static func shouldSkip(directoryName name: String) -> Bool {
+        if skippedDirectories.contains(name) { return true }
+        if name.hasPrefix("DerivedData") { return true }
+        // Xcode per-target intermediate folders, e.g. "hermes-engine.build".
+        if name.hasSuffix(".build") { return true }
+        if name.hasSuffix(".xcodeproj") || name.hasSuffix(".xcworkspace") { return true }
+        return false
+    }
 
     /// Walks `rootPath` for `.sh` files.
     ///
@@ -67,7 +80,7 @@ enum DeepScriptSearch {
             let values = try? url.resourceValues(forKeys: [.isDirectoryKey, .isRegularFileKey])
 
             if values?.isDirectory == true {
-                if skippedDirectories.contains(url.lastPathComponent) {
+                if shouldSkip(directoryName: url.lastPathComponent) {
                     enumerator.skipDescendants()
                 }
                 continue

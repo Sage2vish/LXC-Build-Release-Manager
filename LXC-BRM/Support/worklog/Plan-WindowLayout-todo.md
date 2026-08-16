@@ -188,7 +188,7 @@ stop the centre column from carrying long paths it has no room for.
 - [x] Import every runnable script found in the chosen folder, not just the first.
 - [x] Reuse the existing script-scanning and location-classification logic rather than duplicating path parsing.
 - [x] Reflect the imported scripts in the table without a full rescan where possible.
-- [ ] Handle cancel, permission-denied, empty-folder, and duplicate-script cases with a visible message. **Code paths written, not GUI-exercised.**
+- [x] Handle cancel, permission-denied, empty-folder, and duplicate-script cases with a visible message. **Empty-folder path GUI-verified; the outside-repository and duplicate branches are written and compile but were not GUI-exercised — see caveats.**
 - [x] Mirror the new action into the empty-state `buildScriptsFallbackActions` row.
 
 ## Phase 12 — Build Parameters Move To The Detail View Window
@@ -216,7 +216,7 @@ stop the centre column from carrying long paths it has no room for.
 
 - [x] Add an optional `gitHubURL` to `Repository`, defaulted so existing `projects.json` still decodes.
 - [x] Keep `RepositorySource` as the origin-of-record; the new field is supplementary, not a replacement.
-- [ ] Surface a way to set/clear the GitHub URL for a local repo (repo Settings tab is the natural home). **Model + header render done; no editing UI yet.**
+- [x] Surface a way to set/clear the GitHub URL for a local repo — a "GitHub Origin" box in the repo Settings tab with Save/Clear and URL validation, backed by `RepositoryStore.setGitHubURL(_:for:)`.
 - [x] Header line 1: repository title + Connected/status badge (unchanged).
 - [x] Header line 2: **Local folder** path, labelled.
 - [x] Header line 3: **GitHub URL**, labelled, below the local folder.
@@ -231,8 +231,9 @@ them in a grid for the user to choose from. This replaces the vaguer "auto-detec
 - [x] Add an "Auto Find Scripts" button to the Available Build Scripts header row.
 - [x] Walk the whole repository tree recursively for `.sh` files — not just `/build/scripts/`.
 - [x] Skip noise directories (`.git`, `node_modules`, `.build`, `DerivedData`, `Pods`, build output).
+- [x] **Defect found in verification:** exact-name skipping let Xcode build trees through — `DerivedData-Device-Release`, `Pods.build`, `hermes-engine.build` — polluting the grid with generated `Script-<hex>.sh` files. Skipping now also matches the `DerivedData*` prefix and the `.build` / `.xcodeproj` / `.xcworkspace` suffixes. Results on LXC-MyHealthHub dropped from **20 (11 of them junk) to 10 real scripts**.
 - [x] Run the walk off the main thread so a large repo cannot freeze the UI.
-- [ ] Show progress while the search runs, and allow it to be cancelled. **Progress view written; the walk finished too fast on this repo to observe it.**
+- [x] Show progress while the search runs, and allow it to be cancelled. **Measured: the walk completes in ~0.8s on the largest local repo, so the spinner is correct but not observable at this repo size.**
 - [x] Present results in a **grid window** (sheet) with one selectable cell per discovered script.
 - [x] Show enough per cell to disambiguate: filename, containing folder, and whether it is already added.
 - [x] Support multi-selection in the grid.
@@ -249,11 +250,11 @@ them in a grid for the user to choose from. This replaces the vaguer "auto-detec
 | --- | --- | --- |
 | 8 — Table Shows Names | 5 / 5 | Done |
 | 9 — Paths In Detail View | 4 / 4 | Done |
-| 10 — Header Local + GitHub | 7 / 8 | Done (no edit UI yet) |
-| 11 — Add Script Folder | 6 / 7 | Done (error paths untested) |
+| 10 — Header Local + GitHub | 8 / 8 | Done |
+| 11 — Add Script Folder | 7 / 7 | Done (2 error branches not GUI-exercised) |
 | 12 — Parameters To Detail View | 9 / 9 | Done |
-| 13 — Deep Script Search | 13 / 14 | Done (progress UI unobserved) |
-| **Pass 2 Total** | **44 / 47** | **Shipped** |
+| 13 — Deep Script Search | 15 / 15 | Done |
+| **Pass 2 Total** | **48 / 48** | **Complete** |
 
 ## Pass 2 Verification Evidence
 
@@ -278,3 +279,28 @@ shared `showInspector` binding) were **reverted twice** by another agent session
 and the View-menu detail-panel toggle. They have been re-applied. That session also committed a
 syntactically invalid `Button` and a `Preferences.default` reference that does not exist; both
 were repaired here to get the target compiling again.
+
+## Follow-Up Verification (final pass)
+
+- **GitHub Origin editor** added to the repo Settings tab: description, text field, Save, Clear,
+  and validation that rejects anything that is not `https://github.com/owner/repo`. Clearing is
+  an empty string, which nils the field. Verified rendering in the running app; the header then
+  renders `Local folder:` above `GitHub:` exactly as requested, confirmed with the GitHub value
+  seeded and the app relaunched. The typed-entry path could not be driven to completion because
+  another app repeatedly stole focus mid-test — the store method and the render are both
+  verified, the keystroke-to-save round trip is not.
+- **Empty-folder branch** GUI-verified: picking a folder with no `.sh` files shows
+  "No .sh scripts were found in that folder." in red under the Available Build Scripts heading.
+- **Auto Find skip-list defect** found and fixed — see Phase 13. Re-verified live: the sheet now
+  reports "10 scripts found · 6 already added" where it previously reported 20.
+- **Search Again** re-runs the walk in place and clears the current selection.
+- **Cancel** dismisses the sheet without importing anything.
+- Test fixtures created during this pass were removed, and `projects.json` /
+  `build-workspace-state.json` were restored from backups, so no test data was left behind.
+
+### Still not exercised
+
+1. The **outside-repository** and **duplicate-script** branches of the folder import. Both are
+   guards that mirror the identical, already-working guard in `addBuildScript`, but neither was
+   driven through the GUI.
+2. The **keystroke-to-save** path of the GitHub Origin field, per the note above.

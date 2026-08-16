@@ -732,6 +732,8 @@ private struct RepositoryDetailView: View {
     private var showInspector: Binding<Bool> { preferencesStore.binding(\.showDetailInspector) }
     @State private var buildTabError: BuildWorkspaceError?
     @State private var isAutoFindingScripts = false
+    @State private var gitHubURLDraft = ""
+    @State private var gitHubURLError: String?
     @State private var pickerError: String?
 
     init(
@@ -1679,19 +1681,76 @@ private struct RepositoryDetailView: View {
     // MARK: Settings
 
     private var settingsTab: some View {
-        GroupBox("Repository Settings") {
-            VStack(alignment: .leading, spacing: 12) {
-                Toggle("Pinned", isOn: Binding(
-                    get: { repository.isPinned },
-                    set: { _ in store.togglePin(repository) }
-                ))
-                Button("Remove from List", role: .destructive) {
-                    store.remove(repository)
+        VStack(alignment: .leading, spacing: 16) {
+            GroupBox("Repository Settings") {
+                VStack(alignment: .leading, spacing: 12) {
+                    Toggle("Pinned", isOn: Binding(
+                        get: { repository.isPinned },
+                        set: { _ in store.togglePin(repository) }
+                    ))
+                    Button("Remove from List", role: .destructive) {
+                        store.remove(repository)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 4)
+            }
+
+            // Only a local repository needs this: a GitHub-sourced repo already carries its URL
+            // in `source`, so there is nothing supplementary to set.
+            if repository.source.isLocal {
+                GroupBox("GitHub Origin") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Record the GitHub URL this local folder was cloned from. It appears under the repository name at the top of this screen.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        HStack {
+                            TextField(
+                                "https://github.com/owner/repo",
+                                text: $gitHubURLDraft
+                            )
+                            .textFieldStyle(.roundedBorder)
+                            .onSubmit { saveGitHubURL() }
+
+                            Button("Save") { saveGitHubURL() }
+                                .disabled(gitHubURLDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+                                          == (repository.gitHubURL ?? ""))
+                            Button("Clear") {
+                                gitHubURLDraft = ""
+                                saveGitHubURL()
+                            }
+                            .disabled(repository.gitHubURL == nil)
+                        }
+                        if let gitHubURLError {
+                            Label(gitHubURLError, systemImage: "exclamationmark.triangle.fill")
+                                .font(.caption)
+                                .foregroundStyle(.red)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 4)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 4)
         }
+        .onAppear { gitHubURLDraft = repository.gitHubURL ?? "" }
+    }
+
+    private func saveGitHubURL() {
+        let trimmed = gitHubURLDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            store.setGitHubURL("", for: repository)
+            gitHubURLError = nil
+            return
+        }
+        guard let url = URL(string: trimmed),
+              let host = url.host,
+              host.lowercased().hasSuffix("github.com"),
+              url.pathComponents.count >= 3 else {
+            gitHubURLError = "Enter a GitHub URL in the form https://github.com/owner/repo."
+            return
+        }
+        store.setGitHubURL(trimmed, for: repository)
+        gitHubURLError = nil
     }
 
     private func scan() async {

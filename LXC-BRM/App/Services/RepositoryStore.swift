@@ -49,6 +49,15 @@ final class RepositoryStore: ObservableObject {
         saveSelectedRepositoryID()
     }
 
+    /// Sets or clears the supplementary GitHub URL on a local repository, so a cloned repo can
+    /// remember the origin it came from. Passing an empty or whitespace-only string clears it.
+    func setGitHubURL(_ urlString: String, for repository: Repository) {
+        guard let index = repositories.firstIndex(where: { $0.id == repository.id }) else { return }
+        let trimmed = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+        repositories[index].gitHubURL = trimmed.isEmpty ? nil : trimmed
+        save()
+    }
+
     func togglePin(_ repository: Repository) {
         guard let index = repositories.firstIndex(where: { $0.id == repository.id }) else { return }
         repositories[index].isPinned.toggle()
