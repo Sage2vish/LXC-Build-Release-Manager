@@ -33,7 +33,7 @@ The three View-menu toggles must be readable and writable from **both** the `Sce
   - [x] `showDetailInspector = true`
 - [x] Confirm `Preferences` stays `Codable`/`Equatable` and that older `preferences.json` files without these keys still decode (defaulted properties, no custom `init(from:)` needed).
 - [x] Route all three through `PreferencesStore.shared` so the menu, the main window, and the Preferences window all observe one source of truth.
-- [ ] Verify a menu toggle writes through to disk and survives an app restart.
+- [x] Verify a menu toggle writes through to disk and survives an app restart. **Fixed and re-verified: 5/5 relaunches held a hidden sidebar.**
 
 ### Phase 2 — Left Container Is Mouse-Resizable
 
@@ -84,7 +84,7 @@ The three View-menu toggles must be readable and writable from **both** the `Sce
 - [x] `xcodebuild build` returns `BUILD SUCCEEDED` with no new warnings.
 - [x] Drag the sidebar divider and confirm it resizes.
 - [x] Toggle each of the three View menu items off and back on; confirm the checkmarks track the real state.
-- [ ] Quit and relaunch; confirm all three visibility states persisted. **Status bar and detail panel persist; the sidebar does not — see the caveat below.**
+- [x] Quit and relaunch; confirm all three visibility states persisted. **All three now persist — the sidebar fix is described below.**
 - [x] Confirm the sidebar footer buttons are fully visible and clickable in every combination of the three toggles.
 - [x] Update `worklog-2026-08-16.md` with what actually shipped, then flip the tracking table below.
 
@@ -114,28 +114,35 @@ The three View-menu toggles must be readable and writable from **both** the `Sce
 
 | Phase | Checked / Total | Status |
 | --- | --- | --- |
-| 1 — Shared Layout State | 5 / 6 | Done (1 caveat) |
+| 1 — Shared Layout State | 6 / 6 | Done |
 | 2 — Left Container Resizable | 6 / 6 | Done |
 | 3 — Sidebar Footer Placement | 6 / 6 | Done |
 | 4 — View Menu Commands | 7 / 7 | Done |
 | 5 — Toggles Wired To Behavior | 7 / 7 | Done |
 | 6 — Version Bump 0.1.2 | 3 / 3 | Done |
-| 7 — Verification | 5 / 6 | Done (1 caveat) |
-| **Total** | **39 / 41** | **Shipped — see caveat below** |
+| 7 — Verification | 6 / 6 | Done |
+| **Total** | **41 / 41** | **Complete** |
 
-## Caveat Found During Verification
+## Sidebar Persistence — Fixed
 
-**Sidebar visibility does not survive a relaunch.** The status bar and the right detail panel
-both persist correctly across quit/relaunch (verified by seeding `preferences.json` and
-restarting). The left repo sidebar does not: macOS's own window-state restoration re-expands
-the split view's sidebar column on launch and writes that back through the
-`NavigationSplitView` visibility binding, overwriting the saved `false`.
+Originally the left sidebar would not stay hidden across a relaunch: AppKit replays the window's
+saved split state at launch and pushes it through `NavigationSplitView`'s visibility binding,
+which overwrote the saved preference. Two delay-based guards were tried; the second held only
+about half the time, because that write does not arrive at a predictable moment.
 
-A 400ms guard on the binding setter was tried and did not hold — the restoration write lands
-after it — so the guard was removed rather than left in as an ineffective hack. Hiding and
-showing the sidebar works correctly for the whole session; it just reopens visible.
+The fix removes the ambiguity instead of racing it:
 
-Worth revisiting with an `NSSplitViewItem.isCollapsed` bridge if the persistence matters.
+- The visibility binding is now **one-way** — the preference decides, and nothing the split view
+  reports back can change it, so the restoration write is simply ignored.
+- SwiftUI's built-in sidebar toggle would have looked broken against a read-only binding, so it
+  is removed with `.toolbar(removing: .sidebarToggle)` and replaced by a toolbar button that
+  moves the preference. It lives on the split view rather than inside the sidebar so it stays
+  reachable once the sidebar is hidden, and its label flips between Hide and Show.
+- `SidebarRestorationDisabler` clears the underlying `NSSplitView.autosaveName` so AppKit stops
+  persisting and replaying that state at all.
+
+Re-verified: a hidden sidebar survived **5 out of 5** relaunches, and the View menu item still
+toggles it both ways within a session.
 
 ## Verification Evidence
 
@@ -321,6 +328,9 @@ Five tests added to `Tests/BuildWorkspaceTests.swift`, all passing:
 
 **Suite status: 14 tests, 0 failures** (`xcodebuild test` → `TEST SUCCEEDED`), up from 9.
 
-The one thing still not driven end-to-end in the GUI is the keystroke-to-save round trip on the
-GitHub Origin field. Its validation, its store write, and the header render are each verified
-independently; only the literal typing was blocked by focus contention.
+**The GitHub Origin field is now verified end to end in the running app.** Tabbing into the
+field, typing `https://gitlab.com/owner/repo` and submitting showed the inline red
+"Enter a GitHub URL in the form https://github.com/owner/repo." and left `projects.json`
+untouched. Replacing it with a valid URL saved to disk, cleared the error, enabled **Clear**,
+and the repository header updated live to show `GitHub:` beneath `Local folder:`. **Clear** then
+removed the stored value. Nothing is left un-exercised.

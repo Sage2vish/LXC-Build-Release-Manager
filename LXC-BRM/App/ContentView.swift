@@ -10,20 +10,26 @@ struct ContentView: View {
     @State private var isAddingRepository = false
     @Environment(\.openSettings) private var openSettings
 
-    /// Derived straight from the preference rather than mirrored into `@State`, so the
-    /// View menu item and the native sidebar control share one source of truth and
-    /// cannot oscillate against each other.
+    /// One-way: the preference decides whether the sidebar is showing, and nothing the split
+    /// view reports back can change it.
+    ///
+    /// AppKit replays the window's saved split state during launch and pushes it through this
+    /// binding. That write is indistinguishable from a real click, and it does not arrive at a
+    /// predictable time — a delay-based guard fixed it only about half the time. Ignoring writes
+    /// entirely makes the saved preference authoritative, so a sidebar hidden at quit stays
+    /// hidden. SwiftUI's own sidebar toggle is removed in `sidebar` and replaced with a button
+    /// that writes the preference, so the visible control still works.
     private var columnVisibility: Binding<NavigationSplitViewVisibility> {
         Binding(
             get: { preferencesStore.preferences.showRepositorySidebar ? .all : .detailOnly },
-            set: { newValue in
-                let isVisible = newValue != .detailOnly
-                guard preferencesStore.preferences.showRepositorySidebar != isVisible else { return }
-                var updated = preferencesStore.preferences
-                updated.showRepositorySidebar = isVisible
-                preferencesStore.save(updated)
-            }
+            set: { _ in }
         )
+    }
+
+    private func toggleSidebar() {
+        var updated = preferencesStore.preferences
+        updated.showRepositorySidebar.toggle()
+        preferencesStore.save(updated)
     }
 
     private var preferredColorScheme: ColorScheme? {
@@ -55,9 +61,30 @@ struct ContentView: View {
         }
     }
 
+    /// SwiftUI's `NavigationSplitView` is backed by an `NSSplitViewController` whose split view
+    /// autosaves its collapse state. Clearing the autosave name stops AppKit persisting and
+    /// replaying that state, leaving the preference as the only record of what the user wanted.
+    private struct SidebarRestorationDisabler: NSViewRepresentable {
+        func makeNSView(context: Context) -> NSView { NSView(frame: .zero) }
+
+        func updateNSView(_ nsView: NSView, context: Context) {
+            DispatchQueue.main.async {
+                var view: NSView? = nsView
+                while let current = view {
+                    if let splitView = current as? NSSplitView {
+                        splitView.autosaveName = nil
+                        return
+                    }
+                    view = current.superview
+                }
+            }
+        }
+    }
+
     private var splitView: some View {
         NavigationSplitView(columnVisibility: columnVisibility) {
             sidebar
+                .background(SidebarRestorationDisabler())
         } detail: {
             if let repository = store.selectedRepository {
                 RepositoryDetailView(
@@ -78,6 +105,19 @@ struct ContentView: View {
                     description: Text("Choose a repository from the sidebar, or add one to begin.")
                 )
                 .background(.background)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button(action: toggleSidebar) {
+                    Label(
+                        preferencesStore.preferences.showRepositorySidebar ? "Hide Sidebar" : "Show Sidebar",
+                        systemImage: "sidebar.leading"
+                    )
+                }
+                .help(preferencesStore.preferences.showRepositorySidebar
+                      ? "Hide the repository sidebar"
+                      : "Show the repository sidebar")
             }
         }
     }
@@ -133,6 +173,10 @@ struct ContentView: View {
             }
         }
         .navigationTitle("Build Manager")
+        // SwiftUI's built-in toggle writes through the visibility binding, which we ignore, so
+        // it would look broken. The replacement lives on the split view itself, where it stays
+        // reachable after the sidebar is hidden.
+        .toolbar(removing: .sidebarToggle)
         // The single-value form pins the column and removes the drag handle.
         // min/ideal/max keeps the saved width as the starting point while letting the user drag.
         .navigationSplitViewColumnWidth(
