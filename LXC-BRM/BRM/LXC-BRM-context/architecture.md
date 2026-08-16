@@ -26,3 +26,9 @@
 - Each BRM area has one dated todo file named `todo-2026-08-16.md` for this work.
 - Decision records go under `decisions/`.
 - Tracking sections must stay short and actionable.
+
+## Decision Precedence
+
+- PDF requirements define the requested scope.
+- Recorded decisions define the current implementation path.
+- If they conflict, the decision log wins and the mismatch stays documented.
