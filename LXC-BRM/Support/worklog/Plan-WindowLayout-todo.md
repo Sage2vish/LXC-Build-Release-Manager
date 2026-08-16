@@ -251,7 +251,7 @@ them in a grid for the user to choose from. This replaces the vaguer "auto-detec
 | 8 — Table Shows Names | 5 / 5 | Done |
 | 9 — Paths In Detail View | 4 / 4 | Done |
 | 10 — Header Local + GitHub | 8 / 8 | Done |
-| 11 — Add Script Folder | 7 / 7 | Done (2 error branches not GUI-exercised) |
+| 11 — Add Script Folder | 7 / 7 | Done (error branches unit-tested) |
 | 12 — Parameters To Detail View | 9 / 9 | Done |
 | 13 — Deep Script Search | 15 / 15 | Done |
 | **Pass 2 Total** | **48 / 48** | **Complete** |
