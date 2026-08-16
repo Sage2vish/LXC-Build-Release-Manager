@@ -5,14 +5,11 @@ This repository is organized around a BRM workspace model, with the native macOS
 ## Root Layout
 
 - `LXC-BRM`
-- `LXC-BRM-shared`
-- `LXC-BRM-frameworks`
-- `LXC-BRM-build-release`
-- `LXC-BRM-worklog`
-- `LXC-BRM-context`
 
 ## Conventions
 
+- The native app root is `LXC-BRM/`.
+- The BRM workspace lives inside `LXC-BRM/BRM/`.
 - Each BRM folder keeps its own `README.md`.
 - Dated todo files use the `todo-YYYY-MM-DD.md` naming pattern, for example `todo-2026-08-16.md`.
 - The dated todo file is the daily working note for that area and includes task, subtask, and tracking sections.
@@ -22,17 +19,17 @@ This repository is organized around a BRM workspace model, with the native macOS
 
 | Area | Purpose | Todo Path |
 | --- | --- | --- |
-| `LXC-BRM-shared` | Shared utilities and conventions | `LXC-BRM-shared/todo-2026-08-16.md` |
-| `LXC-BRM-frameworks` | Framework-specific assets and adapters | `LXC-BRM-frameworks/todo-2026-08-16.md` |
-| `LXC-BRM-build-release` | Build and release orchestration | `LXC-BRM-build-release/todo-2026-08-16.md` |
-| `LXC-BRM-build-release/scripts` | Build script entry points | `LXC-BRM-build-release/scripts/build-ios.sh` |
-| `LXC-BRM-build-release/logs` | Timestamped build logs | `LXC-BRM-build-release/logs/README.md` |
-| `LXC-BRM-build-release/version` | Final versioned release output, including the `.dmg` | `LXC-BRM-build-release/version/README.md` |
-| `LXC-BRM-worklog` | Daily progress and execution logs | `LXC-BRM-worklog/todo-2026-08-16.md` |
-| `LXC-BRM-context` | Decisions, references, and operating notes | `LXC-BRM-context/todo-2026-08-16.md` |
-| `LXC-BRM-context/rules-context.md` | Rules and operating constraints | `LXC-BRM-context/rules-context.md` |
-| `LXC-BRM-context/architecture.md` | Current architecture model | `LXC-BRM-context/architecture.md` |
-| `LXC-BRM-context/decisions` | Dated decision logs | `LXC-BRM-context/decisions/decision-2026-08-16.md` |
+| `LXC-BRM/BRM/LXC-BRM-shared` | Shared utilities and conventions | `LXC-BRM/BRM/LXC-BRM-shared/todo-2026-08-16.md` |
+| `LXC-BRM/BRM/LXC-BRM-frameworks` | Framework-specific assets and adapters | `LXC-BRM/BRM/LXC-BRM-frameworks/todo-2026-08-16.md` |
+| `LXC-BRM/BRM/LXC-BRM-build-release` | Build and release orchestration | `LXC-BRM/BRM/LXC-BRM-build-release/todo-2026-08-16.md` |
+| `LXC-BRM/BRM/LXC-BRM-build-release/scripts` | Build script entry points | `LXC-BRM/BRM/LXC-BRM-build-release/scripts/build-ios.sh` |
+| `LXC-BRM/BRM/LXC-BRM-build-release/logs` | Timestamped build logs | `LXC-BRM/BRM/LXC-BRM-build-release/logs/README.md` |
+| `LXC-BRM/BRM/LXC-BRM-build-release/version` | Final versioned release output, including the `.dmg` | `LXC-BRM/BRM/LXC-BRM-build-release/version/README.md` |
+| `LXC-BRM/BRM/LXC-BRM-worklog` | Daily progress and execution logs | `LXC-BRM/BRM/LXC-BRM-worklog/todo-2026-08-16.md` |
+| `LXC-BRM/BRM/LXC-BRM-context` | Decisions, references, and operating notes | `LXC-BRM/BRM/LXC-BRM-context/todo-2026-08-16.md` |
+| `LXC-BRM/BRM/LXC-BRM-context/rules-context.md` | Rules and operating constraints | `LXC-BRM/BRM/LXC-BRM-context/rules-context.md` |
+| `LXC-BRM/BRM/LXC-BRM-context/architecture.md` | Current architecture model | `LXC-BRM/BRM/LXC-BRM-context/architecture.md` |
+| `LXC-BRM/BRM/LXC-BRM-context/decisions` | Dated decision logs | `LXC-BRM/BRM/LXC-BRM-context/decisions/decision-2026-08-16.md` |
 
 ## Desktop Utility
 
