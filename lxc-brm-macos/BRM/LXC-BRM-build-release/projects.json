@@ -1,0 +1,14 @@
+{
+  "projects": [
+    {
+      "name": "lxc-myhealthhub",
+      "path": "/Users/user/workspace/lxc-myhealthhub",
+      "scripts": ["build-ios.sh", "release.sh"]
+    },
+    {
+      "name": "my-app",
+      "path": "/Users/user/projects/my-app",
+      "scripts": ["build-android.sh"]
+    }
+  ]
+}
