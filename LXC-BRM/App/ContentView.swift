@@ -8,10 +8,6 @@ struct ContentView: View {
     @StateObject private var runners = BuildRunnerRegistry.shared
     @StateObject private var preferencesStore = PreferencesStore.shared
     @State private var isAddingRepository = false
-    /// `NavigationSplitView` pushes its own default visibility through the binding during the
-    /// first layout pass, which would overwrite the restored preference. Ignore writes until
-    /// that settles so a sidebar hidden at quit stays hidden on the next launch.
-    @State private var didRestoreLayout = false
     @Environment(\.openSettings) private var openSettings
 
     /// Derived straight from the preference rather than mirrored into `@State`, so the
@@ -22,7 +18,8 @@ struct ContentView: View {
             get: { preferencesStore.preferences.showRepositorySidebar ? .all : .detailOnly },
             set: { newValue in
                 let isVisible = newValue != .detailOnly
-                guard preferencesStore.preferences.showRepositorySidebar != isVisible else { return }
+                guard didRestoreLayout,
+                      preferencesStore.preferences.showRepositorySidebar != isVisible else { return }
                 var updated = preferencesStore.preferences
                 updated.showRepositorySidebar = isVisible
                 preferencesStore.save(updated)
@@ -56,6 +53,10 @@ struct ContentView: View {
             let delegate = NSApp.delegate as? AppDelegate
             delegate?.runners = runners
             delegate?.preferencesStore = preferencesStore
+        }
+        .task {
+            try? await Task.sleep(for: .milliseconds(400))
+            didRestoreLayout = true
         }
     }
 
