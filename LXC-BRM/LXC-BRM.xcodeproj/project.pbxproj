@@ -28,37 +28,23 @@
 
 /* Begin PBXFileReference section */
 		06BE8CB1B631110E0A535F54 /* PreferencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesView.swift; path = App/PreferencesView.swift; sourceTree = "<group>"; };
-		0BB529CB33F756E7C7E65ACF /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = BRM/README.md; sourceTree = "<group>"; };
-		1006ABB94DB1B0FE8DED20CE /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "BRM/LXC-BRM-shared/README.md"; sourceTree = "<group>"; };
 		16F0A7F761D84D0548A244BA /* RepositoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RepositoryStore.swift; path = App/Services/RepositoryStore.swift; sourceTree = "<group>"; };
 		1A3DA0FF6648759940B42148 /* BuildRunner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRunner.swift; path = App/Services/BuildRunner.swift; sourceTree = "<group>"; };
 		1B97018D171778322754574B /* Repository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Repository.swift; path = App/Models/Repository.swift; sourceTree = "<group>"; };
 		363495766860C99A9A8A3A95 /* LXC-BRM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LXC-BRM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		376C275B291A8197FDA9F65B /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = App/AppDelegate.swift; sourceTree = "<group>"; };
-		3AD121A19BC945A59F97CD33 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-context/todo-2026-08-16.md"; sourceTree = "<group>"; };
-		3C3B80DA60154E5F2AA57611 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-frameworks/todo-2026-08-16.md"; sourceTree = "<group>"; };
-		4A0E68398EE182DD668C41B4 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "BRM/LXC-BRM-worklog/README.md"; sourceTree = "<group>"; };
 		51977CC4D41C9D8BB3B28C4D /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = App/ContentView.swift; sourceTree = "<group>"; };
-		55B27D8A3CBC4CD03F74B4A9 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-worklog/todo-2026-08-16.md"; sourceTree = "<group>"; };
 		6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildHistoryStore.swift; path = App/Services/BuildHistoryStore.swift; sourceTree = "<group>"; };
 		80C39837CDF536B7DA795EDC /* PreferencesStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesStore.swift; path = App/Services/PreferencesStore.swift; sourceTree = "<group>"; };
 		925160EB5C5E561373968382 /* BuildScript.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScript.swift; path = App/Models/BuildScript.swift; sourceTree = "<group>"; };
 		9911BF5D489D90AE02811CB3 /* LogFileService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogFileService.swift; path = App/Services/LogFileService.swift; sourceTree = "<group>"; };
 		9ABC2F1F39F8FB25110771D4 /* Preferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = App/Models/Preferences.swift; sourceTree = "<group>"; };
-		ADA05C37EBB9D97D71511B26 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "BRM/LXC-BRM-frameworks/README.md"; sourceTree = "<group>"; };
 		B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LXC_BRMApp.swift; path = App/LXC_BRMApp.swift; sourceTree = "<group>"; };
-		BC1C69A77D6AEDDE678E3704 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-build-release/todo-2026-08-16.md"; sourceTree = "<group>"; };
 		C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildNotificationService.swift; path = App/Services/BuildNotificationService.swift; sourceTree = "<group>"; };
 		D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GitBranchReader.swift; path = App/Services/GitBranchReader.swift; sourceTree = "<group>"; };
 		D42A86DDBD972CFA5981609E /* BuildRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRecord.swift; path = App/Models/BuildRecord.swift; sourceTree = "<group>"; };
-		D8BC40DDA4B60A43DF0450C1 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "BRM/LXC-BRM-build-release/README.md"; sourceTree = "<group>"; };
 		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
-		EC7DCB9FFFC45B14143505CA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "BRM/LXC-BRM-context/README.md"; sourceTree = "<group>"; };
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
-		F50575DC30317AC300601A4A /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		F50575DE30317AE500601A4A /* README 2.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "README 2.md"; sourceTree = "<group>"; };
-		F50575E030317B8F00601A4A /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		F8A35B40DE5743548135AE5E /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-shared/todo-2026-08-16.md"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,31 +67,12 @@
 			name = "OS X";
 			sourceTree = "<group>";
 		};
-		3FA6F04B2B9818F1AD134D30 /* BRM */ = {
-			isa = PBXGroup;
-			children = (
-				0BB529CB33F756E7C7E65ACF /* README.md */,
-				1006ABB94DB1B0FE8DED20CE /* README.md */,
-				F8A35B40DE5743548135AE5E /* todo-2026-08-16.md */,
-				ADA05C37EBB9D97D71511B26 /* README.md */,
-				3C3B80DA60154E5F2AA57611 /* todo-2026-08-16.md */,
-				D8BC40DDA4B60A43DF0450C1 /* README.md */,
-				BC1C69A77D6AEDDE678E3704 /* todo-2026-08-16.md */,
-				4A0E68398EE182DD668C41B4 /* README.md */,
-				55B27D8A3CBC4CD03F74B4A9 /* todo-2026-08-16.md */,
-				EC7DCB9FFFC45B14143505CA /* README.md */,
-				3AD121A19BC945A59F97CD33 /* todo-2026-08-16.md */,
-			);
-			name = BRM;
-			sourceTree = "<group>";
-		};
 		71A7D17D78B11C20BC9E04E0 = {
 			isa = PBXGroup;
 			children = (
 				96D8A2840BD6F8C71B5C2396 /* Products */,
 				748E1DB5B7E9272D4C0291D2 /* Frameworks */,
 				8C1A7831A8D550DDFB81DBF5 /* App */,
-				3FA6F04B2B9818F1AD134D30 /* BRM */,
 			);
 			sourceTree = "<group>";
 		};
@@ -126,9 +93,6 @@
 				376C275B291A8197FDA9F65B /* AppDelegate.swift */,
 				A1B2C3D4E5F6071829384756 /* Models */,
 				A6B5C4D3E2F1897061524738 /* Services */,
-				F50575DC30317AC300601A4A /* .gitignore */,
-				F50575DE30317AE500601A4A /* README 2.md */,
-				F50575E030317B8F00601A4A /* LICENSE */,
 			);
 			name = App;
 			sourceTree = "<group>";
