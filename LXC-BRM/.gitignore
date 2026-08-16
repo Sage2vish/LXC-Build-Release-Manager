@@ -1,5 +1,6 @@
 # Xcode
 DerivedData/
+/.derivedData-lxc-brm/
 *.xcworkspace
 *.xcuserstate
 *.xcuserdata/
