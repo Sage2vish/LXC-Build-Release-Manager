@@ -2,12 +2,12 @@ import SwiftUI
 import AppKit
 
 struct ContentView: View {
-    @StateObject private var store = RepositoryStore()
-    @StateObject private var historyStore = BuildHistoryStore()
-    @StateObject private var runners = BuildRunnerRegistry()
-    @StateObject private var preferencesStore = PreferencesStore()
+    @StateObject private var store = RepositoryStore.shared
+    @StateObject private var historyStore = BuildHistoryStore.shared
+    @StateObject private var runners = BuildRunnerRegistry.shared
+    @StateObject private var preferencesStore = PreferencesStore.shared
     @State private var isAddingRepository = false
-    @State private var isShowingPreferences = false
+    @Environment(\.openSettings) private var openSettings
 
     private var preferredColorScheme: ColorScheme? {
         switch preferencesStore.preferences.theme {
@@ -26,6 +26,7 @@ struct ContentView: View {
                     repository: repository,
                     store: store,
                     historyStore: historyStore,
+                    preferencesStore: preferencesStore,
                     runner: runners.runner(for: repository.id),
                     initialTab: RepositoryDetailView.DetailTab(preferencesStore.preferences.defaultLaunchTab)
                 )
@@ -40,14 +41,16 @@ struct ContentView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            StatusBar(repository: store.selectedRepository)
+            StatusBar(repository: store.selectedRepository, preferences: preferencesStore.preferences)
         }
         .preferredColorScheme(preferredColorScheme)
         .sheet(isPresented: $isAddingRepository) {
             AddRepositorySheet(store: store, isPresented: $isAddingRepository)
         }
-        .sheet(isPresented: $isShowingPreferences) {
-            PreferencesView(store: preferencesStore, isPresented: $isShowingPreferences)
+        .onAppear {
+            let delegate = NSApp.delegate as? AppDelegate
+            delegate?.runners = runners
+            delegate?.preferencesStore = preferencesStore
         }
     }
 
@@ -102,6 +105,7 @@ struct ContentView: View {
             }
         }
         .navigationTitle("Build Manager")
+        .navigationSplitViewColumnWidth(preferencesStore.preferences.sidebarWidthPoints)
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 8) {
                 Divider()
@@ -116,7 +120,7 @@ struct ContentView: View {
                 .buttonStyle(.bordered)
 
                 Button {
-                    isShowingPreferences = true
+                    openSettings()
                 } label: {
                     Label("Preferences", systemImage: "gearshape")
                         .frame(maxWidth: .infinity)
@@ -139,6 +143,7 @@ struct ContentView: View {
     }
 }
 
+@MainActor
 private func presentLocalFolderPickerPath() -> String? {
     let panel = NSOpenPanel()
     panel.canChooseDirectories = true
@@ -151,6 +156,7 @@ private func presentLocalFolderPickerPath() -> String? {
 
 private struct StatusBar: View {
     let repository: Repository?
+    let preferences: Preferences
 
     private var branch: String {
         guard let repository, let branch = GitBranchReader.currentBranch(for: repository) else { return "—" }
@@ -162,7 +168,7 @@ private struct StatusBar: View {
             statusItem("Repository", repository?.name ?? "—")
             statusItem("Branch", branch)
             statusItem("Platform", "macOS")
-            statusItem("Auto-detect", "Enabled")
+            statusItem("Auto-detect", preferences.autoDetectRepositoriesOnStartup ? "Enabled" : "Disabled")
             Spacer()
         }
         .font(.caption)
@@ -363,19 +369,40 @@ private func displayLines(fromFileContent content: String) -> [DisplayLine] {
 private struct LogPane: View {
     let title: String
     let lines: [DisplayLine]
+    let preferences: Preferences
     var onExport: (() -> Void)?
 
     @State private var searchText = ""
-    @State private var filter: LogFilter = .all
+    @State private var filter: LogFilter
     @State private var currentMatchIndex = 0
+
+    init(title: String, lines: [DisplayLine], preferences: Preferences, onExport: (() -> Void)? = nil) {
+        self.title = title
+        self.lines = lines
+        self.preferences = preferences
+        self.onExport = onExport
+        self._filter = State(initialValue: LogFilter(rawValue: preferences.defaultLogFilter) ?? .all)
+    }
 
     private var filtered: [DisplayLine] {
         lines.filter { filter.matches($0.text) }
     }
 
-    private var matchIDs: [UUID] {
+    private var matches: [DisplayLine] {
         guard !searchText.isEmpty else { return [] }
-        return filtered.filter { $0.text.localizedCaseInsensitiveContains(searchText) }.map(\.id)
+        return filtered.filter {
+            preferences.searchIsCaseSensitive
+                ? $0.text.contains(searchText)
+                : $0.text.localizedCaseInsensitiveContains(searchText)
+        }
+    }
+
+    private var logFont: Font {
+        let size = CGFloat(preferences.consoleFontSize)
+        if preferences.useSystemFont {
+            return .system(size: size, design: .monospaced)
+        }
+        return .custom(preferences.consoleFontName, size: size)
     }
 
     var body: some View {
@@ -401,13 +428,13 @@ private struct LogPane: View {
                     .textFieldStyle(.plain)
                     .onChange(of: searchText) { _, _ in currentMatchIndex = 0 }
                 if !searchText.isEmpty {
-                    Text(matchIDs.isEmpty ? "0 matches" : "\(currentMatchIndex + 1) of \(matchIDs.count)")
+                    Text(matches.isEmpty ? "0 matches" : "\(currentMatchIndex + 1) of \(matches.count)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Button { step(-1) } label: { Image(systemName: "chevron.up") }
-                        .disabled(matchIDs.isEmpty)
+                        .disabled(matches.isEmpty)
                     Button { step(1) } label: { Image(systemName: "chevron.down") }
-                        .disabled(matchIDs.isEmpty)
+                        .disabled(matches.isEmpty)
                 }
             }
             .padding(6)
@@ -415,21 +442,30 @@ private struct LogPane: View {
 
             ScrollViewReader { proxy in
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 2) {
-                        ForEach(filtered) { line in
+                    LazyVStack(alignment: .leading, spacing: CGFloat(preferences.lineSpacing) * 2) {
+                        ForEach(Array(filtered.enumerated()), id: \.element.id) { index, line in
                             HStack(alignment: .top, spacing: 8) {
-                                Text(line.timestampText)
-                                    .foregroundStyle(.white.opacity(0.55))
+                                if preferences.showLineNumbers {
+                                    Text("\(index + 1)")
+                                        .foregroundStyle(.white.opacity(0.35))
+                                        .frame(width: 34, alignment: .trailing)
+                                }
+                                if !line.timestampText.isEmpty {
+                                    Text(line.timestampText)
+                                        .foregroundStyle(.white.opacity(0.55))
+                                }
                                 Text(line.text)
                                     .textSelection(.enabled)
+                                    .lineLimit(preferences.wordWrap ? nil : 1)
+                                    .truncationMode(.tail)
+                                    .foregroundStyle(color(for: line.text))
                             }
-                            .font(.system(.caption, design: .monospaced))
+                            .font(logFont)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 1)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(
-                                !searchText.isEmpty && line.text.localizedCaseInsensitiveContains(searchText)
-                                    ? Color.yellow.opacity(0.3) : .clear
+                                matches.contains(where: { $0.id == line.id }) ? Color.yellow.opacity(0.3) : .clear
                             )
                             .id(line.id)
                         }
@@ -445,17 +481,36 @@ private struct LogPane: View {
                 .background(Color.black.opacity(0.88))
                 .foregroundStyle(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+                .onAppear {
+                    if preferences.autoScrollToBottom, let last = filtered.last {
+                        proxy.scrollTo(last.id, anchor: .bottom)
+                    }
+                }
+                .onChange(of: filtered.count) { _, _ in
+                    if preferences.autoScrollToBottom, let last = filtered.last {
+                        proxy.scrollTo(last.id, anchor: .bottom)
+                    }
+                }
                 .onChange(of: currentMatchIndex) { _, newValue in
-                    guard matchIDs.indices.contains(newValue) else { return }
-                    withAnimation { proxy.scrollTo(matchIDs[newValue], anchor: .center) }
+                    guard matches.indices.contains(newValue) else { return }
+                    withAnimation { proxy.scrollTo(matches[newValue].id, anchor: .center) }
                 }
             }
         }
     }
 
+    private func color(for text: String) -> Color {
+        guard preferences.colorizeOutput else { return .white }
+        let lower = text.lowercased()
+        if lower.contains("error") || lower.contains("failed") { return .red }
+        if lower.contains("warning") { return .orange }
+        if lower.contains("success") || lower.contains("succeeded") { return .green }
+        return .white
+    }
+
     private func step(_ delta: Int) {
-        guard !matchIDs.isEmpty else { return }
-        currentMatchIndex = (currentMatchIndex + delta + matchIDs.count) % matchIDs.count
+        guard !matches.isEmpty else { return }
+        currentMatchIndex = (currentMatchIndex + delta + matches.count) % matches.count
     }
 }
 
@@ -463,6 +518,7 @@ private struct RepositoryDetailView: View {
     let repository: Repository
     @ObservedObject var store: RepositoryStore
     @ObservedObject var historyStore: BuildHistoryStore
+    @ObservedObject var preferencesStore: PreferencesStore
     @ObservedObject var runner: BuildRunner
 
     @State private var selectedTab: DetailTab
@@ -471,10 +527,18 @@ private struct RepositoryDetailView: View {
     @State private var selectedLogRecordID: BuildRecord.ID?
     @State private var showInspector = true
 
-    init(repository: Repository, store: RepositoryStore, historyStore: BuildHistoryStore, runner: BuildRunner, initialTab: DetailTab = .build) {
+    init(
+        repository: Repository,
+        store: RepositoryStore,
+        historyStore: BuildHistoryStore,
+        preferencesStore: PreferencesStore,
+        runner: BuildRunner,
+        initialTab: DetailTab = .build
+    ) {
         self.repository = repository
         self.store = store
         self.historyStore = historyStore
+        self._preferencesStore = ObservedObject(wrappedValue: preferencesStore)
         self.runner = runner
         self._selectedTab = State(initialValue: initialTab)
     }
@@ -569,7 +633,7 @@ private struct RepositoryDetailView: View {
                         LabeledContent("Started At", value: startedAt.formatted(date: .omitted, time: .standard))
                     }
                     LabeledContent("Duration", value: durationDescription(runner.duration))
-                    Button("Stop Build", role: .destructive) { runner.cancel() }
+                    Button("Stop Build", role: .destructive) { runner.cancel(preferences: preferencesStore.preferences) }
                         .frame(maxWidth: .infinity)
                 } else if let mostRecent = stats.mostRecent {
                     Label(statusLabel(mostRecent.status), systemImage: statusSymbolName(mostRecent.status))
@@ -740,7 +804,7 @@ private struct RepositoryDetailView: View {
             }
 
             if runner.isRunning || !runner.logLines.isEmpty {
-                LogPane(title: "Live Output", lines: displayLines(from: runner.logLines))
+                LogPane(title: "Live Output", lines: displayLines(from: runner.logLines), preferences: preferencesStore.preferences)
             }
         case .missingBuildFolder:
             ContentUnavailableView("No /build Folder Found", systemImage: "folder.badge.questionmark", description: Text("This repository doesn't have a /build folder at its root."))
@@ -772,11 +836,16 @@ private struct RepositoryDetailView: View {
 
             if isThisRunning {
                 ProgressView().controlSize(.small)
-                Button("Cancel") { runner.cancel() }
+                Button("Cancel") { runner.cancel(preferences: preferencesStore.preferences) }
                     .buttonStyle(.bordered)
             } else {
                 Button("Run") {
-                    runner.start(script: script, repository: repository, historyStore: historyStore)
+                    runner.start(
+                        script: script,
+                        repository: repository,
+                        historyStore: historyStore,
+                        preferences: preferencesStore.preferences
+                    )
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(!repository.source.isLocal || runner.isRunning)
@@ -798,11 +867,16 @@ private struct RepositoryDetailView: View {
     private var logsTab: some View {
         Group {
             if runner.isRunning {
-                LogPane(title: "Live Output — \(runner.runningScript?.label ?? "")", lines: displayLines(from: runner.logLines))
+                LogPane(
+                    title: "Live Output — \(runner.runningScript?.label ?? "")",
+                    lines: displayLines(from: runner.logLines),
+                    preferences: preferencesStore.preferences
+                )
             } else if let record = selectedRecord {
                 LogPane(
                     title: "\(record.scriptLabel) — \(record.startedAt.formatted(date: .abbreviated, time: .shortened))",
                     lines: logLines(for: record),
+                    preferences: preferencesStore.preferences,
                     onExport: {
                         LogFileService.export(content: logContent(for: record), suggestedName: record.logFileName)
                     }
@@ -821,7 +895,11 @@ private struct RepositoryDetailView: View {
     }
 
     private func logContent(for record: BuildRecord) -> String {
-        LogFileService.read(fileName: record.logFileName, repository: repository) ?? ""
+        LogFileService.read(
+            fileName: record.logFileName,
+            repository: repository,
+            encodingName: preferencesStore.preferences.logEncoding
+        ) ?? ""
     }
 
     private func logLines(for record: BuildRecord) -> [DisplayLine] {
@@ -946,11 +1024,18 @@ private struct RepositoryDetailView: View {
 
     private func scan() async {
         isScanning = true
+        let preferences = preferencesStore.preferences
         switch repository.source {
         case .local(let path):
-            scanResult = BuildScriptScanner.scanLocal(path: path)
+            scanResult = BuildScriptScanner.scanLocal(
+                path: path,
+                options: BuildScanOptions(preferences: preferences)
+            )
         case .github(let url):
-            scanResult = await BuildScriptScanner.scanGitHub(urlString: url)
+            scanResult = await BuildScriptScanner.scanGitHub(
+                urlString: url,
+                options: BuildScanOptions(preferences: preferences)
+            )
         }
         isScanning = false
     }

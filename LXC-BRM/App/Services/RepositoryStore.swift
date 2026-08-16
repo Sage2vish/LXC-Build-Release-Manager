@@ -2,17 +2,28 @@ import Foundation
 
 @MainActor
 final class RepositoryStore: ObservableObject {
+    static let shared = RepositoryStore()
+
     @Published private(set) var repositories: [Repository] = []
     @Published var selectedRepositoryID: Repository.ID?
 
     private let storeURL: URL
+    private let rememberRecentRepositories: Bool
 
     init() {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let folder = appSupport.appendingPathComponent("LXC-BRM", isDirectory: true)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         storeURL = folder.appendingPathComponent("projects.json")
+
+        let prefs = Preferences.loadFromDisk()
+        rememberRecentRepositories = prefs.rememberRecentRepositories
+
+        guard rememberRecentRepositories, prefs.automaticallyRestoreLastOpenedRepositories else { return }
         load()
+        if !prefs.restoreLastOpenedRepository {
+            selectedRepositoryID = nil
+        }
     }
 
     var selectedRepository: Repository? {
@@ -71,6 +82,7 @@ final class RepositoryStore: ObservableObject {
     }
 
     private func save() {
+        guard rememberRecentRepositories else { return }
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]

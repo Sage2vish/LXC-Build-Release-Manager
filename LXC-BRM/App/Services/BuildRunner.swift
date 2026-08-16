@@ -1,4 +1,5 @@
 import Foundation
+import Darwin
 
 @MainActor
 final class BuildRunner: ObservableObject {
@@ -11,6 +12,8 @@ final class BuildRunner: ObservableObject {
     private var stdoutHandle: FileHandle?
     private var stderrHandle: FileHandle?
     private var wasCancelled = false
+    private var sleepActivityToken: NSObjectProtocol?
+    private var timeoutWorkItem: DispatchWorkItem?
 
     var isRunning: Bool { runningScript != nil }
 
@@ -19,7 +22,7 @@ final class BuildRunner: ObservableObject {
         return (finishedAt ?? Date()).timeIntervalSince(startedAt)
     }
 
-    func start(script: BuildScript, repository: Repository, historyStore: BuildHistoryStore) {
+    func start(script: BuildScript, repository: Repository, historyStore: BuildHistoryStore, preferences: Preferences) {
         guard !isRunning, case .local(let repositoryPath) = repository.source else { return }
 
         logLines = []
@@ -29,9 +32,17 @@ final class BuildRunner: ObservableObject {
         wasCancelled = false
 
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/bin/bash")
+        process.executableURL = URL(fileURLWithPath: preferences.defaultShell)
         process.arguments = [script.path]
         process.currentDirectoryURL = URL(fileURLWithPath: repositoryPath)
+
+        if !preferences.environmentVariables.isEmpty {
+            var environment = ProcessInfo.processInfo.environment
+            for entry in preferences.environmentVariables where !entry.key.isEmpty {
+                environment[entry.key] = entry.value
+            }
+            process.environment = environment
+        }
 
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
@@ -47,7 +58,7 @@ final class BuildRunner: ObservableObject {
 
         process.terminationHandler = { [weak self] proc in
             Task { @MainActor in
-                self?.finish(exitCode: proc.terminationStatus, repository: repository, script: script, historyStore: historyStore)
+                self?.finish(exitCode: proc.terminationStatus, repository: repository, script: script, historyStore: historyStore, preferences: preferences)
             }
         }
 
@@ -55,18 +66,49 @@ final class BuildRunner: ObservableObject {
         stdoutHandle = stdoutPipe.fileHandleForReading
         stderrHandle = stderrPipe.fileHandleForReading
 
+        if preferences.preventSleepDuringBuild {
+            sleepActivityToken = ProcessInfo.processInfo.beginActivity(
+                options: [.idleSystemSleepDisabled],
+                reason: "LXC-BRM build running: \(script.label)"
+            )
+        }
+
         do {
             try process.run()
+            scheduleTimeout(preferences: preferences)
         } catch {
             logLines.append(LogLine(timestamp: Date(), text: "Failed to start: \(error.localizedDescription)"))
-            finish(exitCode: -1, repository: repository, script: script, historyStore: historyStore)
+            finish(exitCode: -1, repository: repository, script: script, historyStore: historyStore, preferences: preferences)
         }
     }
 
-    func cancel() {
+    func cancel(preferences: Preferences) {
         guard let process, isRunning else { return }
         wasCancelled = true
-        process.terminate()
+        if preferences.terminateChildProcessesOnStop {
+            Self.killProcessTree(rootPID: process.processIdentifier)
+        } else {
+            process.terminate()
+        }
+    }
+
+    private func scheduleTimeout(preferences: Preferences) {
+        let perBuildMinutes = preferences.buildTimeoutMinutes
+        let globalMinutes = preferences.globalBuildTimeoutMinutes
+        let effectiveMinutes: Int
+        if globalMinutes > 0 && perBuildMinutes > 0 {
+            effectiveMinutes = min(perBuildMinutes, globalMinutes)
+        } else {
+            effectiveMinutes = max(perBuildMinutes, globalMinutes)
+        }
+        guard effectiveMinutes > 0 else { return }
+
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self, self.isRunning else { return }
+            self.cancel(preferences: preferences)
+        }
+        timeoutWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(effectiveMinutes * 60), execute: workItem)
     }
 
     nonisolated private func handleOutput(_ data: Data) {
@@ -83,20 +125,42 @@ final class BuildRunner: ObservableObject {
         logLines.append(contentsOf: lines.map { LogLine(timestamp: now, text: $0) })
     }
 
-    private func finish(exitCode: Int32, repository: Repository, script: BuildScript, historyStore: BuildHistoryStore) {
+    private func finish(exitCode: Int32, repository: Repository, script: BuildScript, historyStore: BuildHistoryStore, preferences: Preferences) {
         guard runningScript != nil else { return }
         stdoutHandle?.readabilityHandler = nil
         stderrHandle?.readabilityHandler = nil
         finishedAt = Date()
+        timeoutWorkItem?.cancel()
+        timeoutWorkItem = nil
+
+        if let token = sleepActivityToken {
+            ProcessInfo.processInfo.endActivity(token)
+            sleepActivityToken = nil
+        }
 
         let finalStatus: BuildStatus = wasCancelled ? .cancelled : (exitCode == 0 ? .success : .failed)
-        let logFileName = LogFileService.write(
-            lines: logLines,
-            repository: repository,
-            script: script,
-            status: finalStatus,
-            startedAt: startedAt ?? Date()
-        )
+
+        if wasCancelled && !preferences.preservePartialOutputOnCancellation {
+            logLines = []
+        }
+
+        var logFileName = ""
+        let shouldSaveLogs = preferences.automaticallySaveLogs || preferences.saveLogsAutomatically
+        if shouldSaveLogs {
+            logFileName = LogFileService.write(
+                lines: logLines,
+                repository: repository,
+                script: script,
+                status: finalStatus,
+                startedAt: startedAt ?? Date(),
+                buildFolderName: preferences.defaultBuildFolderName,
+                logsSubdirectory: preferences.logsSubdirectory,
+                timestampFormat: preferences.timestampFormat,
+                encodingName: preferences.logEncoding,
+                retentionDays: preferences.logRetentionDays,
+                maxStoredLogs: preferences.maxStoredLogs
+            )
+        }
 
         historyStore.record(
             BuildRecord(
@@ -114,10 +178,37 @@ final class BuildRunner: ObservableObject {
         process = nil
         wasCancelled = false
     }
+
+    /// Best-effort recursive kill: Foundation's Process API doesn't expose real process-group
+    /// control, so this walks `pgrep -P` children before signalling the root process.
+    nonisolated private static func killProcessTree(rootPID: Int32) {
+        let pgrep = Process()
+        pgrep.executableURL = URL(fileURLWithPath: "/usr/bin/pgrep")
+        pgrep.arguments = ["-P", "\(rootPID)"]
+        let pipe = Pipe()
+        pgrep.standardOutput = pipe
+        pgrep.standardError = Pipe()
+        guard (try? pgrep.run()) != nil else {
+            kill(rootPID, SIGTERM)
+            return
+        }
+        pgrep.waitUntilExit()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        if let output = String(data: data, encoding: .utf8) {
+            for line in output.split(separator: "\n") {
+                if let childPID = Int32(line) {
+                    killProcessTree(rootPID: childPID)
+                }
+            }
+        }
+        kill(rootPID, SIGTERM)
+    }
 }
 
 @MainActor
 final class BuildRunnerRegistry: ObservableObject {
+    static let shared = BuildRunnerRegistry()
+
     private var runners: [UUID: BuildRunner] = [:]
 
     func runner(for repositoryID: UUID) -> BuildRunner {
@@ -125,5 +216,13 @@ final class BuildRunnerRegistry: ObservableObject {
         let runner = BuildRunner()
         runners[repositoryID] = runner
         return runner
+    }
+
+    var hasAnyRunningBuild: Bool {
+        runners.values.contains { $0.isRunning }
+    }
+
+    var runningCount: Int {
+        runners.values.filter(\.isRunning).count
     }
 }

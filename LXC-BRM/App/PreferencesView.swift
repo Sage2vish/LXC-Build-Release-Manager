@@ -3,13 +3,15 @@ import AppKit
 
 struct PreferencesView: View {
     @ObservedObject var store: PreferencesStore
-    @Binding var isPresented: Bool
+    @ObservedObject var historyStore: BuildHistoryStore
+    @Environment(\.dismiss) private var dismiss
     @State private var draft: Preferences
     @State private var selectedTab: PrefTab = .general
+    @State private var pendingClearHistoryConfirmation = false
 
-    init(store: PreferencesStore, isPresented: Binding<Bool>) {
+    init(store: PreferencesStore, historyStore: BuildHistoryStore) {
         self.store = store
-        self._isPresented = isPresented
+        self.historyStore = historyStore
         self._draft = State(initialValue: store.preferences)
     }
 
@@ -66,16 +68,22 @@ struct PreferencesView: View {
             HStack {
                 Button("Restore Defaults") { draft = .recommendedDefaults }
                 Spacer()
-                Button("Cancel") { isPresented = false }
+                Button("Cancel") { dismiss() }
                 Button("Save") {
                     store.save(draft)
-                    isPresented = false
+                    dismiss()
                 }
                 .buttonStyle(.borderedProminent)
             }
             .padding(16)
         }
         .frame(width: 760, height: 580)
+        .onAppear {
+            draft = store.preferences
+        }
+        .onChange(of: store.preferences) { _, newValue in
+            draft = newValue
+        }
     }
 
     @ViewBuilder
@@ -340,6 +348,28 @@ struct PreferencesView: View {
 
             Divider().padding(.vertical, 4)
 
+            Text("Data & Maintenance").font(.callout.weight(.semibold))
+            dataMaintenanceRow("Open Build Manager data directory", "Open the folder where Build Manager stores its data.", "Open Folder") {
+                let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+                NSWorkspace.shared.open(appSupport.appendingPathComponent("LXC-BRM", isDirectory: true))
+            }
+            dataMaintenanceRow("Open projects.json", "Open the projects.json config template in your default editor.", "Open File") {
+                openProjectsJSONTemplate()
+            }
+            dataMaintenanceRow("Clear repository metadata cache", "No metadata cache exists yet — every scan is already live, so this is a no-op today.", "Clear Cache") {}
+                .disabled(true)
+            dataMaintenanceRow("Clear build history", "Remove all build history from this machine.", "Clear History") {
+                if draft.confirmBeforeClearing {
+                    pendingClearHistoryConfirmation = true
+                } else {
+                    historyStore.clearAll()
+                }
+            }
+            dataMaintenanceRow("Reset all warnings", "No \"Don't show again\" warning system exists yet — this is a no-op today.", "Reset Warnings") {}
+                .disabled(true)
+
+            Divider().padding(.vertical, 4)
+
             VStack(alignment: .leading, spacing: 10) {
                 Text("⚠️ Danger Zone").font(.callout.weight(.semibold)).foregroundStyle(.red)
                 HStack {
@@ -357,6 +387,31 @@ struct PreferencesView: View {
             }
             .padding(12)
             .background(Color.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+        }
+        .alert("Clear Build History?", isPresented: $pendingClearHistoryConfirmation) {
+            Button("Clear History", role: .destructive) { historyStore.clearAll() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This removes all recorded build history from this machine. Log files on disk are not deleted.")
+        }
+    }
+
+    private func openProjectsJSONTemplate() {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent() // App/
+            .deletingLastPathComponent() // LXC-BRM/
+            .appendingPathComponent("BRM/LXC-BRM-build-release/projects.json")
+        NSWorkspace.shared.open(repoRoot)
+    }
+
+    private func dataMaintenanceRow(_ title: String, _ subtitle: String, _ buttonTitle: String, action: @escaping () -> Void) -> some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                Text(subtitle).font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 12)
+            Button(buttonTitle, action: action)
         }
     }
 

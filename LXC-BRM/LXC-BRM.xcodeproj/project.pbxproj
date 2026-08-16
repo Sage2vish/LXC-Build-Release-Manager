@@ -22,6 +22,7 @@
 		77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BE8CB1B631110E0A535F54 /* PreferencesView.swift */; };
 		55BA48F23D7D589AEBE85E1D /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ABC2F1F39F8FB25110771D4 /* Preferences.swift */; };
 		5D97B5F6FBFEF4DFB4D2AFE8 /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C39837CDF536B7DA795EDC /* PreferencesStore.swift */; };
+		5248C1C125D21068689EBB27 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C275B291A8197FDA9F65B /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		06BE8CB1B631110E0A535F54 /* PreferencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesView.swift; path = App/PreferencesView.swift; sourceTree = "<group>"; };
 		9ABC2F1F39F8FB25110771D4 /* Preferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = App/Models/Preferences.swift; sourceTree = "<group>"; };
 		80C39837CDF536B7DA795EDC /* PreferencesStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesStore.swift; path = App/Services/PreferencesStore.swift; sourceTree = "<group>"; };
+		376C275B291A8197FDA9F65B /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = App/AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 				B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */,
 				51977CC4D41C9D8BB3B28C4D /* ContentView.swift */,
 				06BE8CB1B631110E0A535F54 /* PreferencesView.swift */,
+				376C275B291A8197FDA9F65B /* AppDelegate.swift */,
 				A1B2C3D4E5F6071829384756 /* Models */,
 				A6B5C4D3E2F1897061524738 /* Services */,
 			);
@@ -233,6 +236,7 @@
 				77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */,
 				55BA48F23D7D589AEBE85E1D /* Preferences.swift in Sources */,
 				5D97B5F6FBFEF4DFB4D2AFE8 /* PreferencesStore.swift in Sources */,
+				5248C1C125D21068689EBB27 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

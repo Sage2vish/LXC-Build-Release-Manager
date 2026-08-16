@@ -2,6 +2,8 @@ import Foundation
 
 @MainActor
 final class BuildHistoryStore: ObservableObject {
+    static let shared = BuildHistoryStore()
+
     @Published private(set) var recordsByRepository: [UUID: [BuildRecord]] = [:]
 
     private let storeURL: URL
@@ -20,6 +22,11 @@ final class BuildHistoryStore: ObservableObject {
 
     func record(_ record: BuildRecord) {
         recordsByRepository[record.repositoryID, default: []].append(record)
+        save()
+    }
+
+    func clearAll() {
+        recordsByRepository = [:]
         save()
     }
 

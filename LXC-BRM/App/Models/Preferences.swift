@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 
 enum AppTheme: String, Codable, CaseIterable, Identifiable {
     case light, dark, system
@@ -111,4 +112,22 @@ struct Preferences: Codable, Equatable {
     var gitHubRateLimitAlertThreshold = "Warn me at 20%"
 
     static let recommendedDefaults = Preferences()
+
+    static func loadFromDisk() -> Preferences {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let url = appSupport.appendingPathComponent("LXC-BRM/preferences.json")
+        guard let data = try? Data(contentsOf: url),
+              let decoded = try? JSONDecoder().decode(Preferences.self, from: data) else {
+            return .recommendedDefaults
+        }
+        return decoded
+    }
+
+    var sidebarWidthPoints: CGFloat {
+        switch sidebarWidth {
+        case "Narrow (220px)": return 220
+        case "Wide (340px)": return 340
+        default: return 280
+        }
+    }
 }

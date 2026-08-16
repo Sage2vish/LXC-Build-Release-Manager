@@ -1,7 +1,10 @@
 import Foundation
+import ServiceManagement
 
 @MainActor
 final class PreferencesStore: ObservableObject {
+    static let shared = PreferencesStore()
+
     @Published private(set) var preferences: Preferences
 
     private let storeURL: URL
@@ -11,12 +14,23 @@ final class PreferencesStore: ObservableObject {
         let folder = appSupport.appendingPathComponent("LXC-BRM", isDirectory: true)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         storeURL = folder.appendingPathComponent("preferences.json")
-        preferences = Self.load(from: storeURL) ?? .recommendedDefaults
+        preferences = Preferences.loadFromDisk()
     }
 
     func save(_ newPreferences: Preferences) {
-        preferences = newPreferences
+        var updated = newPreferences
+        if updated.saveLogsAutomatically != preferences.saveLogsAutomatically {
+            updated.automaticallySaveLogs = updated.saveLogsAutomatically
+        } else if updated.automaticallySaveLogs != preferences.automaticallySaveLogs {
+            updated.saveLogsAutomatically = updated.automaticallySaveLogs
+        }
+
+        let launchAtLoginChanged = updated.launchAtLogin != preferences.launchAtLogin
+        preferences = updated
         persist()
+        if launchAtLoginChanged {
+            applyLaunchAtLogin(enabled: updated.launchAtLogin)
+        }
     }
 
     private func persist() {
@@ -26,8 +40,16 @@ final class PreferencesStore: ObservableObject {
         try? data.write(to: storeURL, options: .atomic)
     }
 
-    private static func load(from url: URL) -> Preferences? {
-        guard let data = try? Data(contentsOf: url) else { return nil }
-        return try? JSONDecoder().decode(Preferences.self, from: data)
+    private func applyLaunchAtLogin(enabled: Bool) {
+        do {
+            if enabled {
+                try SMAppService.mainApp.register()
+            } else {
+                try SMAppService.mainApp.unregister()
+            }
+        } catch {
+            // Best effort only: the setting is still persisted even if macOS rejects the request.
+            print("Launch at login update failed: \(error.localizedDescription)")
+        }
     }
 }
