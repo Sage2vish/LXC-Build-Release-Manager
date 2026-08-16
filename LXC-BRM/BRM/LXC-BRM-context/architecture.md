@@ -10,7 +10,7 @@
 
 ## Workspace Architecture
 
-- `lxc-brm-macos/` is the Xcode-openable native app container.
+- `LXC-BRM/` is the Xcode-openable native app container.
 - `BRM/` contains the workspace folders and documentation.
 - `LXC-BRM-shared/` holds shared helpers and conventions.
 - `LXC-BRM-frameworks/` holds framework-specific assets only.

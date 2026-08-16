@@ -1,10 +1,10 @@
 # LXC Build Release Manager
 
-This repository is organized around a BRM workspace model, with the native macOS app living in `lxc-brm-macos/`.
+This repository is organized around a BRM workspace model, with the native macOS app living in `LXC-BRM/`.
 
 ## Root Layout
 
-- `lxc-brm-macos`
+- `LXC-BRM`
 - `LXC-BRM-shared`
 - `LXC-BRM-frameworks`
 - `LXC-BRM-build-release`
@@ -36,15 +36,15 @@ This repository is organized around a BRM workspace model, with the native macOS
 
 ## Desktop Utility
 
-The macOS SwiftUI app in `lxc-brm-macos/` is the desktop shell for navigating the BRM areas, viewing status, and tracking dated notes.
+The macOS SwiftUI app in `LXC-BRM/` is the desktop shell for navigating the BRM areas, viewing status, and tracking dated notes.
 
 ## Current Release Map
 
-- Build scripts live in `lxc-brm-macos/BRM/LXC-BRM-build-release/scripts/`
-- Build logs are written to `lxc-brm-macos/BRM/LXC-BRM-build-release/logs/`
-- Final release packages go to `lxc-brm-macos/BRM/LXC-BRM-build-release/version/`
-- Project tracking lives in `lxc-brm-macos/BRM/LXC-BRM-build-release/projects.json`
-- Daily todo notes use `lxc-brm-macos/BRM/LXC-BRM-*/todo-2026-08-16.md`
-- Context rules live in `lxc-brm-macos/BRM/LXC-BRM-context/rules-context.md`
-- Context architecture lives in `lxc-brm-macos/BRM/LXC-BRM-context/architecture.md`
-- Decisions live in `lxc-brm-macos/BRM/LXC-BRM-context/decisions/`
+- Build scripts live in `LXC-BRM/BRM/LXC-BRM-build-release/scripts/`
+- Build logs are written to `LXC-BRM/BRM/LXC-BRM-build-release/logs/`
+- Final release packages go to `LXC-BRM/BRM/LXC-BRM-build-release/version/`
+- Project tracking lives in `LXC-BRM/BRM/LXC-BRM-build-release/projects.json`
+- Daily todo notes use `LXC-BRM/BRM/LXC-BRM-*/todo-2026-08-16.md`
+- Context rules live in `LXC-BRM/BRM/LXC-BRM-context/rules-context.md`
+- Context architecture lives in `LXC-BRM/BRM/LXC-BRM-context/architecture.md`
+- Decisions live in `LXC-BRM/BRM/LXC-BRM-context/decisions/`

@@ -3,7 +3,7 @@
 ## Rules
 
 1. Keep the tool macOS-only.
-2. Keep the native app inside `lxc-brm-macos/`.
+2. Keep the native app inside `LXC-BRM/`.
 3. Keep BRM workspace content in the `BRM/` tree.
 4. Use `LXC-BRM-build-release/version/` as the final release staging folder.
 5. Place the final `.dmg` in `version/`.
