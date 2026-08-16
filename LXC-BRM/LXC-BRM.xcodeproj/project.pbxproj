@@ -3,57 +3,65 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		32AFC59C44ABE8B95311B6F4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */; };
-		861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */; };
-		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
-		9DD375B6E51F32764D466AAF /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B97018D171778322754574B /* Repository.swift */; };
 		2069CF7280E3EFC8FE58FDDF /* BuildScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925160EB5C5E561373968382 /* BuildScript.swift */; };
-		FEEDFCE5AA26DC939D4E44DE /* RepositoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F0A7F761D84D0548A244BA /* RepositoryStore.swift */; };
 		251FCCFB1823E848C6967B7C /* BuildScriptScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */; };
-		4B5590D2F6DE9F6ACEEB834A /* BuildRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42A86DDBD972CFA5981609E /* BuildRecord.swift */; };
-		A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9911BF5D489D90AE02811CB3 /* LogFileService.swift */; };
-		50CC22F6B112137092256122 /* BuildHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */; };
-		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
 		2F3B4B4C450DA1992E367F86 /* GitBranchReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */; };
-		77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BE8CB1B631110E0A535F54 /* PreferencesView.swift */; };
+		4C6B8D1F2A3E4C5D6F708192 /* BuildNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */; };
+		32AFC59C44ABE8B95311B6F4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */; };
+		4B5590D2F6DE9F6ACEEB834A /* BuildRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42A86DDBD972CFA5981609E /* BuildRecord.swift */; };
+		50CC22F6B112137092256122 /* BuildHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */; };
+		5248C1C125D21068689EBB27 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C275B291A8197FDA9F65B /* AppDelegate.swift */; };
 		55BA48F23D7D589AEBE85E1D /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ABC2F1F39F8FB25110771D4 /* Preferences.swift */; };
 		5D97B5F6FBFEF4DFB4D2AFE8 /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C39837CDF536B7DA795EDC /* PreferencesStore.swift */; };
-		5248C1C125D21068689EBB27 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C275B291A8197FDA9F65B /* AppDelegate.swift */; };
+		77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BE8CB1B631110E0A535F54 /* PreferencesView.swift */; };
+		861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */; };
+		9DD375B6E51F32764D466AAF /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B97018D171778322754574B /* Repository.swift */; };
+		A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9911BF5D489D90AE02811CB3 /* LogFileService.swift */; };
+		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
+		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
+		F50575DD30317AC300601A4A /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F50575DC30317AC300601A4A /* .gitignore */; };
+		F50575DF30317AE500601A4A /* README 2.md in Resources */ = {isa = PBXBuildFile; fileRef = F50575DE30317AE500601A4A /* README 2.md */; };
+		F50575E130317B8F00601A4A /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = F50575E030317B8F00601A4A /* LICENSE */; };
+		FEEDFCE5AA26DC939D4E44DE /* RepositoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F0A7F761D84D0548A244BA /* RepositoryStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0BB529CB33F756E7C7E65ACF /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = BRM/README.md; sourceTree = "<group>"; };
-		1006ABB94DB1B0FE8DED20CE /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = "BRM/LXC-BRM-shared/README.md"; sourceTree = "<group>"; };
-		363495766860C99A9A8A3A95 /* LXC-BRM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LXC-BRM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3AD121A19BC945A59F97CD33 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-context/todo-2026-08-16.md"; sourceTree = "<group>"; };
-		3C3B80DA60154E5F2AA57611 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-frameworks/todo-2026-08-16.md"; sourceTree = "<group>"; };
-		4A0E68398EE182DD668C41B4 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = "BRM/LXC-BRM-worklog/README.md"; sourceTree = "<group>"; };
-		51977CC4D41C9D8BB3B28C4D /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = App/ContentView.swift; sourceTree = "<group>"; };
-		55B27D8A3CBC4CD03F74B4A9 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-worklog/todo-2026-08-16.md"; sourceTree = "<group>"; };
-		ADA05C37EBB9D97D71511B26 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = "BRM/LXC-BRM-frameworks/README.md"; sourceTree = "<group>"; };
-		B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LXC_BRMApp.swift; path = App/LXC_BRMApp.swift; sourceTree = "<group>"; };
-		BC1C69A77D6AEDDE678E3704 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-build-release/todo-2026-08-16.md"; sourceTree = "<group>"; };
-		D8BC40DDA4B60A43DF0450C1 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = "BRM/LXC-BRM-build-release/README.md"; sourceTree = "<group>"; };
-		EC7DCB9FFFC45B14143505CA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = "BRM/LXC-BRM-context/README.md"; sourceTree = "<group>"; };
-		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
-		F8A35B40DE5743548135AE5E /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-shared/todo-2026-08-16.md"; sourceTree = "<group>"; };
-		1B97018D171778322754574B /* Repository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Repository.swift; path = App/Models/Repository.swift; sourceTree = "<group>"; };
-		925160EB5C5E561373968382 /* BuildScript.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScript.swift; path = App/Models/BuildScript.swift; sourceTree = "<group>"; };
-		16F0A7F761D84D0548A244BA /* RepositoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RepositoryStore.swift; path = App/Services/RepositoryStore.swift; sourceTree = "<group>"; };
-		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
-		D42A86DDBD972CFA5981609E /* BuildRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRecord.swift; path = App/Models/BuildRecord.swift; sourceTree = "<group>"; };
-		9911BF5D489D90AE02811CB3 /* LogFileService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogFileService.swift; path = App/Services/LogFileService.swift; sourceTree = "<group>"; };
-		6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildHistoryStore.swift; path = App/Services/BuildHistoryStore.swift; sourceTree = "<group>"; };
-		1A3DA0FF6648759940B42148 /* BuildRunner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRunner.swift; path = App/Services/BuildRunner.swift; sourceTree = "<group>"; };
-		D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GitBranchReader.swift; path = App/Services/GitBranchReader.swift; sourceTree = "<group>"; };
 		06BE8CB1B631110E0A535F54 /* PreferencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesView.swift; path = App/PreferencesView.swift; sourceTree = "<group>"; };
-		9ABC2F1F39F8FB25110771D4 /* Preferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = App/Models/Preferences.swift; sourceTree = "<group>"; };
-		80C39837CDF536B7DA795EDC /* PreferencesStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesStore.swift; path = App/Services/PreferencesStore.swift; sourceTree = "<group>"; };
+		0BB529CB33F756E7C7E65ACF /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = BRM/README.md; sourceTree = "<group>"; };
+		1006ABB94DB1B0FE8DED20CE /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "BRM/LXC-BRM-shared/README.md"; sourceTree = "<group>"; };
+		16F0A7F761D84D0548A244BA /* RepositoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RepositoryStore.swift; path = App/Services/RepositoryStore.swift; sourceTree = "<group>"; };
+		1A3DA0FF6648759940B42148 /* BuildRunner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRunner.swift; path = App/Services/BuildRunner.swift; sourceTree = "<group>"; };
+		C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildNotificationService.swift; path = App/Services/BuildNotificationService.swift; sourceTree = "<group>"; };
+		1B97018D171778322754574B /* Repository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Repository.swift; path = App/Models/Repository.swift; sourceTree = "<group>"; };
+		363495766860C99A9A8A3A95 /* LXC-BRM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LXC-BRM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		376C275B291A8197FDA9F65B /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = App/AppDelegate.swift; sourceTree = "<group>"; };
+		3AD121A19BC945A59F97CD33 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-context/todo-2026-08-16.md"; sourceTree = "<group>"; };
+		3C3B80DA60154E5F2AA57611 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-frameworks/todo-2026-08-16.md"; sourceTree = "<group>"; };
+		4A0E68398EE182DD668C41B4 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "BRM/LXC-BRM-worklog/README.md"; sourceTree = "<group>"; };
+		51977CC4D41C9D8BB3B28C4D /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = App/ContentView.swift; sourceTree = "<group>"; };
+		55B27D8A3CBC4CD03F74B4A9 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-worklog/todo-2026-08-16.md"; sourceTree = "<group>"; };
+		6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildHistoryStore.swift; path = App/Services/BuildHistoryStore.swift; sourceTree = "<group>"; };
+		80C39837CDF536B7DA795EDC /* PreferencesStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesStore.swift; path = App/Services/PreferencesStore.swift; sourceTree = "<group>"; };
+		925160EB5C5E561373968382 /* BuildScript.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScript.swift; path = App/Models/BuildScript.swift; sourceTree = "<group>"; };
+		9911BF5D489D90AE02811CB3 /* LogFileService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogFileService.swift; path = App/Services/LogFileService.swift; sourceTree = "<group>"; };
+		9ABC2F1F39F8FB25110771D4 /* Preferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = App/Models/Preferences.swift; sourceTree = "<group>"; };
+		ADA05C37EBB9D97D71511B26 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "BRM/LXC-BRM-frameworks/README.md"; sourceTree = "<group>"; };
+		B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LXC_BRMApp.swift; path = App/LXC_BRMApp.swift; sourceTree = "<group>"; };
+		BC1C69A77D6AEDDE678E3704 /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-build-release/todo-2026-08-16.md"; sourceTree = "<group>"; };
+		D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GitBranchReader.swift; path = App/Services/GitBranchReader.swift; sourceTree = "<group>"; };
+		D42A86DDBD972CFA5981609E /* BuildRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRecord.swift; path = App/Models/BuildRecord.swift; sourceTree = "<group>"; };
+		D8BC40DDA4B60A43DF0450C1 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "BRM/LXC-BRM-build-release/README.md"; sourceTree = "<group>"; };
+		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
+		EC7DCB9FFFC45B14143505CA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "BRM/LXC-BRM-context/README.md"; sourceTree = "<group>"; };
+		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		F50575DC30317AC300601A4A /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		F50575DE30317AE500601A4A /* README 2.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "README 2.md"; sourceTree = "<group>"; };
+		F50575E030317B8F00601A4A /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		F8A35B40DE5743548135AE5E /* todo-2026-08-16.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = "todo-2026-08-16.md"; path = "BRM/LXC-BRM-shared/todo-2026-08-16.md"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,8 +129,19 @@
 				376C275B291A8197FDA9F65B /* AppDelegate.swift */,
 				A1B2C3D4E5F6071829384756 /* Models */,
 				A6B5C4D3E2F1897061524738 /* Services */,
+				F50575DC30317AC300601A4A /* .gitignore */,
+				F50575DE30317AE500601A4A /* README 2.md */,
+				F50575E030317B8F00601A4A /* LICENSE */,
 			);
 			name = App;
+			sourceTree = "<group>";
+		};
+		96D8A2840BD6F8C71B5C2396 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				363495766860C99A9A8A3A95 /* LXC-BRM.app */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		A1B2C3D4E5F6071829384756 /* Models */ = {
@@ -142,20 +161,13 @@
 				16F0A7F761D84D0548A244BA /* RepositoryStore.swift */,
 				E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */,
 				1A3DA0FF6648759940B42148 /* BuildRunner.swift */,
+				C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */,
 				6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */,
 				9911BF5D489D90AE02811CB3 /* LogFileService.swift */,
 				D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */,
 				80C39837CDF536B7DA795EDC /* PreferencesStore.swift */,
 			);
 			name = Services;
-			sourceTree = "<group>";
-		};
-		96D8A2840BD6F8C71B5C2396 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				363495766860C99A9A8A3A95 /* LXC-BRM.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -184,11 +196,11 @@
 		D84DE3DCEEE3F1B08BD25C91 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 2630;
-				LastUpgradeCheck = 2630;
+				LastUpgradeCheck = 2660;
 			};
 			buildConfigurationList = E54C30A42C4CB92701C89DF2 /* Build configuration list for PBXProject "LXC-BRM" */;
-			compatibilityVersion = "Xcode 26.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -196,8 +208,7 @@
 				Base,
 			);
 			mainGroup = 71A7D17D78B11C20BC9E04E0;
-			minimizedProjectReferenceProxies = 0;
-			preferredProjectObjectVersion = 100;
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 96D8A2840BD6F8C71B5C2396 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -212,6 +223,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F50575E130317B8F00601A4A /* LICENSE in Resources */,
+				F50575DF30317AE500601A4A /* README 2.md in Resources */,
+				F50575DD30317AC300601A4A /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,6 +243,7 @@
 				FEEDFCE5AA26DC939D4E44DE /* RepositoryStore.swift in Sources */,
 				251FCCFB1823E848C6967B7C /* BuildScriptScanner.swift in Sources */,
 				4B5590D2F6DE9F6ACEEB834A /* BuildRecord.swift in Sources */,
+				4C6B8D1F2A3E4C5D6F708192 /* BuildNotificationService.swift in Sources */,
 				A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */,
 				50CC22F6B112137092256122 /* BuildHistoryStore.swift in Sources */,
 				E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */,
@@ -251,9 +266,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sagevish.lxcbrm;
@@ -266,6 +285,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -296,9 +316,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -310,6 +332,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -324,9 +347,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sagevish.lxcbrm;
@@ -339,6 +366,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -369,9 +397,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -390,6 +420,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;

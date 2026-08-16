@@ -27,6 +27,7 @@ struct ContentView: View {
                     store: store,
                     historyStore: historyStore,
                     preferencesStore: preferencesStore,
+                    runners: runners,
                     runner: runners.runner(for: repository.id),
                     initialTab: RepositoryDetailView.DetailTab(preferencesStore.preferences.defaultLaunchTab)
                 )
@@ -519,6 +520,7 @@ private struct RepositoryDetailView: View {
     @ObservedObject var store: RepositoryStore
     @ObservedObject var historyStore: BuildHistoryStore
     @ObservedObject var preferencesStore: PreferencesStore
+    @ObservedObject var runners: BuildRunnerRegistry
     @ObservedObject var runner: BuildRunner
 
     @State private var selectedTab: DetailTab
@@ -532,6 +534,7 @@ private struct RepositoryDetailView: View {
         store: RepositoryStore,
         historyStore: BuildHistoryStore,
         preferencesStore: PreferencesStore,
+        runners: BuildRunnerRegistry,
         runner: BuildRunner,
         initialTab: DetailTab = .build
     ) {
@@ -539,6 +542,7 @@ private struct RepositoryDetailView: View {
         self.store = store
         self.historyStore = historyStore
         self._preferencesStore = ObservedObject(wrappedValue: preferencesStore)
+        self._runners = ObservedObject(wrappedValue: runners)
         self.runner = runner
         self._selectedTab = State(initialValue: initialTab)
     }
@@ -592,6 +596,12 @@ private struct RepositoryDetailView: View {
         }
         .background(.background)
         .task(id: repository.id) { await scan() }
+        .onChange(of: runner.finishedAt) { _, newValue in
+            guard newValue != nil else { return }
+            if preferencesStore.preferences.defaultBehaviorAfterBuildCompletes == "Switch to History" {
+                selectedTab = .history
+            }
+        }
         .toolbar {
             ToolbarItem {
                 Button {
@@ -790,6 +800,11 @@ private struct RepositoryDetailView: View {
         case .success(let scripts):
             GroupBox("Available Build Scripts") {
                 VStack(alignment: .leading, spacing: 8) {
+                    if runners.runningCount >= preferencesStore.preferences.maxConcurrentBuilds {
+                        Text("Maximum concurrent builds reached. Stop one build before starting another.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                     ForEach(scripts) { script in
                         scriptRow(script)
                     }
@@ -848,7 +863,7 @@ private struct RepositoryDetailView: View {
                     )
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(!repository.source.isLocal || runner.isRunning)
+                .disabled(!repository.source.isLocal || runner.isRunning || runners.runningCount >= preferencesStore.preferences.maxConcurrentBuilds)
             }
         }
         .padding(8)

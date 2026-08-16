@@ -9,5 +9,6 @@ This folder is the final output staging area for release builds.
 
 ## Expected Contents
 
-- `*.dmg` release artifact
+- `LXC-BRM-YYYY-MM-DD.dmg` release artifact
 - Optional release notes or version marker files if needed later
+- Temporary staging copies may live here while the DMG is being created

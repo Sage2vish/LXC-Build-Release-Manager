@@ -8,6 +8,7 @@ final class RepositoryStore: ObservableObject {
     @Published var selectedRepositoryID: Repository.ID?
 
     private let storeURL: URL
+    private let selectedStoreURL: URL
     private let rememberRecentRepositories: Bool
 
     init() {
@@ -15,15 +16,14 @@ final class RepositoryStore: ObservableObject {
         let folder = appSupport.appendingPathComponent("LXC-BRM", isDirectory: true)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         storeURL = folder.appendingPathComponent("projects.json")
+        selectedStoreURL = folder.appendingPathComponent("selected-repository.json")
 
         let prefs = Preferences.loadFromDisk()
         rememberRecentRepositories = prefs.rememberRecentRepositories
 
         guard rememberRecentRepositories, prefs.automaticallyRestoreLastOpenedRepositories else { return }
         load()
-        if !prefs.restoreLastOpenedRepository {
-            selectedRepositoryID = nil
-        }
+        selectedRepositoryID = prefs.restoreLastOpenedRepository ? (loadSelectedRepositoryID() ?? repositories.first?.id) : repositories.first?.id
     }
 
     var selectedRepository: Repository? {
@@ -46,6 +46,7 @@ final class RepositoryStore: ObservableObject {
             selectedRepositoryID = repositories.first?.id
         }
         save()
+        saveSelectedRepositoryID()
     }
 
     func togglePin(_ repository: Repository) {
@@ -59,6 +60,7 @@ final class RepositoryStore: ObservableObject {
         guard let index = repositories.firstIndex(where: { $0.id == repository.id }) else { return }
         repositories[index].lastAccessed = Date()
         save()
+        saveSelectedRepositoryID()
     }
 
     private func upsert(_ repository: Repository) {
@@ -70,6 +72,7 @@ final class RepositoryStore: ObservableObject {
             selectedRepositoryID = repository.id
         }
         save()
+        saveSelectedRepositoryID()
     }
 
     private func load() {
@@ -78,7 +81,6 @@ final class RepositoryStore: ObservableObject {
         decoder.dateDecodingStrategy = .iso8601
         guard let decoded = try? decoder.decode([Repository].self, from: data) else { return }
         repositories = decoded.sorted { $0.lastAccessed > $1.lastAccessed }
-        selectedRepositoryID = repositories.first?.id
     }
 
     private func save() {
@@ -88,5 +90,20 @@ final class RepositoryStore: ObservableObject {
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         guard let data = try? encoder.encode(repositories) else { return }
         try? data.write(to: storeURL, options: .atomic)
+    }
+
+    private func loadSelectedRepositoryID() -> UUID? {
+        struct SelectionState: Codable { var selectedRepositoryID: UUID? }
+        guard let data = try? Data(contentsOf: selectedStoreURL) else { return nil }
+        return try? JSONDecoder().decode(SelectionState.self, from: data).selectedRepositoryID
+    }
+
+    private func saveSelectedRepositoryID() {
+        guard rememberRecentRepositories else { return }
+        struct SelectionState: Codable { var selectedRepositoryID: UUID? }
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        guard let data = try? encoder.encode(SelectionState(selectedRepositoryID: selectedRepositoryID)) else { return }
+        try? data.write(to: selectedStoreURL, options: .atomic)
     }
 }

@@ -16,6 +16,7 @@
 - `LXC-BRM-frameworks/` holds framework-specific assets only.
 - `LXC-BRM-build-release/` holds build scripts, logs, release mapping, and version output.
 - `LXC-BRM-build-release/version/` is the final `.dmg` staging folder.
+- Local release builds can skip code signing while staging the DMG, because the release script is only producing a distributable local artifact in this repo.
 - `LXC-BRM-worklog/` records daily activity and progress.
 - `LXC-BRM-context/` records rules, architecture, and decisions.
 

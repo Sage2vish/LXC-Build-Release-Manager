@@ -27,11 +27,8 @@ enum LogFileService {
             .replacingOccurrences(of: "[", with: "")
             .replacingOccurrences(of: "]", with: "")
         formatter.dateFormat = cleanedFormat.isEmpty ? "HH:mm:ss" : cleanedFormat
-        var contents = "# \(script.fileName) — \(status.rawValue)\n\n"
-        contents += lines
-            .map { "[\(formatter.string(from: $0.timestamp))] \($0.text)" }
-            .joined(separator: "\n")
-        return contents
+        let renderedLines = lines.map { "[\(formatter.string(from: $0.timestamp))] \($0.text)" }
+        return "# \(script.fileName) — \(status.rawValue)\n\n" + renderedLines.joined(separator: "\n")
     }
 
     private static func stringEncoding(named name: String) -> String.Encoding {
@@ -54,6 +51,7 @@ enum LogFileService {
         logsSubdirectory: String = "logs",
         timestampFormat: String = "[HH:mm:ss]",
         encodingName: String = "UTF-8",
+        maxLogFileSizeMB: Int = 100,
         retentionDays: Int = 30,
         maxStoredLogs: Int = 100
     ) -> String {
@@ -65,11 +63,12 @@ enum LogFileService {
             startedAt: startedAt,
             timestampFormat: timestampFormat
         )
+        let finalContents = contents.truncated(toMaxByteCount: maxLogFileSizeMB > 0 ? maxLogFileSizeMB * 1024 * 1024 : 0)
 
         guard let directory = logsDirectoryURL(for: repository, buildFolderName: buildFolderName, logsSubdirectory: logsSubdirectory) else { return fileName }
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let fileURL = directory.appendingPathComponent(fileName)
-        try? contents.write(to: fileURL, atomically: true, encoding: stringEncoding(named: encodingName))
+        try? finalContents.write(to: fileURL, atomically: true, encoding: stringEncoding(named: encodingName))
         prune(directory: directory, retentionDays: retentionDays, maxStoredLogs: maxStoredLogs)
         return fileName
     }
@@ -123,5 +122,38 @@ enum LogFileService {
                 try? fileManager.removeItem(at: file)
             }
         }
+    }
+}
+
+private extension String {
+    func truncated(toMaxByteCount limit: Int) -> String {
+        guard limit > 0, utf8.count > limit else { return self }
+
+        let separator = "\n"
+        let parts = components(separatedBy: separator)
+        guard parts.count > 1 else {
+            return String(decoding: utf8.prefix(limit), as: UTF8.self)
+        }
+
+        var kept: [String] = []
+        var currentByteCount = 0
+        for part in parts.reversed() {
+            let partCount = part.utf8.count
+            let separatorCount = kept.isEmpty ? 0 : separator.utf8.count
+            if currentByteCount + partCount + separatorCount > limit { break }
+            kept.insert(part, at: 0)
+            currentByteCount += partCount + separatorCount
+        }
+
+        guard !kept.isEmpty else {
+            return String(decoding: utf8.prefix(limit), as: UTF8.self)
+        }
+
+        let note = "# Log truncated to fit the configured maximum size.\n"
+        let combined = kept.joined(separator: separator)
+        if (note + combined).utf8.count <= limit {
+            return note + combined
+        }
+        return combined
     }
 }

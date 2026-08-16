@@ -1,0 +1,47 @@
+# Xcode
+DerivedData/
+*.xcworkspace
+*.xcuserstate
+*.xcuserdata/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Build products
+/build/
+LXC-BRM-build-release/version/
+*.app
+*.dmg
+*.ipa
+*.xcarchive
+
+# Logs and user data
+*.log
+*.swp
+*.swo
+*.tmp
+
+# SwiftPM
+/.build/
+Package.resolved
+
+# User-specific files
+*.personal.json
+*.user
+*.keychain
+
+# Misc
+*.orig
+*~
+
+# Ignore context and worklog cache
+LXC-BRM-context/cache/
+worklog/tmp/

@@ -1,5 +1,6 @@
 import Foundation
 import Darwin
+import Combine
 
 @MainActor
 final class BuildRunner: ObservableObject {
@@ -34,7 +35,7 @@ final class BuildRunner: ObservableObject {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: preferences.defaultShell)
         process.arguments = [script.path]
-        process.currentDirectoryURL = URL(fileURLWithPath: repositoryPath)
+        process.currentDirectoryURL = workingDirectoryURL(for: repositoryPath, preferences: preferences)
 
         if !preferences.environmentVariables.isEmpty {
             var environment = ProcessInfo.processInfo.environment
@@ -72,6 +73,13 @@ final class BuildRunner: ObservableObject {
                 reason: "LXC-BRM build running: \(script.label)"
             )
         }
+
+        BuildNotificationService.shared.notify(
+            .started,
+            repository: repository,
+            script: script,
+            preferences: preferences
+        )
 
         do {
             try process.run()
@@ -139,6 +147,14 @@ final class BuildRunner: ObservableObject {
         }
 
         let finalStatus: BuildStatus = wasCancelled ? .cancelled : (exitCode == 0 ? .success : .failed)
+        let notificationKind: BuildNotificationService.Kind = {
+            switch finalStatus {
+            case .success: return .succeeded
+            case .failed: return .failed
+            case .cancelled: return .cancelled
+            case .running: return .started
+            }
+        }()
 
         if wasCancelled && !preferences.preservePartialOutputOnCancellation {
             logLines = []
@@ -157,6 +173,7 @@ final class BuildRunner: ObservableObject {
                 logsSubdirectory: preferences.logsSubdirectory,
                 timestampFormat: preferences.timestampFormat,
                 encodingName: preferences.logEncoding,
+                maxLogFileSizeMB: preferences.maxLogFileSizeMB,
                 retentionDays: preferences.logRetentionDays,
                 maxStoredLogs: preferences.maxStoredLogs
             )
@@ -174,9 +191,31 @@ final class BuildRunner: ObservableObject {
             )
         )
 
+        BuildNotificationService.shared.notify(
+            notificationKind,
+            repository: repository,
+            script: script,
+            preferences: preferences
+        )
+
         runningScript = nil
         process = nil
         wasCancelled = false
+    }
+
+    private func workingDirectoryURL(for repositoryPath: String, preferences: Preferences) -> URL {
+        let repositoryURL = URL(fileURLWithPath: repositoryPath)
+        switch preferences.workingDirectoryChoice {
+        case "Custom":
+            let buildFolder = repositoryURL.appendingPathComponent(preferences.defaultBuildFolderName, isDirectory: true)
+            var isDirectory: ObjCBool = false
+            if FileManager.default.fileExists(atPath: buildFolder.path, isDirectory: &isDirectory), isDirectory.boolValue {
+                return buildFolder
+            }
+            return repositoryURL
+        default:
+            return repositoryURL
+        }
     }
 
     /// Best-effort recursive kill: Foundation's Process API doesn't expose real process-group
@@ -210,11 +249,15 @@ final class BuildRunnerRegistry: ObservableObject {
     static let shared = BuildRunnerRegistry()
 
     private var runners: [UUID: BuildRunner] = [:]
+    private var cancellables: [UUID: AnyCancellable] = [:]
 
     func runner(for repositoryID: UUID) -> BuildRunner {
         if let existing = runners[repositoryID] { return existing }
         let runner = BuildRunner()
         runners[repositoryID] = runner
+        cancellables[repositoryID] = runner.objectWillChange.sink { [weak self] _ in
+            self?.objectWillChange.send()
+        }
         return runner
     }
 
