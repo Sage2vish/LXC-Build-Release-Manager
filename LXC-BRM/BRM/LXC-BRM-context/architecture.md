@@ -23,7 +23,8 @@
 
 - Root `README.md` is the top-level index.
 - Each BRM area has its own `README.md`.
-- Each BRM area has one dated todo file named `todo-2026-08-16.md` for this work.
+- Active todo tracking lives only in `LXC-BRM-worklog/todo-2026-08-16.md`.
+- Other BRM areas keep README files and reference notes, not their own todo files.
 - Decision records go under `decisions/`.
 - Tracking sections must stay short and actionable.
 

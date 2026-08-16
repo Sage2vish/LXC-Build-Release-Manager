@@ -4,7 +4,7 @@ Build and release orchestration for the macOS app.
 
 ## Output Layout
 
-- `todo-2026-08-16.md` for the current dated release note
+- Active todo tracking lives in `../LXC-BRM-worklog/todo-2026-08-16.md`.
 - `scripts/` for shell entry points
 - `logs/` for timestamped build logs
 - `version/` for the final versioned release package and `.dmg`
@@ -15,4 +15,5 @@ Build and release orchestration for the macOS app.
 - PDF requirements define the requested scope.
 - Context decisions define the implementation path.
 - If they conflict, follow the decision log and keep the conflict visible.
-- The todo file is a working checklist, not a completion report.
+- The build-release folder does not keep its own todo file.
+- The worklog todo is the working checklist for this area.
