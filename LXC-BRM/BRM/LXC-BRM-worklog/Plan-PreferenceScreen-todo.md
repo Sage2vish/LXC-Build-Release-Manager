@@ -7,8 +7,9 @@ Sources:
 - **Screen 2 — Repositories tab**, same fidelity. Superseded the early Repositories field guesses.
 - **Screen 3 — Build Execution tab**, same fidelity. Superseded the early Build Execution field guesses.
 - **Screen 4 — Logs & Console tab**, same fidelity. Superseded the early Logs & Console field guesses.
+- **Screen 5 — Appearance tab**, same fidelity. Superseded the early Appearance field guess (was a single "App Theme" line; the real tab is much larger).
 
-Image files: `assets/Preference-Screen-1.png` through `assets/Preference-Screen-4.png` — not yet on disk, and this isn't something I'm choosing to skip: a chat-pasted image reaches me only as something I can look at, never as file bytes, and none of my tools can export it. There is no tool call in my toolset that turns a pasted image into a saved file — I checked your clipboard and Desktop/Downloads for a match and found nothing there either. The only way these land in `assets/` is you saving them from Finder (drag the image out of the chat, or right-click → Save Image As) under the exact names above. Once they're there I'll use them automatically — I'm not re-checking or re-asking, just noting it stays true each round. Everything else below is written directly from reading each screen.
+Image files: `assets/Preference-Screen-1.png` through `assets/Preference-Screen-5.png` — still not on disk. Checked again just now (searched the whole home folder, Application Support, and the system temp dirs for anything created in the last five minutes) — nothing. This is a hard tool limitation, not a choice: a chat-pasted image reaches me only as something I can look at, never as file bytes, and no tool available to me exports it. The only way these land in `assets/` is you saving them from Finder (drag the image out of the chat, or right-click → Save Image As) under the exact names above. Everything else below is written directly from reading each screen.
 
 This is a **plan document**, not a duplicate todo list — the single active todo file is still `todo-2026-08-16.md`. This file holds the detailed design + checklist for one feature (the Preferences screen); the master todo links to it as one line item so tracking still has one home.
 
@@ -89,8 +90,16 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 - Default log filter — dropdown, default "All Lines" — "Applied when opening a log."
 - Search is case sensitive (off) — "Case sensitive search in logs."
 
-### 05 🎨 Appearance
-- App Theme: Light / Dark / System
+### 05 🎨 Appearance — *finalized from Screen 5*
+- Theme — card picker: Light / Dark / System, default Light
+- UI Density — dropdown, default "Comfortable" — "Adjust the spacing and size of elements in the app."
+- Sidebar Width — dropdown, default "Medium (280px)" — "Choose the width of the left sidebar."
+- Text Size — dropdown, default "Default (100%)" — "Adjust the base text size in the app."
+- Accent Color — swatch picker (blue selected, plus purple/green/orange/red/teal/gray) + "Custom…" — "Choose the accent color used for highlights and actions."
+- Show animations (on) — "Enable subtle animations for a smoother experience."
+- Round window corners (on) — "Use rounded corners for windows and panels."
+- Reduce transparency (off) — "Minimize transparency effects for better readability."
+- Use system font (San Francisco) (on) — "Use macOS system font for a native look."
 
 ### 06 🔔 Notifications
 - Show toast notifications for build events
@@ -177,7 +186,15 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 - [ ] Search-is-case-sensitive toggle — wire into `LogPane`'s search (currently always `localizedCaseInsensitiveContains`)
 
 ### 05 Appearance
-- [ ] App Theme control (Light/Dark/System) — wire to actual app appearance (currently always follows system with no override)
+- [ ] Theme card picker (Light/Dark/System) — wire into actual app appearance; **note:** `ContentView.swift` currently has no override mechanism at all — it was deliberately built to always follow the system, per the user's own earlier instruction ("the dark or bright has to be the system default"). This field reintroduces a manual override on top of that, so Light/Dark selections need a real `.preferredColorScheme` hook while "System" keeps today's behavior.
+- [ ] UI Density dropdown — new concept, no density-aware spacing exists yet across the app's views
+- [ ] Sidebar Width dropdown — wire into `NavigationSplitView`'s sidebar column width (currently unset/default)
+- [ ] Text Size dropdown — new concept, no app-wide dynamic type scaling exists yet
+- [ ] Accent Color swatch picker + Custom — wire into `.tint()`/`AccentColor` asset (currently uses the system accent color only)
+- [ ] Show animations toggle — groundwork; app currently uses SwiftUI's implicit animations without a global on/off
+- [ ] Round window corners toggle — groundwork; no custom window-corner styling exists yet
+- [ ] Reduce transparency toggle — groundwork; app currently uses standard `.bar`/`.background` materials with no transparency override
+- [ ] Use system font toggle — groundwork; app already uses the system font everywhere by default, so "on" is a no-op and "off" needs a real alternate-font path to mean anything
 
 ### 06 Notifications
 - [ ] Toast notifications toggle — no toast/notification system exists yet; build the minimal version needed to honor this toggle
@@ -201,11 +218,11 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 | 02 Repositories | 0 / 9 | Open |
 | 03 Build Execution | 0 / 10 | Open |
 | 04 Logs & Console | 0 / 15 | Open |
-| 05 Appearance | 0 / 1 | Open (pending Screen 5) |
+| 05 Appearance | 0 / 9 | Open |
 | 06 Notifications | 0 / 2 | Open (pending Screen 6) |
 | 07 Advanced | 0 / 3 | Open (pending Screen 7) |
 | Polish | 0 / 1 | Open |
-| **Total** | **0 / 59** | **Not started** |
+| **Total** | **0 / 67** | **Not started** |
 
 ## Screens Received
 
@@ -215,8 +232,8 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 | 2 | Repositories | ✅ Read and incorporated (image not yet saved to `assets/`) |
 | 3 | Build Execution | ✅ Read and incorporated (image not yet saved to `assets/`) |
 | 4 | Logs & Console | ✅ Read and incorporated (image not yet saved to `assets/`) |
-| 5 | Appearance | ⏳ Waiting — fields below are still the early guesses from the concept mockup |
-| 6 | Notifications | ⏳ Waiting — same |
+| 5 | Appearance | ✅ Read and incorporated (image not yet saved to `assets/`) |
+| 6 | Notifications | ⏳ Waiting — fields below are still the early guesses from the concept mockup |
 | 7 | Advanced | ⏳ Waiting — same |
 
 ## Notes / Open Questions
@@ -227,5 +244,6 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 4. GitHub access moved from an inline token field (early mockup) to a "Configure…" button opening a sub-sheet (Screen 2) — plan follows the newer screen.
 5. **Another duplicate field**: "Logs directory (inside /build)" appears on both the Repositories tab (Screen 2) and the Logs & Console tab (Screen 4), same default `logs`. Same resolution as note 2 — one shared stored value, shown in both places.
 6. **Shell default mismatch**: Screen 3's mockup defaults "Default shell" to `/bin/zsh`; the app's `BuildRunner` currently hardcodes `/bin/bash`. Worth confirming which is the intended default before wiring this field — flagged rather than silently picked.
-7. Storage path: keeping `~/Library/Application Support/LXC-BRM/preferences.json` instead of the early mockup's `BuildManager/` folder name, for consistency with the app's existing stores.
-8. This supersedes the placeholder `PreferencesView`/`Settings` scene built earlier today (2026-08-16); that code will be replaced, not kept alongside.
+7. **Theme override reverses an earlier decision.** Screen 5's Light/Dark/System picker means the app needs a manual appearance override — but the app was deliberately built earlier today to *always* follow the system appearance, per explicit instruction ("the dark or bright has to be the system default"), which removed a hardcoded dark background specifically to achieve that. This isn't a contradiction to silently resolve: implementing the theme picker is the right call (it's what's being asked for now, and "System" as the default still satisfies the earlier instruction), just flagging that it's a deliberate reversal of "no in-app override," not an oversight.
+8. Storage path: keeping `~/Library/Application Support/LXC-BRM/preferences.json` instead of the early mockup's `BuildManager/` folder name, for consistency with the app's existing stores.
+9. This supersedes the placeholder `PreferencesView`/`Settings` scene built earlier today (2026-08-16); that code will be replaced, not kept alongside.
