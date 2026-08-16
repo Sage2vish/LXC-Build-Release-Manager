@@ -14,9 +14,42 @@ jobs:
 
     runs-on: macos-latest
 
+    defaults:
+      run:
+        working-directory: LXC-BRM
+
     steps:
     - uses: actions/checkout@v4
+    - name: Set Default Scheme
+      id: xcode_info
+      working-directory: LXC-BRM
+      run: |
+        if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then
+          filetype_parameter="workspace"
+          file_to_build="`ls -A | grep -i \\.xcworkspace\$`"
+          json_key="workspace"
+        else
+          filetype_parameter="project"
+          file_to_build="`ls -A | grep -i \\.xcodeproj\$`"
+          json_key="project"
+        fi
+        file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
+        scheme=$(xcodebuild -list -json | tr -d "\n" | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['$json_key']['targets'][0]")
+        echo "filetype_parameter=$filetype_parameter" >> "$GITHUB_OUTPUT"
+        echo "file_to_build=$file_to_build" >> "$GITHUB_OUTPUT"
+        echo "scheme=$scheme" >> "$GITHUB_OUTPUT"
+        echo "Using scheme: $scheme, $filetype_parameter: $file_to_build"
     - name: Build
-      run: swift build -v
+      working-directory: LXC-BRM
+      run: |
+        xcodebuild clean build \
+          -scheme "${{ steps.xcode_info.outputs.scheme }}" \
+          -"${{ steps.xcode_info.outputs.filetype_parameter }}" "${{ steps.xcode_info.outputs.file_to_build }}" \
+          | xcpretty && exit ${PIPESTATUS[0]}
     - name: Run tests
-      run: swift test -v
+      working-directory: LXC-BRM
+      run: |
+        xcodebuild test \
+          -scheme "${{ steps.xcode_info.outputs.scheme }}" \
+          -"${{ steps.xcode_info.outputs.filetype_parameter }}" "${{ steps.xcode_info.outputs.file_to_build }}" \
+          | xcpretty && exit ${PIPESTATUS[0]}
