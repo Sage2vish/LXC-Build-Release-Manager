@@ -26,6 +26,7 @@ This repository is organized around a BRM workspace model, with the native macOS
 | `LXC-BRM/BRM/LXC-BRM-build-release/logs` | Timestamped build logs | `LXC-BRM/BRM/LXC-BRM-build-release/logs/README.md` |
 | `LXC-BRM/BRM/LXC-BRM-build-release/version` | Final versioned release output, including the `.dmg` | `LXC-BRM/BRM/LXC-BRM-build-release/version/README.md` |
 | `LXC-BRM/BRM/LXC-BRM-worklog` | Daily progress and execution logs | `LXC-BRM/BRM/LXC-BRM-worklog/todo-2026-08-16.md` |
+| `LXC-BRM/BRM/LXC-BRM-worklog/worklog-2026-08-16.md` | Written daily work summary | `LXC-BRM/BRM/LXC-BRM-worklog/worklog-2026-08-16.md` |
 | `LXC-BRM/BRM/LXC-BRM-context` | Decisions, references, and operating notes | `LXC-BRM/BRM/LXC-BRM-context/todo-2026-08-16.md` |
 | `LXC-BRM/BRM/LXC-BRM-context/rules-context.md` | Rules and operating constraints | `LXC-BRM/BRM/LXC-BRM-context/rules-context.md` |
 | `LXC-BRM/BRM/LXC-BRM-context/architecture.md` | Current architecture model | `LXC-BRM/BRM/LXC-BRM-context/architecture.md` |
@@ -42,6 +43,7 @@ The macOS SwiftUI app in `LXC-BRM/` is the desktop shell for navigating the BRM 
 - Final release packages go to `LXC-BRM/BRM/LXC-BRM-build-release/version/`
 - Project tracking lives in `LXC-BRM/BRM/LXC-BRM-build-release/projects.json`
 - Daily todo notes use `LXC-BRM/BRM/LXC-BRM-*/todo-2026-08-16.md`
+- Worklog summaries use `LXC-BRM/BRM/LXC-BRM-worklog/worklog-2026-08-16.md`
 - Context rules live in `LXC-BRM/BRM/LXC-BRM-context/rules-context.md`
 - Context architecture lives in `LXC-BRM/BRM/LXC-BRM-context/architecture.md`
 - Decisions live in `LXC-BRM/BRM/LXC-BRM-context/decisions/`
