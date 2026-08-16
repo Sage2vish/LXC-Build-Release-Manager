@@ -1,20 +1,37 @@
-// Contributing to My Health Hub Space
+# Contributing to LXC-BRM
 
-Thank you for your interest in improving this project!
+Thank you for helping improve LXC-BRM. This project values small, understandable changes that keep the native macOS app and its Support handbook in sync.
 
-## How to Contribute
+## Before you change code
 
-- **Open an Issue:** If you have a bug or feature request, open an issue first to discuss your idea.
-- **Fork & PR:** Fork the repo, make your changes, and submit a pull request to `main`.
-- **Coding Style:** Follow the SwiftLint and SwiftFormat rules. Run `swiftlint` and `swiftformat` before submitting PRs.
-- **Tests:** Please add or update tests as needed when submitting code changes.
-- **Documentation:** Keep code and user-guide docs up to date when you add features or change behavior.
+1. Read the [Support Handbook](Support/README.md).
+2. Read the relevant [context rules](Support/context/rules-context.md), architecture notes, and decision records.
+3. Find the matching item in the [master worklog](Support/worklog/todo-2026-08-16.md), or add one before starting larger work.
 
-## Community Guidelines
-- Please be respectful and inclusive.
-- All contributions are reviewed for quality and clarity.
+## Local verification
 
-## Getting Help
-For major design or architecture questions, open an issue to discuss with the maintainers.
+Run from the repository root:
 
-Thank you for making My Health Hub Space better!
+```sh
+xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug build
+xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug test
+```
+
+Use the repository's SwiftFormat and SwiftLint configuration when those tools are available. Do not mark a GUI, performance, or packaging task complete from a compile result alone.
+
+## Documentation and worklog expectations
+
+- Update the relevant Support README when folder ownership or commands change.
+- Update Context when requirements, architecture, or decisions change.
+- Update the master todo only when the matching work is complete at the level the checklist claims.
+- Add verification evidence to the dated worklog.
+- Keep generated `.app`, `.dmg`, logs, and local build data out of commits.
+
+## Pull requests and issues
+
+- Open an issue for a bug, design question, or feature proposal when discussion will help.
+- Keep pull requests focused and describe how the change was verified.
+- Include screenshots or a short recording when a visual macOS behavior changes.
+- Follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+For architectural questions, start with the context and decision records, then open an issue with the specific tradeoff that needs discussion.

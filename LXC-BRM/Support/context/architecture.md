@@ -1,36 +1,53 @@
 # Architecture
 
-## UI Architecture
+This document describes the current shape of both the native app and the Support workspace around it.
 
-- Native SwiftUI app.
-- Main shell uses a `NavigationSplitView`: repository sidebar, repository detail pane, and an optional build inspector.
-- Reusable sidebar components (`RepositoryRow`, `RecentRepositoryRow`, `AddRepositorySheet`, `StatusBar`) live in dedicated Swift files instead of being duplicated in the app shell.
-- The detail pane owns Build, Logs, History, Overview, and Settings tabs for the selected repository.
-- UI copy reflects actual repository state, build output, and saved preferences.
+## Product architecture
 
-## Workspace Architecture
+- The product is a native macOS application built with Swift 6, SwiftUI, AppKit, Foundation, and XCTest.
+- The Xcode project lives under `LXC-BRM/` and targets macOS 15 or later.
+- The app shell uses a `NavigationSplitView` with a repository sidebar, repository detail workspace, and optional right-side inspector.
+- The detail workspace owns Build, Logs, History, Overview, and Settings surfaces for the selected repository.
+- The app has no third-party package dependency; local files and Apple system frameworks are the baseline.
+
+## Runtime responsibilities
+
+| Responsibility | Main implementation area | Persistent result |
+| --- | --- | --- |
+| Repository input and recent list | `App/Services/RepositoryStore.swift` | `~/Library/Application Support/LXC-BRM/projects.json` |
+| Script discovery and path safety | `App/Services/BuildScriptScanner.swift` and `DeepScriptSearch.swift` | In-memory scan result plus workspace selections |
+| Build execution | `App/Services/BuildRunner.swift` | Live output and a `BuildRecord` |
+| History and statistics | `App/Services/BuildHistoryStore.swift` | `~/Library/Application Support/LXC-BRM/build-history.json` |
+| Logs | `App/Services/LogFileService.swift` | `<repository>/build/logs/*.log` |
+| Preferences and layout | `App/Services/PreferencesStore.swift` | `~/Library/Application Support/LXC-BRM/preferences.json` |
+| Build workspace selections | `App/Services/BuildWorkspaceStateStore.swift` | `~/Library/Application Support/LXC-BRM/build-workspace-state.json` |
+
+## Workspace architecture
 
 - `LXC-BRM/` is the Xcode-openable native app container.
-- `Support/` contains the workspace folders and documentation.
-- `shared/` holds shared helpers and conventions.
-- `frameworks/` holds framework-specific assets only.
-- `build-release/` holds build scripts, logs, release mapping, and version output.
-- `build-release/version/` is the final `.dmg` staging folder.
-- Local release builds can skip code signing while staging the DMG, because the release script is only producing a distributable local artifact in this repo.
-- `worklog/` records daily activity and progress.
-- `context/` records rules, architecture, and decisions.
+- `Support/` is the non-app project handbook and delivery workspace.
+- `Support/build-release/` owns scripts, release instructions, configuration examples, and version staging.
+- `Support/context/` owns requirements, architecture, rules, decisions, and design references.
+- `Support/frameworks/` owns the framework and integration inventory.
+- `Support/shared/` owns reusable conventions and cross-feature ideas.
+- `Support/worklog/` owns the master checklist, feature plans, and dated execution narratives.
 
-## Documentation Architecture
+## Documentation architecture
 
-- Root `README.md` is the top-level index.
-- Each support area has its own `README.md`.
-- Active todo tracking lives only in `worklog/todo-2026-08-16.md`.
-- Other support areas keep README files and reference notes, not their own todo files.
-- Decision records go under `decisions/`.
-- Tracking sections must stay short and actionable.
+- The repository root `README.md` is the top-level landing page.
+- `LXC-BRM/README.md` is the app product guide.
+- `Support/README.md` is the Support handbook and full project map.
+- Each Support child README is an index for that folder, not a replacement for the master worklog.
+- The master dated todo is the release-wide tracker. Detailed feature plans live beside it and link back to the master.
+- Dated decision records live under `context/decisions/`.
 
-## Decision Precedence
+## Decision precedence
 
-- PDF requirements define the requested scope.
-- Recorded decisions define the current implementation path.
-- If they conflict, the decision log wins and the mismatch stays documented.
+1. Code describes the shipped runtime behavior.
+2. Dated decisions describe the chosen implementation when the requirements input is ambiguous or conflicts with the product direction.
+3. Requirements describe the requested behavior and historical scope.
+4. Worklog files describe delivery status and verification evidence.
+
+If these sources disagree, do not silently rewrite history. Update the decision or worklog so the difference is visible, then change the code intentionally.
+
+Return to [`README.md`](README.md) or the [Support Handbook](../README.md).

@@ -1,8 +1,10 @@
-# LXC-BRM Build Manager — User Guide
+# LXC-BRM Build Manager - User Guide
+
+This guide covers the app's human-facing workflow. For packaging commands and release staging, see [Build and Release](README.md). For the full project map, see the [Support Handbook](../README.md).
 
 ## What it does
 
-Point the app at a repo (local folder or GitHub URL). It looks for a `/build` folder, lists the `.sh` scripts it finds in `/build/scripts/`, and lets you run them with live output and a saved history.
+Point the app at a repository (local folder or GitHub URL). It looks for a `/build` folder, lists the `.sh` scripts it finds in `/build/scripts/`, and lets you run local scripts with live output and saved history.
 
 ## Quick Start
 
@@ -19,7 +21,7 @@ Point the app at a repo (local folder or GitHub URL). It looks for a `/build` fo
 
 ## Running a Build
 
-Only local repositories can execute scripts (GitHub repos can only be scanned, since there's no local checkout to run `bash` against).
+Only local repositories can execute scripts. A GitHub URL can be scanned, but it has no local checkout against which LXC-BRM can safely run the configured shell.
 
 1. Go to the **Build** tab.
 2. Click **Run** next to a script. Output streams live below, each line timestamped.
@@ -48,4 +50,4 @@ Saved logs live on disk in the repo's own `/build/logs/` folder, named `build-YY
 
 ## Appearance
 
-The app follows your Mac's system light/dark mode automatically — there's no in-app setting for it.
+The app follows your Mac's system light/dark mode automatically. The Preferences surface also exposes theme, console, repository, execution, notification, and layout settings. Any setting still marked open in the [master worklog](../worklog/todo-2026-08-16.md) remains subject to verification.

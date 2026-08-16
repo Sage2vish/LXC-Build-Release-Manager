@@ -1,10 +1,10 @@
 # Requirements — Build Manager Desktop Tool
 
-Full text of the functional requirements doc (`LXC-BuildManager.pdf`), kept in-repo so it is versioned and doesn't depend on an external file. This is reference input — see `decisions/decision-2026-08-16.md` for where the recorded decisions override it (native Swift/SwiftUI instead of Tauri/React, `projects.json` under `build-release/` instead of a generic local JSON path).
+Full text of the functional requirements doc (`LXC-BuildManager.pdf`), kept in-repo so it is versioned and does not depend on an external file. This document is reference input. The current implementation is governed by `decisions/decision-2026-08-16.md`, including the native Swift/SwiftUI choice and the `projects.json` location under `build-release/`.
 
 ## Executive Summary
 
-A native macOS desktop application (Tauri) that manages builds and workflows across multiple GitHub projects. Core function: user points to a repo, the tool scans it, discovers what can be built, displays available options, and executes builds with live output streaming.
+A desktop application that manages builds and workflows across multiple GitHub projects. Core function: a user points to a repository, the tool scans it, discovers what can be built, displays available options, and executes builds with live output streaming. The implementation decision for this repository is native macOS SwiftUI/AppKit, not Tauri.
 
 ## Functional Requirements (What the Tool Does)
 
@@ -243,7 +243,7 @@ User can add, remove, and organize multiple repos.
 - User can remove a repo from the app (clears from list, doesn't delete the actual folder)
 - Each repo in the list shows its name and URL/path
 
-## Technical Stack (as specified in the PDF)
+## Original Technical Stack (as specified in the PDF)
 
 - Framework: Tauri (Rust backend + web frontend)
 - Frontend: React or vanilla JS + CSS
@@ -252,7 +252,7 @@ User can add, remove, and organize multiple repos.
 - Storage: Local JSON config for saved repos & history
 - Logging: File-based logs in `/build/logs/` directory
 
-**Overridden by decision** — see `decisions/decision-2026-08-16.md`: this build is a native Swift/SwiftUI macOS app, not Tauri/React/Rust. Every requirement above still applies to what the app does; only how it's built changes.
+**Implementation override** — see `decisions/decision-2026-08-16.md`: this repository uses a native Swift/SwiftUI/AppKit macOS app, not Tauri/React/Rust. The requested product behavior remains the reference; only the implementation stack changes.
 
 ## User Workflows
 
@@ -282,7 +282,7 @@ User can add, remove, and organize multiple repos.
 - [x] Native macOS `.app` package
 - [x] Basic dashboard UI
 
-(Checked = in scope for v1, not yet built — see `../worklog/todo-2026-08-16.md` for real build status.)
+(These checkmarks describe the requested v1 scope. Actual implementation and verification status lives in `../worklog/todo-2026-08-16.md`.)
 
 ## Out of Scope (v2+)
 

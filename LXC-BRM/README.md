@@ -1,114 +1,130 @@
-# LXC Build & Release Manager (LXC-BRM)
+# LXC-BRM
 
 <p align="center">
-  <img src="https://via.placeholder.com/128x128.png?text=BRM" alt="LXC-BRM Logo">
+  <strong>Build Manager for macOS</strong><br>
+  Discover repository scripts, run builds, read the output, and carry the result into a repeatable release flow.
 </p>
 
 <p align="center">
-  <strong>A native macOS application for discovering, running, and managing local build scripts with ease.</strong>
+  <img src="https://img.shields.io/badge/platform-macOS%2015%2B-111827?logo=apple&logoColor=white" alt="Platform: macOS 15 or later">
+  <img src="https://img.shields.io/badge/Swift-6.0-F05138?logo=swift&logoColor=white" alt="Swift 6.0">
+  <img src="https://img.shields.io/badge/SwiftUI%20%2B%20AppKit-native-2563EB" alt="Native SwiftUI and AppKit">
+  <img src="https://img.shields.io/badge/release-0.1.2-7C3AED" alt="Release 0.1.2">
+  <img src="https://img.shields.io/badge/third--party%20dependencies-none-059669" alt="No third-party dependencies">
+  <img src="https://img.shields.io/badge/license-MIT-10B981" alt="MIT license">
 </p>
 
 <p align="center">
-  <a href="#features">Features</a> •
-  <a href="#quick-start">Quick Start</a> •
-  <a href="#screenshots">Screenshots</a> •
-  <a href="#technology-stack">Tech Stack</a> •
-  <a href="#project-status">Project Status</a>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/platform-macOS-lightgrey.svg" alt="Platform: macOS">
-  <img src="https://img.shields.io/badge/swift-5.9-orange.svg" alt="Swift 5.9">
-  <img src="https://img.shields.io/badge/swiftui-native-blue.svg" alt="SwiftUI Native">
-  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License: MIT">
-  <img src="https://img.shields.io/badge/status-in%20progress-yellow.svg" alt="Status: In Progress">
+  <a href="#the-idea">The idea</a> |
+  <a href="#what-ships">What ships</a> |
+  <a href="#quick-start">Quick start</a> |
+  <a href="#repository-contract">Repository contract</a> |
+  <a href="Support/README.md">Support handbook</a>
 </p>
 
 ---
 
-LXC-BRM is a developer utility designed to streamline your local build process. Point it at a repository, and it automatically detects shell scripts in a `/build/scripts` directory, presenting them as one-click actions. It provides live, timestamped log streaming, a complete build history, and project-specific statistics, all wrapped in a clean, native macOS interface.
+## The idea
 
-## ✨ Features
+Every project eventually grows a collection of shell commands that only the team knows how to run. LXC-BRM turns those commands into a visible workspace without replacing the scripts or hiding the underlying process.
 
-*   **📂 Repository Management**: Add local repositories from your disk or scan public GitHub repositories.
-*   **🤖 Automatic Script Detection**: Scans for `.sh` files within `/build/scripts/` and creates runnable commands.
-*   **▶️ One-Click Build Execution**: Run any detected script as a background process with a single click.
-*   **🔴 Live Log Streaming**: View `stdout` and `stderr` in real-time, with per-line timestamps in a terminal-style view.
-*   **🔍 Log Search & Filtering**: Instantly search logs, highlight matches, and filter by Errors, Warnings, or Info.
-*   **📜 Persistent Build History**: Every run is recorded with its status (Success, Failed, Cancelled) and duration.
-*   **📊 Project Overview**: At-a-glance dashboard with success rates, average build times, and other key stats.
-*   **📌 Multi-Repository Support**: Switch between multiple projects instantly, with pinned favorites for quick access.
-*   **🎨 Native Look & Feel**: A pure Swift/SwiftUI app that respects system light/dark modes and macOS conventions.
-*   **⚙️ Highly Configurable**: An extensive preferences panel to customize everything from build execution to appearance.
+Point the app at a local repository or a GitHub repository. LXC-BRM looks for the build contract, presents the available scripts, runs local scripts in the repository root, and keeps the output and history close enough to inspect when a release needs an explanation.
 
-## 🚀 Quick Start
+![Build Console concept](Support/context/concepts-designs/Build-Console-Screen-Concept-02a.png)
 
-1.  **Launch the app.**
-2.  Click **Add Repository** in the sidebar.
-3.  Choose a local folder containing a `/build/scripts/` directory with your `.sh` build scripts.
-4.  The repository will appear in the sidebar, and its available scripts will be listed in the **Build** tab.
-5.  Click **Run** next to a script to start a build!
+The concept above is the visual north star for the Build workspace: repositories on the left, build actions and live output in the center, and status, history, and quick actions in the detail panel.
 
-For more details, see the **User Guide**.
+## What ships
 
-## 📸 Screenshots
+| Capability | Behavior |
+| --- | --- |
+| Repository discovery | Add local folders or GitHub URLs, validate the source, and keep recent repositories. |
+| Build detection | Scan `/build/scripts` for shell scripts and executable files, with clear missing and empty states. |
+| Build execution | Launch local scripts through the configured shell (default `/bin/zsh`) with the repository root as the working directory. |
+| Live console | Stream stdout and stderr with timestamps, search, filters, line numbers, wrapping, and auto-scroll. |
+| Build history | Persist per-repository runs, statuses, durations, logs, success rate, and average duration. |
+| Repository workspace | Switch between repositories, pin favorites, inspect branch/source information, and keep history isolated. |
+| Release support | Build Debug or Release configurations and stage a local `.app` plus `.dmg` through the Support release script. |
+| Preferences | Configure repository scanning, execution, logs, appearance, notifications, and advanced behavior. |
 
-*(This is where you would place screenshots of the application)*
+### Product flow
 
-<p align="center">
-  <img src="https://via.placeholder.com/800x500.png?text=Main+Application+View" alt="Main Application View" style="width: 100%; max-width: 800px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-</p>
+1. Add a repository from the sidebar.
+2. LXC-BRM checks the repository and discovers `/build/scripts`.
+3. Choose a script and run it locally.
+4. Watch live output while the process runs, or stop it and preserve the partial log.
+5. Review the result in Logs, History, or Overview.
+6. Use the release flow when the build is ready to become a distributable artifact.
 
-<p align="center">
-  <img src="https://via.placeholder.com/800x500.png?text=Preferences+Window" alt="Preferences Window" style="width: 100%; max-width: 800px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-</p>
+GitHub sources can be inspected through the contents API, but only local checkouts can execute a script. This boundary is intentional and documented in the [Build screen plan](Support/worklog/BuildScreen-plan-todo.md).
 
+## Quick start
 
-## 🛠️ Technology Stack
+### Build from Xcode
 
-LXC-BRM is built with a focus on performance, stability, and a native user experience.
+1. Open `LXC-BRM.xcodeproj` in Xcode.
+2. Select the `LXC-BRM` scheme and `My Mac`.
+3. Press `Cmd+B` to build or `Cmd+R` to run.
 
-*   **Language**: **Swift 5**
-*   **UI Framework**: **SwiftUI**
-*   **App Framework**: **AppKit**
-*   **Dependencies**: **None!** 100% first-party Apple frameworks.
+### Build from the terminal
 
-The project follows a strict "no third-party dependencies" rule to ensure a lean, maintainable, and secure codebase.
+Run from the repository root:
 
-## 📈 Project Status
+```sh
+xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug build
+xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug test
+```
 
-The project is actively under development. The core feature set is largely complete and verified through code and build checks.
+The app currently targets macOS 15 and uses Swift 6 with system frameworks only.
 
-| Phase | Status | Checked / Total |
-| :--- | :--- | :--- |
-| 0 — Workspace Foundation | ✅ Done | 5 / 5 |
-| 1 — Repository Input & Detection | ✅ Done | 9 / 9 |
-| 2 — Build Execution & Management | ✅ Done | 5 / 5 |
-| 3 — Log Storage & Retrieval | ✅ Done | 6 / 6 |
-| 4 — Project & Build Overview | ✅ Done | 5 / 5 |
-| 5 — Multi-Repository Support | ✅ Done | 5 / 5 |
-| 6 — Non-Functional Hardening | 🟡 In Progress | 3 / 6 |
-| 7 — Packaging & Deliverables | 🟡 In Progress | 3 / 4 |
+## Repository contract
 
-For a detailed breakdown of all tasks, see the master **`todo-2026-08-16.md`** file.
+For the default scan, a project looks like this:
 
-> **Note**: While most features are code-complete, full interactive GUI testing is still pending.
+```text
+your-repository/
+  build/
+    scripts/
+      build-ios.sh
+      release.sh
+    logs/
+```
 
-## 🏗️ Building from Source
+LXC-BRM treats `build/scripts` as the standard discovery location. A local script is executed with the repository root as its working directory. Logs are written back to that repository's `build/logs` folder and can also be exported through the app.
 
-1.  Clone the repository.
-2.  Open `LXC-BRM.xcodeproj` in Xcode.
-3.  Select the `LXC-BRM` scheme and "My Mac" as the target.
-4.  Press `Cmd+B` to build or `Cmd+R` to run.
+## Data and release locations
 
-For detailed packaging and release instructions, see the **Build Instructions**.
+| Data | Location |
+| --- | --- |
+| Recent repositories | `~/Library/Application Support/LXC-BRM/projects.json` |
+| Build history | `~/Library/Application Support/LXC-BRM/build-history.json` |
+| Build workspace state | `~/Library/Application Support/LXC-BRM/build-workspace-state.json` |
+| Preferences | `~/Library/Application Support/LXC-BRM/preferences.json` |
+| Repository logs | `<repository>/build/logs/` |
+| Release staging | `Support/build-release/version/` |
 
-## 📜 License
+## Project documentation
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+The [Support handbook](Support/README.md) is the main map for the project. It explains what each support area owns and how the files work together.
 
----
+| Need | Read |
+| --- | --- |
+| Use the app | [User guide](Support/build-release/USER_GUIDE.md) |
+| Package a release | [Build and release README](Support/build-release/README.md) |
+| Understand requirements | [Requirements](Support/context/requirements.md) |
+| Understand architecture | [Architecture](Support/context/architecture.md) |
+| Understand decisions | [Decision log](Support/context/decisions/decision-2026-08-16.md) |
+| Follow current work | [Master worklog](Support/worklog/todo-2026-08-16.md) |
+| Read the Build screen record | [Build screen plan](Support/worklog/BuildScreen-plan-todo.md) |
 
-<p align="center">
-  <em>Crafted with ❤️ for macOS developers.</em>
-</p>
+## Project status
+
+The native app builds and its Xcode test target passes locally. The remaining work is tracked explicitly in the master worklog, including performance measurement, broader stress testing, and final GUI hardening. The documentation does not mark those items complete merely because the project compiles.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). When a code change changes the product contract, update the relevant Support context and worklog entry in the same change.
+
+## License
+
+LXC-BRM is released under the [MIT License](LICENSE).

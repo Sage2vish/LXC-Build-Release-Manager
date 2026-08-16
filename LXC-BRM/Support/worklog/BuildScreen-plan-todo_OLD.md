@@ -1,4 +1,6 @@
-# Build Screen Plan Todo
+# Build Screen Plan Todo - Archived
+
+> Historical planning record. Use [`BuildScreen-plan-todo.md`](BuildScreen-plan-todo.md) for the active Build workspace execution record and [`README.md`](README.md) for Worklog ownership rules.
 
 Scope: the center Build workspace and its supporting behavior.
 
@@ -165,4 +167,3 @@ Already complete and verified in code:
 - [x] Validation failures and runtime failures are visible and recoverable.
 - [x] The UI stays native-feeling and consistent with the rest of the app.
 - [ ] Add tests for the remaining helper and integration paths before treating the screen as fully hardened.
-

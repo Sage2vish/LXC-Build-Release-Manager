@@ -1,26 +1,50 @@
-# worklog
+# Worklog
 
-This is the only folder that keeps an active todo file. `shared`, `frameworks`, `build-release`, and `context` do not get their own — every task, no matter which folder it touches, is tracked here with that folder named in the task text.
+The Worklog is the delivery ledger for LXC-BRM. It maps requirements and decisions to features, release work, verification, and the story of what actually changed.
 
-## This Is What We Will Be Doing
+## File ownership
 
-1. All todo items live in `todo-YYYY-MM-DD.md` in this folder, and nowhere else.
-2. Each todo file is built from `context/requirements.md` (the in-repo copy of the functional requirements) plus the recorded decisions in `context/decisions/` — not invented ad hoc.
-3. Work is broken into numbered **phases** that ship in order — each phase is a reviewable slice of the requirements, not the whole app at once. A phase doesn't start until the previous one is functional.
-4. Each todo file has a `## Phases` section (numbered phases, numbered subtasks) and a `## Tracking` table with one row per phase.
-5. Nothing is marked `Done` in the tracking table until the matching code exists and builds. `Open` means not started; `In Progress` means started but incomplete; `Done` means shipped and verified.
-6. After the todo file changes, `worklog-YYYY-MM-DD.md` gets a short narrative update — what changed and why — so the todo stays the checklist and the worklog stays the story.
-7. If a requirement conflicts with a recorded decision, the decision wins, and the conflict gets written down in `context/decisions/`.
+| File or pattern | Role |
+| --- | --- |
+| `todo-YYYY-MM-DD.md` | Dated master checklist for the active release or workday. |
+| `BuildScreen-plan-todo.md` | Detailed Build workspace execution record. |
+| `Plan-PreferenceScreen-todo.md` | Detailed Preferences design and wiring plan. |
+| `Plan-WindowLayout-todo.md` | Detailed window layout and View menu pass. |
+| `worklog-YYYY-MM-DD.md` | Narrative record of work completed and verification evidence. |
+| `*_OLD.md` | Historical archive; never treat it as the active tracker. |
 
-## Active Files
+The current master tracker is [`todo-2026-08-16.md`](todo-2026-08-16.md). Detailed feature plans live here because they are delivery records, but they must map back to the master tracker and never contradict its status.
 
-- `todo-2026-08-16.md` — the master running checklist and tracking table.
-- `worklog-2026-08-16.md` — the narrative log of what was actually done, verified against the checklist.
+## The mapping model
 
-## How To Use This Folder
+```text
+context/requirements.md
+        |
+context/decisions/
+        |
+worklog/todo-YYYY-MM-DD.md
+        |
+feature plan -> code -> build/test evidence
+        |
+worklog-YYYY-MM-DD.md
+```
 
-- New task → add it to `todo-2026-08-16.md` under the right lettered section (or a new one), with a tracking row.
-- Status change → update the `Status` column in the same file, same day.
-- Work finished → summarize it in `worklog-2026-08-16.md`, and only then flip the todo row to `Done`.
-- New day → start a new dated pair (`todo-YYYY-MM-DD.md`, `worklog-YYYY-MM-DD.md`); carry open items forward instead of leaving them stranded in an old file.
-- Any other support folder that needs a task tracked: write the task here, name the folder in the text, link back to this file from that folder's README.
+## Status rules
+
+- `[ ]` means the task is not complete.
+- `[x]` means the matching code or documentation exists and has been verified at the task's stated level.
+- A successful compile does not automatically close GUI, performance, stress, or release-distribution tasks.
+- When a task changes architecture or a product rule, update Context as part of the same change.
+- When a todo item is completed, add the short narrative and verification evidence to the dated worklog.
+
+## Starting a new task
+
+1. Find the relevant requirement and decision.
+2. Add or update the corresponding master-tracker item.
+3. Link a detailed feature plan when the work is larger than one checklist line.
+4. Implement and verify the code.
+5. Update the checklist and dated narrative together.
+
+The worklog is the only place where release-wide workload is tracked. `shared`, `frameworks`, `build-release`, and `context` may link to it, but they do not own separate active trackers.
+
+Return to the [Support Handbook](../README.md).

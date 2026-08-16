@@ -1,39 +1,69 @@
-# build-release
+# Build and Release
 
-Build and release orchestration for the macOS app.
+<p align="center">
+  <img src="https://img.shields.io/badge/release%20line-0.1.2-7C3AED" alt="Release line 0.1.2">
+  <img src="https://img.shields.io/badge/artifact-local%20DMG-2563EB" alt="Local DMG artifact">
+  <img src="https://img.shields.io/badge/signing-local%20only-F59E0B" alt="Local signing only">
+</p>
 
-## Output Layout
+This folder owns the operational path from the Xcode project to a local release artifact. It contains the command scripts, the example project mapping, the release staging area, and the documentation a human needs to run the flow safely.
 
-- Active todo tracking lives in `../worklog/todo-2026-08-16.md`.
-- `scripts/` for shell entry points
-- `logs/` for timestamped build logs
-- `version/` for the final versioned release package and `.dmg`
-- `projects.json` for repo tracking and script mapping
+## Ownership map
 
-## Requirement Hierarchy
+| Path | Responsibility |
+| --- | --- |
+| `scripts/build-ios.sh` | Example iOS build entry point for repositories managed by the app. |
+| `scripts/build-android.sh` | Example Android build entry point for repositories managed by the app. |
+| `scripts/release.sh` | Builds the macOS app and creates a dated local DMG. |
+| `projects.json` | Example configuration template showing repository/script mapping. |
+| `logs/` | Documentation for release-support logs; application run logs live in the target repository. |
+| `version/` | Final local artifact staging, including `version/staging/`. |
+| `USER_GUIDE.md` | Human-facing guide to the app workflow. |
 
-- PDF requirements define the requested scope.
-- Context decisions define the implementation path.
-- If they conflict, follow the decision log and keep the conflict visible.
-- The build-release folder does not keep its own todo file.
-- The worklog todo is the working checklist for this area.
+## Canonical commands
 
-## Build Instructions (Packaging the .app)
+Run from the repository root, not from this folder:
 
-1. Open `LXC-BRM/LXC-BRM.xcodeproj` in Xcode.
-2. Select the `LXC-BRM` scheme, target "My Mac".
-3. **Debug build** (for local testing): `Product > Build`, or from the command line:
-   ```
-   xcodebuild -project LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug build
-   ```
-   The built `.app` lands in DerivedData under `Build/Products/Debug/LXC-BRM.app`.
-4. **Release build** (for distribution): `Product > Archive`, then `Distribute App > Copy App` to export a self-contained `.app`. From the command line:
-   ```
-   xcodebuild -project LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Release build
-   ```
-5. Copy the exported `LXC-BRM.app` into `version/` (this folder) alongside the version number you're shipping.
-6. Optional — wrap it in a `.dmg` for distribution:
-   ```
-   hdiutil create -volname "LXC-BRM" -srcfolder version/LXC-BRM.app -ov -format UDZO version/LXC-BRM.dmg
-   ```
-7. Code signing: the project currently uses "Sign to Run Locally" (automatic, ad-hoc). For distribution outside your own Mac, set a Developer ID signing identity in the target's Signing & Capabilities before archiving.
+```sh
+xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug build
+xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug test
+```
+
+The same project can be opened in Xcode with the `LXC-BRM` scheme and `My Mac` destination.
+
+## Local release flow
+
+The repeatable packaging command is:
+
+```sh
+./LXC-BRM/Support/build-release/scripts/release.sh
+```
+
+The script:
+
+1. Builds the `Release` configuration with `CODE_SIGNING_ALLOWED=NO` and `CODE_SIGNING_REQUIRED=NO`.
+2. Places the app in `Support/build-release/version/staging/`.
+3. Creates `Support/build-release/version/LXC-BRM-YYYY-MM-DD.dmg` with `hdiutil`.
+4. Replaces the same-day DMG if the command is run again.
+
+This is a local inspection and staging flow. A production distribution still needs a Developer ID signing identity, notarization, and release-specific validation before the DMG is shared outside the development machine.
+
+## Requirement and decision precedence
+
+- The functional requirements are preserved in [`../context/requirements.md`](../context/requirements.md).
+- Recorded implementation decisions are preserved in [`../context/decisions/`](../context/decisions/).
+- The active checklist is [`../worklog/todo-2026-08-16.md`](../worklog/todo-2026-08-16.md).
+- This folder does not own a competing feature todo file.
+
+If a requirement and a decision disagree, follow the decision and keep the difference visible in Context.
+
+## Release checklist
+
+- [ ] Confirm the intended version and release notes.
+- [ ] Run the Debug build and test commands.
+- [ ] Inspect the Release app bundle.
+- [ ] Run `release.sh` and inspect the DMG in `version/`.
+- [ ] Confirm signing and notarization requirements before external distribution.
+- [ ] Record the result in the dated worklog and update the master tracker.
+
+For the user-facing behavior of the app, continue to the [User Guide](USER_GUIDE.md). For the complete project map, return to the [Support Handbook](../README.md).

@@ -1,48 +1,72 @@
-# LXC Build Release Manager
+# LXC Build & Release Manager
 
-This repository is organized around a BRM workspace model, with the native macOS app living in `LXC-BRM/` and all active todo tracking centralized in `LXC-BRM/BRM/LXC-BRM-worklog/`.
+<p align="center">
+  <strong>A native macOS workspace for turning repository build scripts into a calm, observable release flow.</strong>
+</p>
 
-## Root Layout
+<p align="center">
+  <a href="LXC-BRM/README.md">Product guide</a> |
+  <a href="LXC-BRM/Support/README.md">Support handbook</a> |
+  <a href="LXC-BRM/Support/build-release/USER_GUIDE.md">User guide</a> |
+  <a href="LXC-BRM/Support/context/requirements.md">Requirements</a>
+</p>
 
-- `LXC-BRM`
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-macOS%2015%2B-111827?logo=apple&logoColor=white" alt="Platform: macOS 15 or later">
+  <img src="https://img.shields.io/badge/Swift-6.0-F05138?logo=swift&logoColor=white" alt="Swift 6.0">
+  <img src="https://img.shields.io/badge/UI-SwiftUI%20%2B%20AppKit-2563EB" alt="SwiftUI and AppKit">
+  <img src="https://img.shields.io/badge/version-0.1.2-7C3AED" alt="Version 0.1.2">
+  <img src="https://img.shields.io/badge/dependencies-none-059669" alt="No third-party dependencies">
+  <img src="https://img.shields.io/badge/license-MIT-10B981" alt="MIT license">
+</p>
 
-## Conventions
+## Why this repository exists
 
-- The native app root is `LXC-BRM/`.
-- The BRM workspace lives inside `LXC-BRM/BRM/`.
-- Each BRM folder keeps its own `README.md`.
-- The only active todo file is `LXC-BRM/BRM/LXC-BRM-worklog/todo-2026-08-16.md`.
-- The dated todo file is the central daily working note and includes task, subtask, and tracking sections.
-- The root `README.md` is the index that tracks what each area is for.
+LXC-BRM gives local repositories a consistent build and release surface. It discovers scripts under `/build/scripts`, runs local commands as managed subprocesses, streams timestamped output, persists build history, and keeps the release artifacts and project knowledge organized beside the app.
 
-## Tracking Table
+The repository has two layers:
 
-| Area | Purpose | Key File |
+| Layer | Role |
+| --- | --- |
+| `LXC-BRM/` | The native SwiftUI/AppKit macOS application and its Xcode project. |
+| `LXC-BRM/Support/` | The operating handbook for builds, releases, context, frameworks, shared conventions, and worklogs. |
+
+## Start here
+
+1. Read the [product guide](LXC-BRM/README.md) for the application capabilities and local setup.
+2. Read the [Support handbook](LXC-BRM/Support/README.md) for the full project map and release story.
+3. Read the [user guide](LXC-BRM/Support/build-release/USER_GUIDE.md) for the repository and build workflow.
+4. Read the [context rules](LXC-BRM/Support/context/rules-context.md) before changing architecture or documentation conventions.
+
+## Build and test
+
+Run these commands from the repository root:
+
+```sh
+xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug build
+xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug test
+```
+
+Open `LXC-BRM/LXC-BRM.xcodeproj` in Xcode, choose the `LXC-BRM` scheme and `My Mac`, then use `Cmd+B` to build or `Cmd+R` to run.
+
+## Repository map
+
+| Area | Purpose | Entry point |
 | --- | --- | --- |
-| `LXC-BRM/BRM/LXC-BRM-shared` | Shared utilities and conventions | `LXC-BRM/BRM/LXC-BRM-shared/README.md` |
-| `LXC-BRM/BRM/LXC-BRM-frameworks` | Framework-specific assets and adapters | `LXC-BRM/BRM/LXC-BRM-frameworks/README.md` |
-| `LXC-BRM/BRM/LXC-BRM-build-release` | Build and release orchestration | `LXC-BRM/BRM/LXC-BRM-build-release/README.md` |
-| `LXC-BRM/BRM/LXC-BRM-build-release/scripts` | Build script entry points | `LXC-BRM/BRM/LXC-BRM-build-release/scripts/build-ios.sh` |
-| `LXC-BRM/BRM/LXC-BRM-build-release/logs` | Timestamped build logs | `LXC-BRM/BRM/LXC-BRM-build-release/logs/README.md` |
-| `LXC-BRM/BRM/LXC-BRM-build-release/version` | Final versioned release output, including the `.dmg` | `LXC-BRM/BRM/LXC-BRM-build-release/version/README.md` |
-| `LXC-BRM/BRM/LXC-BRM-worklog` | Daily progress and execution logs | `LXC-BRM/BRM/LXC-BRM-worklog/README.md` |
-| `LXC-BRM/BRM/LXC-BRM-context` | Decisions, references, and operating notes | `LXC-BRM/BRM/LXC-BRM-context/README.md` |
-| `LXC-BRM/BRM/LXC-BRM-context/rules-context.md` | Rules and operating constraints | `LXC-BRM/BRM/LXC-BRM-context/rules-context.md` |
-| `LXC-BRM/BRM/LXC-BRM-context/architecture.md` | Current architecture model | `LXC-BRM/BRM/LXC-BRM-context/architecture.md` |
-| `LXC-BRM/BRM/LXC-BRM-context/decisions` | Dated decision logs | `LXC-BRM/BRM/LXC-BRM-context/decisions/decision-2026-08-16.md` |
+| `LXC-BRM/App/` | SwiftUI views, models, and services. | [App source](LXC-BRM/App/) |
+| `LXC-BRM/Tests/` | Xcode unit and integration-level workspace tests. | [BuildWorkspaceTests.swift](LXC-BRM/Tests/BuildWorkspaceTests.swift) |
+| `LXC-BRM/Support/build-release/` | Build scripts, release packaging, logs guidance, and artifact staging. | [Build and release](LXC-BRM/Support/build-release/README.md) |
+| `LXC-BRM/Support/context/` | Requirements, architecture, decisions, rules, and design references. | [Context](LXC-BRM/Support/context/README.md) |
+| `LXC-BRM/Support/frameworks/` | Framework inventory and future adapter/package notes. | [Frameworks](LXC-BRM/Support/frameworks/README.md) |
+| `LXC-BRM/Support/shared/` | Shared workspace conventions and reusable support ideas. | [Shared](LXC-BRM/Support/shared/README.md) |
+| `LXC-BRM/Support/worklog/` | Master checklist, feature plans, and dated execution notes. | [Worklog](LXC-BRM/Support/worklog/README.md) |
 
-## Desktop Utility
+## Release line
 
-The macOS SwiftUI app in `LXC-BRM/` is the desktop shell for navigating the BRM areas, viewing status, and tracking dated notes.
+The current product line is `0.1.2`. The dated local release tag is `release-2026-08-16`; the repeatable packaging flow is documented in [build-release](LXC-BRM/Support/build-release/README.md) and implemented by [`release.sh`](LXC-BRM/Support/build-release/scripts/release.sh).
 
-## Current Release Map
+The release process produces an unsigned local `.app` and a `.dmg` under `LXC-BRM/Support/build-release/version/`. Those generated artifacts are intentionally ignored by Git; the tracked `version/README.md` explains the staging contract.
 
-- Build scripts live in `LXC-BRM/BRM/LXC-BRM-build-release/scripts/`
-- Build logs are written to `LXC-BRM/BRM/LXC-BRM-build-release/logs/`
-- Final release packages go to `LXC-BRM/BRM/LXC-BRM-build-release/version/`
-- Project tracking lives in `LXC-BRM/BRM/LXC-BRM-build-release/projects.json`
-- Daily todo notes use `LXC-BRM/BRM/LXC-BRM-worklog/todo-2026-08-16.md`
-- Worklog summaries use `LXC-BRM/BRM/LXC-BRM-worklog/worklog-2026-08-16.md`
-- Context rules live in `LXC-BRM/BRM/LXC-BRM-context/rules-context.md`
-- Context architecture lives in `LXC-BRM/BRM/LXC-BRM-context/architecture.md`
-- Decisions live in `LXC-BRM/BRM/LXC-BRM-context/decisions/`
+## License
+
+This project is available under the [MIT License](LXC-BRM/LICENSE).
