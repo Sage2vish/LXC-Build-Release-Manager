@@ -18,6 +18,8 @@
 		A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9911BF5D489D90AE02811CB3 /* LogFileService.swift */; };
 		50CC22F6B112137092256122 /* BuildHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */; };
 		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
+		2F3B4B4C450DA1992E367F86 /* GitBranchReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */; };
+		77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BE8CB1B631110E0A535F54 /* PreferencesView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +46,8 @@
 		9911BF5D489D90AE02811CB3 /* LogFileService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogFileService.swift; path = App/Services/LogFileService.swift; sourceTree = "<group>"; };
 		6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildHistoryStore.swift; path = App/Services/BuildHistoryStore.swift; sourceTree = "<group>"; };
 		1A3DA0FF6648759940B42148 /* BuildRunner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRunner.swift; path = App/Services/BuildRunner.swift; sourceTree = "<group>"; };
+		D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GitBranchReader.swift; path = App/Services/GitBranchReader.swift; sourceTree = "<group>"; };
+		06BE8CB1B631110E0A535F54 /* PreferencesView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesView.swift; path = App/PreferencesView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +111,7 @@
 			children = (
 				B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */,
 				51977CC4D41C9D8BB3B28C4D /* ContentView.swift */,
+				06BE8CB1B631110E0A535F54 /* PreferencesView.swift */,
 				A1B2C3D4E5F6071829384756 /* Models */,
 				A6B5C4D3E2F1897061524738 /* Services */,
 			);
@@ -131,6 +136,7 @@
 				1A3DA0FF6648759940B42148 /* BuildRunner.swift */,
 				6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */,
 				9911BF5D489D90AE02811CB3 /* LogFileService.swift */,
+				D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -217,6 +223,8 @@
 				A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */,
 				50CC22F6B112137092256122 /* BuildHistoryStore.swift in Sources */,
 				E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */,
+				2F3B4B4C450DA1992E367F86 /* GitBranchReader.swift in Sources */,
+				77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -6,6 +6,7 @@ struct ContentView: View {
     @StateObject private var historyStore = BuildHistoryStore()
     @StateObject private var runners = BuildRunnerRegistry()
     @State private var isAddingRepository = false
+    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         NavigationSplitView {
@@ -28,6 +29,9 @@ struct ContentView: View {
                 .background(.background)
             }
         }
+        .safeAreaInset(edge: .bottom) {
+            StatusBar(repository: store.selectedRepository)
+        }
         .sheet(isPresented: $isAddingRepository) {
             AddRepositorySheet(store: store, isPresented: $isAddingRepository)
         }
@@ -38,6 +42,10 @@ struct ContentView: View {
             if lhs.isPinned != rhs.isPinned { return lhs.isPinned && !rhs.isPinned }
             return lhs.lastAccessed > rhs.lastAccessed
         }
+    }
+
+    private var recentRepositories: [Repository] {
+        Array(store.repositories.sorted { $0.lastAccessed > $1.lastAccessed }.prefix(5))
     }
 
     private var sidebar: some View {
@@ -51,20 +59,58 @@ struct ContentView: View {
                 }
             )
         ) {
-            ForEach(sortedRepositories) { repository in
-                RepositoryRow(repository: repository, store: store)
-                    .tag(repository.id)
+            Section {
+                ForEach(sortedRepositories) { repository in
+                    RepositoryRow(repository: repository, store: store)
+                        .tag(repository.id)
+                }
+            } header: {
+                HStack {
+                    Text("Repositories")
+                    Spacer()
+                    Button {
+                        isAddingRepository = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .buttonStyle(.borderless)
+                    .help("Add Repository")
+                }
+            }
+
+            if !recentRepositories.isEmpty {
+                Section("Recent Repositories") {
+                    ForEach(recentRepositories) { repository in
+                        RecentRepositoryRow(repository: repository, store: store)
+                    }
+                }
             }
         }
         .navigationTitle("Build Manager")
-        .toolbar {
-            ToolbarItem {
+        .safeAreaInset(edge: .bottom) {
+            VStack(spacing: 8) {
+                Divider()
                 Button {
-                    isAddingRepository = true
+                    if let path = presentLocalFolderPickerPath() {
+                        store.addLocalRepository(path: path)
+                    }
                 } label: {
-                    Label("Add Repository", systemImage: "plus")
+                    Label("Open Repository…", systemImage: "folder")
+                        .frame(maxWidth: .infinity)
                 }
+                .buttonStyle(.bordered)
+
+                Button {
+                    openSettings()
+                } label: {
+                    Label("Preferences", systemImage: "gearshape")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderless)
+                .foregroundStyle(.secondary)
             }
+            .padding(10)
+            .background(.bar)
         }
         .overlay {
             if store.repositories.isEmpty {
@@ -75,6 +121,72 @@ struct ContentView: View {
                 )
             }
         }
+    }
+}
+
+private func presentLocalFolderPickerPath() -> String? {
+    let panel = NSOpenPanel()
+    panel.canChooseDirectories = true
+    panel.canChooseFiles = false
+    panel.allowsMultipleSelection = false
+    panel.prompt = "Open Repository"
+    guard panel.runModal() == .OK, let url = panel.url else { return nil }
+    return url.path
+}
+
+private struct StatusBar: View {
+    let repository: Repository?
+
+    private var branch: String {
+        guard let repository, let branch = GitBranchReader.currentBranch(for: repository) else { return "—" }
+        return branch
+    }
+
+    var body: some View {
+        HStack(spacing: 20) {
+            statusItem("Repository", repository?.name ?? "—")
+            statusItem("Branch", branch)
+            statusItem("Platform", "macOS")
+            statusItem("Auto-detect", "Enabled")
+            Spacer()
+        }
+        .font(.caption)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(.bar)
+        .overlay(alignment: .top) { Divider() }
+    }
+
+    private func statusItem(_ label: String, _ value: String) -> some View {
+        HStack(spacing: 4) {
+            Text("\(label):").foregroundStyle(.secondary)
+            Text(value)
+        }
+    }
+}
+
+private struct RecentRepositoryRow: View {
+    let repository: Repository
+    @ObservedObject var store: RepositoryStore
+
+    var body: some View {
+        Button {
+            store.select(repository)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: repository.source.isLocal ? "folder" : "chevron.left.forwardslash.chevron.right")
+                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(repository.name).font(.subheadline)
+                    Text("Opened \(repository.lastAccessed.relativeDescription)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -181,13 +293,8 @@ private struct AddRepositorySheet: View {
     }
 
     private func pickLocalFolder() {
-        let panel = NSOpenPanel()
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        panel.allowsMultipleSelection = false
-        panel.prompt = "Open Repository"
-        guard panel.runModal() == .OK, let url = panel.url else { return }
-        store.addLocalRepository(path: url.path)
+        guard let path = presentLocalFolderPickerPath() else { return }
+        store.addLocalRepository(path: path)
         isPresented = false
     }
 }
@@ -347,6 +454,7 @@ private struct RepositoryDetailView: View {
     @State private var scanResult: BuildScanResult?
     @State private var isScanning = false
     @State private var selectedLogRecordID: BuildRecord.ID?
+    @State private var showInspector = true
 
     enum DetailTab: String, CaseIterable, Identifiable {
         case build = "Build"
@@ -396,6 +504,154 @@ private struct RepositoryDetailView: View {
                     Label("Rescan", systemImage: "arrow.clockwise")
                 }
             }
+            ToolbarItem {
+                Button {
+                    showInspector.toggle()
+                } label: {
+                    Label("Toggle Build Panel", systemImage: "sidebar.right")
+                }
+            }
+        }
+        .inspector(isPresented: $showInspector) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    buildStatusCard
+                    buildHistoryCard
+                    quickActionsCard
+                }
+                .padding(16)
+            }
+            .inspectorColumnWidth(min: 240, ideal: 280, max: 340)
+        }
+    }
+
+    // MARK: Inspector — Build Status / History / Quick Actions
+
+    private var buildStatusCard: some View {
+        GroupBox("Build Status") {
+            VStack(alignment: .leading, spacing: 6) {
+                if runner.isRunning, let script = runner.runningScript {
+                    Label("In Progress", systemImage: "circle.dotted").foregroundStyle(.blue)
+                    Text(script.label).font(.headline)
+                    if let startedAt = runner.startedAt {
+                        LabeledContent("Started At", value: startedAt.formatted(date: .omitted, time: .standard))
+                    }
+                    LabeledContent("Duration", value: durationDescription(runner.duration))
+                    Button("Stop Build", role: .destructive) { runner.cancel() }
+                        .frame(maxWidth: .infinity)
+                } else if let mostRecent = stats.mostRecent {
+                    Label(statusLabel(mostRecent.status), systemImage: statusSymbolName(mostRecent.status))
+                        .foregroundStyle(statusColor(mostRecent.status))
+                    Text(mostRecent.scriptLabel).font(.headline)
+                    LabeledContent("Duration", value: durationDescription(mostRecent.durationSeconds))
+                } else {
+                    Text("No builds run yet.").foregroundStyle(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 4)
+        }
+    }
+
+    private var buildHistoryCard: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 8) {
+                if records.isEmpty {
+                    Text("No builds yet.").font(.caption).foregroundStyle(.secondary)
+                } else {
+                    ForEach(records.prefix(5)) { record in
+                        HStack {
+                            statusIcon(record.status)
+                            Text(record.scriptLabel).font(.caption)
+                            Spacer()
+                            Text(durationDescription(record.durationSeconds))
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 4)
+        } label: {
+            HStack {
+                Text("Build History")
+                Spacer()
+                Button("View All") { selectedTab = .history }
+                    .buttonStyle(.link)
+                    .font(.caption)
+            }
+        }
+    }
+
+    private var quickActionsCard: some View {
+        GroupBox("Quick Actions") {
+            VStack(alignment: .leading, spacing: 8) {
+                Button {
+                    openLogsFolder()
+                } label: {
+                    Label("Open Logs Folder", systemImage: "folder")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .disabled(!repository.source.isLocal)
+
+                Button {
+                    exportCurrentLog()
+                } label: {
+                    Label("Export Current Log", systemImage: "square.and.arrow.down")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .disabled(!runner.isRunning && selectedRecord == nil)
+            }
+            .buttonStyle(.bordered)
+            .padding(.vertical, 4)
+        }
+    }
+
+    private func statusLabel(_ status: BuildStatus) -> String {
+        switch status {
+        case .success: return "Completed"
+        case .failed: return "Failed"
+        case .cancelled: return "Cancelled"
+        case .running: return "In Progress"
+        }
+    }
+
+    private func statusSymbolName(_ status: BuildStatus) -> String {
+        switch status {
+        case .success: return "checkmark.circle.fill"
+        case .failed: return "xmark.circle.fill"
+        case .cancelled: return "slash.circle.fill"
+        case .running: return "circle.dotted"
+        }
+    }
+
+    private func statusColor(_ status: BuildStatus) -> Color {
+        switch status {
+        case .success: return .green
+        case .failed: return .red
+        case .cancelled: return .orange
+        case .running: return .blue
+        }
+    }
+
+    private func openLogsFolder() {
+        guard let directory = LogFileService.logsDirectoryURL(for: repository) else { return }
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        NSWorkspace.shared.open(directory)
+    }
+
+    private func exportCurrentLog() {
+        if runner.isRunning, let script = runner.runningScript {
+            let content = LogFileService.formattedContent(
+                lines: runner.logLines,
+                script: script,
+                status: .running,
+                startedAt: runner.startedAt ?? Date()
+            )
+            LogFileService.export(content: content, suggestedName: "\(script.fileName)-current.log")
+        } else if let record = selectedRecord {
+            LogFileService.export(content: logContent(for: record), suggestedName: record.logFileName)
         }
     }
 
