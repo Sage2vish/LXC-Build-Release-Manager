@@ -14,6 +14,7 @@ final class BuildWorkspaceStateStore: ObservableObject {
     static let shared = BuildWorkspaceStateStore()
 
     @Published private(set) var states: [UUID: BuildWorkspaceState] = [:]
+    @Published private(set) var lastError: AppDataError?
 
     private let storeURL: URL
 
@@ -22,10 +23,7 @@ final class BuildWorkspaceStateStore: ObservableObject {
             self.storeURL = storeURL
             try? FileManager.default.createDirectory(at: storeURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         } else {
-            let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-            let folder = appSupport.appendingPathComponent("LXC-BRM", isDirectory: true)
-            try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-            self.storeURL = folder.appendingPathComponent("build-workspace-state.json")
+            self.storeURL = AppDataLocations.url(for: .buildWorkspaceState)
         }
         load()
     }
@@ -71,15 +69,18 @@ final class BuildWorkspaceStateStore: ObservableObject {
     }
 
     private func load() {
-        guard let data = try? Data(contentsOf: storeURL),
-              let decoded = try? JSONDecoder().decode([UUID: BuildWorkspaceState].self, from: data) else { return }
-        states = decoded
+        switch JSONFileStore(url: storeURL).load([UUID: BuildWorkspaceState].self) {
+        case .success(let decoded):
+            guard let decoded else { return }
+            states = decoded
+        case .failure(let error):
+            lastError = error
+        }
     }
 
     private func save() {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        guard let data = try? encoder.encode(states) else { return }
-        try? data.write(to: storeURL, options: .atomic)
+        if case .failure(let error) = JSONFileStore(url: storeURL).save(states) {
+            lastError = error
+        }
     }
 }

@@ -5,6 +5,8 @@ final class BuildHistoryStore: ObservableObject {
     static let shared = BuildHistoryStore()
 
     @Published private(set) var recordsByRepository: [UUID: [BuildRecord]] = [:]
+    /// Set when a load or save fails, so history loss is visible rather than silent.
+    @Published private(set) var lastError: AppDataError?
 
     private let storeURL: URL
 
@@ -13,10 +15,7 @@ final class BuildHistoryStore: ObservableObject {
             self.storeURL = storeURL
             try? FileManager.default.createDirectory(at: storeURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         } else {
-            let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-            let folder = appSupport.appendingPathComponent("LXC-BRM", isDirectory: true)
-            try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-            self.storeURL = folder.appendingPathComponent("build-history.json")
+            self.storeURL = AppDataLocations.url(for: .buildHistory)
         }
         load()
     }
@@ -58,21 +57,26 @@ final class BuildHistoryStore: ObservableObject {
     }
 
     private func load() {
-        guard let data = try? Data(contentsOf: storeURL) else { return }
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        guard let decoded = try? decoder.decode([UUID: [BuildRecord]].self, from: data) else { return }
-        recordsByRepository = decoded
+        switch JSONFileStore(url: storeURL).load([UUID: [BuildRecord]].self) {
+        case .success(let decoded):
+            guard let decoded else { return }
+            recordsByRepository = decoded
+        case .failure(let error):
+            lastError = error
+        }
     }
 
+    /// Encoded on the main actor, written off it: history can grow large and a build finishing
+    /// should never block the UI on disk I/O.
     private func save() {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        guard let data = try? encoder.encode(recordsByRepository) else { return }
         let destination = storeURL
-        DispatchQueue.global(qos: .utility).async {
-            try? data.write(to: destination, options: .atomic)
+        do {
+            let data = try JSONFileStore.makeEncoder().encode(recordsByRepository)
+            DispatchQueue.global(qos: .utility).async {
+                try? data.write(to: destination, options: .atomic)
+            }
+        } catch {
+            lastError = .unwritable(file: destination.lastPathComponent, reason: error.localizedDescription)
         }
     }
 }

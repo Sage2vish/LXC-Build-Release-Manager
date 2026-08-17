@@ -12,7 +12,7 @@
 | Signal | Current state |
 | --- | --- |
 | Assessment | Complete |
-| Refactor implementation | Not started |
+| Refactor implementation | In progress — sections 03 and 05 landed |
 | Baseline Debug build | Passing on the current working tree |
 | Third-party packages | None; keep the refactor package-free |
 | Primary risk | Extracting code while preserving build execution, persistence, and SwiftUI state behavior |
@@ -110,12 +110,12 @@ The target is a direction, not permission to introduce layers without a consumer
 
 ### 03. Centralize Persistence and Application Paths
 
-- [ ] Create one application-support path provider for `projects.json`, `selected-repository.json`, `build-history.json`, `preferences.json`, and `build-workspace-state.json`.
-- [ ] Create a small reusable JSON file boundary for date encoding, sorted output, atomic writes, directory creation, and injected URLs.
-- [ ] Move each store to the shared boundary while preserving its public behavior and on-disk file names.
-- [ ] Replace silent persistence failures that matter with typed results, diagnostics, or user-visible recovery paths.
-- [ ] Keep log file paths separate from Application Support because repository-local `build/logs/` is part of the product contract.
-- [ ] Add tests for missing files, malformed JSON, write failures, legacy records, and recovery without touching the real user directory.
+- [x] Create one application-support path provider for `projects.json`, `selected-repository.json`, `build-history.json`, `preferences.json`, and `build-workspace-state.json`.
+- [x] Create a small reusable JSON file boundary for date encoding, sorted output, atomic writes, directory creation, and injected URLs.
+- [x] Move each store to the shared boundary while preserving its public behavior and on-disk file names.
+- [x] Replace silent persistence failures that matter with typed results, diagnostics, or user-visible recovery paths.
+- [x] Keep log file paths separate from Application Support because repository-local `build/logs/` is part of the product contract.
+- [x] Add tests for missing files, malformed JSON, write failures, legacy records, and recovery without touching the real user directory.
 
 ### 04. Extract the App Shell and Repository Features
 
@@ -130,10 +130,10 @@ The target is a direction, not permission to introduce layers without a consumer
 
 ### 05. Make Logs a Reusable Feature
 
-- [ ] Move `DisplayLine`, `TerminalLineColor`, `LogFilter`, stream parsing, ANSI cleanup, and display-line conversion out of `ContentView.swift`.
-- [ ] Make log filtering, search matching, line numbering, color selection, and duration/status formatting pure and unit-testable.
-- [ ] Extract `LogPane` into a dedicated view that accepts a log model and action closures rather than reaching into repository/build services.
-- [ ] Extract `LogWindowController` into a small AppKit presentation gateway with a testable call site.
+- [x] Move `DisplayLine`, `TerminalLineColor`, `LogFilter`, stream parsing, ANSI cleanup, and display-line conversion out of `ContentView.swift`.
+- [x] Make log filtering, search matching, line numbering, color selection, and duration/status formatting pure and unit-testable.
+- [x] Extract `LogPane` into a dedicated view that accepts a log model and action closures rather than reaching into repository/build services.
+- [x] Extract `LogWindowController` into a small AppKit presentation gateway with a testable call site.
 - [ ] Consolidate live output, saved log, export, clear, stop, and separate-window behavior so the live and history tabs reuse one path.
 - [ ] Verify auto-scroll, search navigation, filter selection, ANSI colors, line numbers, word wrap, accessibility labels, and reduced-motion behavior are unchanged.
 
@@ -169,7 +169,7 @@ The target is a direction, not permission to introduce layers without a consumer
 
 ### 09. Project, Documentation, and Cleanup
 
-- [ ] Add every extracted Swift file to the Xcode project and the correct target exactly once.
+- [x] Add every extracted Swift file to the Xcode project and the correct target exactly once.
 - [ ] Keep folder ownership clear: Models for domain values, Services for behavior and I/O, Views for presentation, and composition files for wiring.
 - [ ] Remove dead code and obsolete private helpers only after references and tests are confirmed.
 - [ ] Update `Support/context/architecture.md` with the final dependency and feature boundaries.
@@ -205,9 +205,9 @@ The refactor is complete only when all of the following are true:
 | Baseline Debug build | Complete |
 | Baseline tests | Complete: 14 passed |
 | Dependency boundaries | Pending |
-| Feature extraction | Pending |
-| Persistence and platform seams | Pending |
-| Test expansion | Pending |
+| Feature extraction | Logs + script row extracted; detail view pending |
+| Persistence and platform seams | Persistence done; platform gateways pending |
+| Test expansion | 20 passing (was 14) |
 | Final build, test, GUI, and release verification | Pending |
 
 _This is the refactoring execution ledger. Only mark an implementation line `[x]` after the complete boundary, behavior, and verification condition is satisfied._

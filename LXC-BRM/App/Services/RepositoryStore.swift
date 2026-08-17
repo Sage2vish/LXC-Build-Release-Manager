@@ -7,16 +7,16 @@ final class RepositoryStore: ObservableObject {
     @Published private(set) var repositories: [Repository] = []
     @Published var selectedRepositoryID: Repository.ID?
 
-    private let storeURL: URL
-    private let selectedStoreURL: URL
+    /// Set when a load or save fails, so the UI can report it instead of losing data silently.
+    @Published private(set) var lastError: AppDataError?
+
+    private let repositoriesFile: JSONFileStore
+    private let selectionFile: JSONFileStore
     private let rememberRecentRepositories: Bool
 
     init() {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let folder = appSupport.appendingPathComponent("LXC-BRM", isDirectory: true)
-        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        storeURL = folder.appendingPathComponent("projects.json")
-        selectedStoreURL = folder.appendingPathComponent("selected-repository.json")
+        repositoriesFile = JSONFileStore(url: AppDataLocations.url(for: .repositories))
+        selectionFile = JSONFileStore(url: AppDataLocations.url(for: .selectedRepository))
 
         let prefs = Preferences.loadFromDisk()
         rememberRecentRepositories = prefs.rememberRecentRepositories
@@ -84,35 +84,40 @@ final class RepositoryStore: ObservableObject {
         saveSelectedRepositoryID()
     }
 
+    private struct SelectionState: Codable { var selectedRepositoryID: UUID? }
+
     private func load() {
-        guard let data = try? Data(contentsOf: storeURL) else { return }
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        guard let decoded = try? decoder.decode([Repository].self, from: data) else { return }
-        repositories = decoded.sorted { $0.lastAccessed > $1.lastAccessed }
+        switch repositoriesFile.load([Repository].self) {
+        case .success(let decoded):
+            guard let decoded else { return }
+            repositories = decoded.sorted { $0.lastAccessed > $1.lastAccessed }
+        case .failure(let error):
+            lastError = error
+        }
     }
 
     private func save() {
         guard rememberRecentRepositories else { return }
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        guard let data = try? encoder.encode(repositories) else { return }
-        try? data.write(to: storeURL, options: .atomic)
+        if case .failure(let error) = repositoriesFile.save(repositories) {
+            lastError = error
+        }
     }
 
     private func loadSelectedRepositoryID() -> UUID? {
-        struct SelectionState: Codable { var selectedRepositoryID: UUID? }
-        guard let data = try? Data(contentsOf: selectedStoreURL) else { return nil }
-        return try? JSONDecoder().decode(SelectionState.self, from: data).selectedRepositoryID
+        switch selectionFile.load(SelectionState.self) {
+        case .success(let state):
+            return state?.selectedRepositoryID
+        case .failure(let error):
+            lastError = error
+            return nil
+        }
     }
 
     private func saveSelectedRepositoryID() {
         guard rememberRecentRepositories else { return }
-        struct SelectionState: Codable { var selectedRepositoryID: UUID? }
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        guard let data = try? encoder.encode(SelectionState(selectedRepositoryID: selectedRepositoryID)) else { return }
-        try? data.write(to: selectedStoreURL, options: .atomic)
+        let state = SelectionState(selectedRepositoryID: selectedRepositoryID)
+        if case .failure(let error) = selectionFile.save(state) {
+            lastError = error
+        }
     }
 }

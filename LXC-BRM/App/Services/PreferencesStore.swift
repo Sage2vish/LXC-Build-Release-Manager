@@ -7,14 +7,12 @@ final class PreferencesStore: ObservableObject {
     static let shared = PreferencesStore()
 
     @Published private(set) var preferences: Preferences
+    @Published private(set) var lastError: AppDataError?
 
     private let storeURL: URL
 
     init() {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let folder = appSupport.appendingPathComponent("LXC-BRM", isDirectory: true)
-        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        storeURL = folder.appendingPathComponent("preferences.json")
+        storeURL = AppDataLocations.url(for: .preferences)
         preferences = Preferences.loadFromDisk()
     }
 
@@ -48,10 +46,9 @@ final class PreferencesStore: ObservableObject {
     }
 
     private func persist() {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        guard let data = try? encoder.encode(preferences) else { return }
-        try? data.write(to: storeURL, options: .atomic)
+        if case .failure(let error) = JSONFileStore(url: storeURL).save(preferences) {
+            lastError = error
+        }
     }
 
     private func applyLaunchAtLogin(enabled: Bool) {

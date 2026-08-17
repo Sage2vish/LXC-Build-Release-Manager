@@ -372,6 +372,132 @@ final class BuildWorkspaceTests: XCTestCase {
         XCTAssertTrue(reRun.first?.isAlreadyAdded ?? false)
     }
 
+    // MARK: Log presentation
+
+    func testLogPresentationStripsANSIAndPicksColours() {
+        let red = LogPresentation.terminalPresentation(for: "\u{001B}[31mBuild failed\u{001B}[0m")
+        XCTAssertEqual(red.text, "Build failed")
+        XCTAssertEqual(red.ansiColor, .red)
+
+        let bright = LogPresentation.terminalPresentation(for: "\u{001B}[92mok\u{001B}[0m")
+        XCTAssertEqual(bright.ansiColor, .green)
+
+        let plain = LogPresentation.terminalPresentation(for: "nothing special")
+        XCTAssertEqual(plain.text, "nothing special")
+        XCTAssertNil(plain.ansiColor)
+    }
+
+    func testLogPresentationRecoversStreamMarkersFromSavedLogs() {
+        XCTAssertEqual(LogPresentation.streamPayload(from: "[stderr] boom").stream, .stderr)
+        XCTAssertEqual(LogPresentation.streamPayload(from: "[stderr] boom").text, "boom")
+        XCTAssertEqual(LogPresentation.streamPayload(from: "[system] note").stream, .system)
+        XCTAssertEqual(LogPresentation.streamPayload(from: "ordinary").stream, .stdout)
+    }
+
+    func testLogPresentationParsesSavedFileContentAndDropsHeaderLines() {
+        let content = """
+        # Build log for release.sh
+        # Started 2026-08-16
+
+        [10:15:01] starting
+        [10:15:02] [stderr] warning: something
+        no timestamp here
+        """
+        let lines = LogPresentation.displayLines(fromFileContent: content)
+        XCTAssertEqual(lines.count, 3)
+        XCTAssertEqual(lines[0].timestampText, "10:15:01")
+        XCTAssertEqual(lines[0].text, "starting")
+        XCTAssertEqual(lines[1].stream, .stderr)
+        XCTAssertEqual(lines[1].text, "warning: something")
+        XCTAssertEqual(lines[2].timestampText, "")
+        XCTAssertEqual(lines[2].text, "no timestamp here")
+    }
+
+    func testLogFilterAndSearchNarrowTheVisibleLines() {
+        let lines = [
+            DisplayLine(timestampText: "", text: "compiling main.swift", stream: .stdout, ansiColor: nil),
+            DisplayLine(timestampText: "", text: "warning: deprecated API", stream: .stderr, ansiColor: nil),
+            DisplayLine(timestampText: "", text: "error: build failed", stream: .stderr, ansiColor: nil)
+        ]
+
+        XCTAssertEqual(LogPresentation.visibleLines(lines, filter: .all, searchText: "", caseSensitive: false).count, 3)
+        XCTAssertEqual(LogPresentation.visibleLines(lines, filter: .errors, searchText: "", caseSensitive: false).count, 1)
+        XCTAssertEqual(LogPresentation.visibleLines(lines, filter: .warnings, searchText: "", caseSensitive: false).count, 1)
+        // "info" excludes anything that reads as an error or a warning.
+        XCTAssertEqual(LogPresentation.visibleLines(lines, filter: .info, searchText: "", caseSensitive: false).map(\.text), ["compiling main.swift"])
+
+        XCTAssertEqual(LogPresentation.visibleLines(lines, filter: .all, searchText: "MAIN", caseSensitive: false).count, 1)
+        XCTAssertEqual(LogPresentation.visibleLines(lines, filter: .all, searchText: "MAIN", caseSensitive: true).count, 0)
+        // "compiling main.swift" has no "e"; the warning and error lines do.
+        XCTAssertEqual(LogPresentation.matchCount(lines, searchText: "e", caseSensitive: false), 2)
+        XCTAssertEqual(LogPresentation.matchCount(lines, searchText: "", caseSensitive: false), 0)
+    }
+
+    // MARK: Shared persistence boundary
+
+    func testJSONFileStoreReportsMissingCorruptAndUnwritableCases() throws {
+        struct Sample: Codable, Equatable { var name: String; var stamp: Date }
+
+        // Missing file is a first launch, not an error.
+        let missing = JSONFileStore(url: temporaryDirectory.appendingPathComponent("nope.json"))
+        XCTAssertFalse(missing.exists)
+        guard case .success(let none) = missing.load(Sample.self) else {
+            return XCTFail("A missing file should not be an error")
+        }
+        XCTAssertNil(none)
+
+        // Round trip preserves values and uses ISO-8601 dates on disk.
+        let url = temporaryDirectory.appendingPathComponent("sample.json")
+        let store = JSONFileStore(url: url)
+        let value = Sample(name: "release", stamp: Date(timeIntervalSince1970: 1_700_000_000))
+        guard case .success = store.save(value) else { return XCTFail("Save should succeed") }
+        XCTAssertTrue(store.exists)
+        let raw = try String(contentsOf: url, encoding: .utf8)
+        XCTAssertTrue(raw.contains("2023-11-14T"), "Expected ISO-8601 date, got: \(raw)")
+        guard case .success(let restored) = store.load(Sample.self) else {
+            return XCTFail("Load should succeed")
+        }
+        XCTAssertEqual(restored, value)
+
+        // Malformed JSON is reported rather than silently dropped.
+        try "{ not json".write(to: url, atomically: true, encoding: .utf8)
+        guard case .failure(let error) = store.load(Sample.self) else {
+            return XCTFail("Corrupt JSON should surface an error")
+        }
+        guard case .corrupt(let file, _) = error else {
+            return XCTFail("Expected .corrupt, got \(error)")
+        }
+        XCTAssertEqual(file, "sample.json")
+
+        // A path that cannot be written reports .unwritable.
+        let unwritable = JSONFileStore(url: URL(fileURLWithPath: "/no-such-dir-here/x.json"))
+        guard case .failure(let writeError) = unwritable.save(value) else {
+            return XCTFail("Writing into a missing directory should fail")
+        }
+        guard case .unwritable = writeError else {
+            return XCTFail("Expected .unwritable, got \(writeError)")
+        }
+    }
+
+    func testAppDataLocationsNamesEveryFileExactlyOnce() {
+        let names = AppDataLocations.File.allCases.map(\.rawValue)
+        XCTAssertEqual(Set(names).count, names.count, "Duplicate data file name")
+        // These names are the on-disk contract; changing one strands existing installs.
+        XCTAssertEqual(
+            Set(names),
+            [
+                "projects.json",
+                "selected-repository.json",
+                "build-history.json",
+                "preferences.json",
+                "build-workspace-state.json"
+            ]
+        )
+        XCTAssertTrue(
+            AppDataLocations.url(for: .repositories).path.hasSuffix("LXC-BRM/projects.json")
+        )
+    }
+
     private func waitForRunner(_ runner: BuildRunner, timeout: Duration = .seconds(5)) async throws {
         let clock = ContinuousClock()
         let deadline = clock.now + timeout

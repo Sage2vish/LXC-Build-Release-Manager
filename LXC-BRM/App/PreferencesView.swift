@@ -350,8 +350,7 @@ struct PreferencesView: View {
 
             Text("Data & Maintenance").font(.callout.weight(.semibold))
             dataMaintenanceRow("Open Build Manager data directory", "Open the folder where Build Manager stores its data.", "Open Folder") {
-                let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-                NSWorkspace.shared.open(appSupport.appendingPathComponent("LXC-BRM", isDirectory: true))
+                NSWorkspace.shared.open(AppDataLocations.supportDirectory())
             }
             dataMaintenanceRow("Open projects.json", "Open the projects.json config template in your default editor.", "Open File") {
                 openProjectsJSONTemplate()

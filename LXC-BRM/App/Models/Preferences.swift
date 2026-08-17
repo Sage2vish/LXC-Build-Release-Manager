@@ -117,8 +117,7 @@ struct Preferences: Codable, Equatable {
     static let recommendedDefaults = Preferences()
 
     static func loadFromDisk() -> Preferences {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let url = appSupport.appendingPathComponent("LXC-BRM/preferences.json")
+        let url = AppDataLocations.url(for: .preferences)
         guard let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode(Preferences.self, from: data) else {
             return .recommendedDefaults

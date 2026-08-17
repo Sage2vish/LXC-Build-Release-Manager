@@ -27,6 +27,10 @@
 		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
 		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
 		F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */; };
+		6768B6C99A3D4C2A91B2E4E1 /* App/Services/AppDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DED576C4C74FAEB9764CBE /* App/Services/AppDataStore.swift */; };
+		746AB1ECFEFE48D2A9EAE9B1 /* App/Views/BuildScriptTableRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D44A67D24CE4638B3DBF3B8 /* App/Views/BuildScriptTableRow.swift */; };
+		877258AE8BF84E3E8A947999 /* App/Views/LogPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBF3180683E24138A37766D6 /* App/Views/LogPane.swift */; };
+		42D194CFA8AD45AFBF28FC0E /* App/Models/LogPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A00E28C35B04C4B9585B095 /* App/Models/LogPresentation.swift */; };
 		5BA86873F58547929F408FEE /* App/Views/AutoFindScriptsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 530D82D215D5463E8AACEC56 /* App/Views/AutoFindScriptsSheet.swift */; };
 		9C2A7EF640374F2AB326DC49 /* App/Services/DeepScriptSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0D1DE81E304C1E9B2771ED /* App/Services/DeepScriptSearch.swift */; };
 		8A0B88E86C774770A10B0AEC /* App/Services/BuildScriptFolderImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543DCCF6EF334013B8B54853 /* App/Services/BuildScriptFolderImport.swift */; };
@@ -108,6 +112,10 @@
 		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
+		88DED576C4C74FAEB9764CBE /* App/Services/AppDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/AppDataStore.swift; sourceTree = "<group>"; };
+		8D44A67D24CE4638B3DBF3B8 /* App/Views/BuildScriptTableRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/BuildScriptTableRow.swift; sourceTree = "<group>"; };
+		EBF3180683E24138A37766D6 /* App/Views/LogPane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/LogPane.swift; sourceTree = "<group>"; };
+		7A00E28C35B04C4B9585B095 /* App/Models/LogPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Models/LogPresentation.swift; sourceTree = "<group>"; };
 		530D82D215D5463E8AACEC56 /* App/Views/AutoFindScriptsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AutoFindScriptsSheet.swift; sourceTree = "<group>"; };
 		BE0D1DE81E304C1E9B2771ED /* App/Services/DeepScriptSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/DeepScriptSearch.swift; sourceTree = "<group>"; };
 		543DCCF6EF334013B8B54853 /* App/Services/BuildScriptFolderImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/BuildScriptFolderImport.swift; sourceTree = "<group>"; };
@@ -264,6 +272,10 @@
 			isa = PBXGroup;
 			children = (
 				F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */,
+				88DED576C4C74FAEB9764CBE /* App/Services/AppDataStore.swift */,
+				8D44A67D24CE4638B3DBF3B8 /* App/Views/BuildScriptTableRow.swift */,
+				EBF3180683E24138A37766D6 /* App/Views/LogPane.swift */,
+				7A00E28C35B04C4B9585B095 /* App/Models/LogPresentation.swift */,
 				530D82D215D5463E8AACEC56 /* App/Views/AutoFindScriptsSheet.swift */,
 				BE0D1DE81E304C1E9B2771ED /* App/Services/DeepScriptSearch.swift */,
 				543DCCF6EF334013B8B54853 /* App/Services/BuildScriptFolderImport.swift */,
@@ -537,6 +549,10 @@
 				F50575ED30318AE800601A4A /* App/Views/RepositoryRow.swift in Sources */,
 				861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */,
 				F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */,
+				6768B6C99A3D4C2A91B2E4E1 /* App/Services/AppDataStore.swift in Sources */,
+				746AB1ECFEFE48D2A9EAE9B1 /* App/Views/BuildScriptTableRow.swift in Sources */,
+				877258AE8BF84E3E8A947999 /* App/Views/LogPane.swift in Sources */,
+				42D194CFA8AD45AFBF28FC0E /* App/Models/LogPresentation.swift in Sources */,
 				5BA86873F58547929F408FEE /* App/Views/AutoFindScriptsSheet.swift in Sources */,
 				9C2A7EF640374F2AB326DC49 /* App/Services/DeepScriptSearch.swift in Sources */,
 				8A0B88E86C774770A10B0AEC /* App/Services/BuildScriptFolderImport.swift in Sources */,
