@@ -42,8 +42,8 @@ extension Color {
 /// The window's background image, drawn behind every region.
 ///
 /// Loaded once and held, because decoding a 1536×1024 PNG on every layout pass would be a real
-/// cost. Honours **Reduce transparency**, and is suppressed in dark mode: the asset is a light
-/// pastel, and dimming it produces mud rather than a dark theme.
+/// cost. Honours **Reduce transparency**, and stays visible in dark mode with a stronger overlay
+/// so the image still reads as the app's identity without washing out the content.
 struct AppBackground: View {
     let preferences: Preferences
     @Environment(\.colorScheme) private var colorScheme
@@ -55,23 +55,35 @@ struct AppBackground: View {
         return NSImage(contentsOf: url)
     }()
 
-    private var shouldShow: Bool {
-        !preferences.reduceTransparency && colorScheme != .dark
+    static func displayState(preferences: Preferences, colorScheme: ColorScheme) -> DisplayState {
+        DisplayState(
+            shouldShow: !preferences.reduceTransparency,
+            imageOpacity: colorScheme == .dark ? 0.22 : 0.55,
+            overlayOpacity: colorScheme == .dark ? 0.38 : 0.0
+        )
     }
 
     var body: some View {
+        let displayState = Self.displayState(preferences: preferences, colorScheme: colorScheme)
         ZStack {
             Color(nsColor: .windowBackgroundColor)
-            if shouldShow, let image = Self.image {
+            if displayState.shouldShow, let image = Self.image {
                 Image(nsImage: image)
                     .resizable()
                     // Fill rather than stretch: the window will not match the asset's 3:2.
                     .aspectRatio(contentMode: .fill)
-                    .opacity(0.55)
+                    .opacity(displayState.imageOpacity)
+                    .overlay(Color.black.opacity(displayState.overlayOpacity))
                     .allowsHitTesting(false)
             }
         }
         .ignoresSafeArea()
         .accessibilityHidden(true)
+    }
+
+    struct DisplayState: Equatable {
+        let shouldShow: Bool
+        let imageOpacity: Double
+        let overlayOpacity: Double
     }
 }

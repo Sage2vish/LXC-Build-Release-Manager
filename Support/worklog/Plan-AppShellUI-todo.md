@@ -23,13 +23,13 @@ Concepts live in `Support/context/concepts-designs/`:
 
 ## 01. Window background
 
-- [ ] Ship `ui-back-main.png` as a bundled app resource, registered in the target exactly once.
-- [ ] Render it behind the whole window, beneath all four regions.
+- [x] Ship `ui-back-main.png` as a bundled app resource, registered in the target exactly once.
+- [x] Render it behind the whole window, beneath all four regions.
 - [ ] Scale it to fill without distorting — the window's aspect ratio will not match 3:2.
 - [ ] Keep it subtle enough that body text stays comfortably readable on top of it.
 - [ ] Respect the **Reduce transparency** preference: fall back to a plain surface when it is on.
-- [ ] Decide what happens in dark mode — the asset is a light pastel, so it either needs a dark
-      counterpart or must be suppressed rather than dimmed into mud.
+- [x] Decide what happens in dark mode — the asset stays visible, but with a darker overlay so it
+      does not wash out the content.
 - [ ] Make sure it does not fight the accent colour or the section cards drawn over it.
 - [ ] Confirm it costs nothing meaningful at launch; 1.5 MB decoded once is fine, decoded per
       frame is not.

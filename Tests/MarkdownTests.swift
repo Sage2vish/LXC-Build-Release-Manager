@@ -455,6 +455,26 @@ final class SidebarAndHTMLTests: XCTestCase {
         XCTAssertNil(tag?.attributes["onerror"])
     }
 
+    // MARK: App shell background
+
+    func testAppBackgroundStaysVisibleInDarkMode() {
+        var prefs = Preferences()
+        prefs.reduceTransparency = false
+
+        let state = AppBackground.displayState(preferences: prefs, colorScheme: .dark)
+        XCTAssertTrue(state.shouldShow)
+        XCTAssertEqual(state.imageOpacity, 0.22, accuracy: 0.0001)
+        XCTAssertEqual(state.overlayOpacity, 0.38, accuracy: 0.0001)
+    }
+
+    func testAppBackgroundIsSuppressedWhenReduceTransparencyIsEnabled() {
+        var prefs = Preferences()
+        prefs.reduceTransparency = true
+
+        let state = AppBackground.displayState(preferences: prefs, colorScheme: .light)
+        XCTAssertFalse(state.shouldShow)
+    }
+
     func testTagShapedPlaceholdersInDocsSurviveAsText() {
         // This project's own docs contain <repository>, <tabname>, <hex> as placeholders.
         for placeholder in ["<repository>", "<tabname>", "<hex>"] {
