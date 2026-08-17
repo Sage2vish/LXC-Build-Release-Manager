@@ -1,0 +1,241 @@
+{
+  "sourceLanguage" : "en",
+  "version" : "1.0",
+  "strings" : {
+    "Add Build Script" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बिल्ड स्क्रिप्ट जोड़ें" } }
+      }
+    },
+    "Add Folder" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "फ़ोल्डर जोड़ें" } }
+      }
+    },
+    "All" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सभी" } }
+      }
+    },
+    "Auto Find" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्वतः खोजें" } }
+      }
+    },
+    "Available Build Scripts" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "उपलब्ध बिल्ड स्क्रिप्ट" } }
+      }
+    },
+    "Build" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बिल्ड" } }
+      }
+    },
+    "Build History" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बिल्ड इतिहास" } }
+      }
+    },
+    "Build Parameters" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बिल्ड पैरामीटर" } }
+      }
+    },
+    "Build Status" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बिल्ड स्थिति" } }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "रद्द करें" } }
+      }
+    },
+    "Clear" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "साफ़ करें" } }
+      }
+    },
+    "Connected" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कनेक्टेड" } }
+      }
+    },
+    "Copy Path" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पथ कॉपी करें" } }
+      }
+    },
+    "Errors" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "त्रुटियाँ" } }
+      }
+    },
+    "Export Current Log" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "वर्तमान लॉग निर्यात करें" } }
+      }
+    },
+    "GitHub" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "GitHub" } }
+      }
+    },
+    "History" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "इतिहास" } }
+      }
+    },
+    "Info" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "जानकारी" } }
+      }
+    },
+    "Live Output" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "लाइव आउटपुट" } }
+      }
+    },
+    "Local folder" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्थानीय फ़ोल्डर" } }
+      }
+    },
+    "Logs" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "लॉग" } }
+      }
+    },
+    "Never run" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कभी नहीं चलाया" } }
+      }
+    },
+    "No Repositories" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कोई रिपॉज़िटरी नहीं" } }
+      }
+    },
+    "Open Logs Folder" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "लॉग फ़ोल्डर खोलें" } }
+      }
+    },
+    "Open Repository…" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "रिपॉज़िटरी खोलें…" } }
+      }
+    },
+    "Open in Terminal" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "टर्मिनल में खोलें" } }
+      }
+    },
+    "Overview" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अवलोकन" } }
+      }
+    },
+    "Parameters" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पैरामीटर" } }
+      }
+    },
+    "Preferences" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "प्राथमिकताएँ" } }
+      }
+    },
+    "Quick Actions" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "त्वरित क्रियाएँ" } }
+      }
+    },
+    "Recent Repositories" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "हाल की रिपॉज़िटरी" } }
+      }
+    },
+    "Refresh Scripts" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्क्रिप्ट रीफ़्रेश करें" } }
+      }
+    },
+    "Repositories" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "रिपॉज़िटरी" } }
+      }
+    },
+    "Resolved Command" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "हल किया गया कमांड" } }
+      }
+    },
+    "Reveal in Finder" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "फ़ाइंडर में दिखाएँ" } }
+      }
+    },
+    "Run" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "चलाएँ" } }
+      }
+    },
+    "Run Build" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बिल्ड चलाएँ" } }
+      }
+    },
+    "Save Log" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "लॉग सहेजें" } }
+      }
+    },
+    "Script" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्क्रिप्ट" } }
+      }
+    },
+    "Selected Script" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "चयनित स्क्रिप्ट" } }
+      }
+    },
+    "Settings" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सेटिंग्स" } }
+      }
+    },
+    "Show Detail View Window (Right Side)" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "विवरण विंडो दिखाएँ (दाईं ओर)" } }
+      }
+    },
+    "Show Repo Window (Left side)" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "रिपॉज़िटरी विंडो दिखाएँ (बाईं ओर)" } }
+      }
+    },
+    "Show Status Bar (Bottom)" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्टेटस बार दिखाएँ (नीचे)" } }
+      }
+    },
+    "Source" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्रोत" } }
+      }
+    },
+    "Stop" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "रोकें" } }
+      }
+    },
+    "Warnings" : {
+      "localizations" : {
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "चेतावनियाँ" } }
+      }
+    }
+  }
+}

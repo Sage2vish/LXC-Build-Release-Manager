@@ -8,6 +8,9 @@ struct PreferencesView: View {
     @State private var draft: Preferences
     @State private var selectedTab: PrefTab = .general
     @State private var pendingClearHistoryConfirmation = false
+    @State private var isCheckingForUpdates = false
+    @State private var updateStatus: String?
+    @State private var availableUpdateURL: URL?
 
     init(store: PreferencesStore, historyStore: BuildHistoryStore) {
         self.store = store
@@ -71,6 +74,7 @@ struct PreferencesView: View {
                 Button("Cancel") { dismiss() }
                 Button("Save") {
                     store.save(draft)
+                    applyLanguageIfChanged()
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)
@@ -99,6 +103,51 @@ struct PreferencesView: View {
         }
     }
 
+    private var updateStatusText: String {
+        if let updateStatus { return updateStatus }
+        let current = UpdateChecker.currentVersion().map(\.description) ?? "unknown"
+        return "Current version \(current). Checking uses GitHub Releases."
+    }
+
+    /// Runs the check the "Check for updates automatically" preference would run at launch,
+    /// using the channel currently selected in this draft.
+    private func checkForUpdatesNow() async {
+        isCheckingForUpdates = true
+        availableUpdateURL = nil
+        defer { isCheckingForUpdates = false }
+
+        switch await UpdateChecker.check(preferences: draft) {
+        case .upToDate(let current):
+            updateStatus = "Up to date — running \(current)."
+        case .updateAvailable(let update, let current):
+            updateStatus = "Update available: \(update.version) (running \(current))."
+            availableUpdateURL = update.releaseURL
+        case .failed(let reason):
+            updateStatus = reason
+        }
+    }
+
+    /// Applies the language override and offers a relaunch, because macOS only picks up
+    /// `AppleLanguages` on the next launch.
+    private func applyLanguageIfChanged() {
+        let language = AppLanguage(preference: draft.language)
+        guard AppLanguageController.apply(language) else { return }
+
+        let alert = NSAlert()
+        alert.messageText = "Relaunch to change language?"
+        alert.informativeText = "Build Manager applies the language when it next starts."
+        alert.addButton(withTitle: "Relaunch Now")
+        alert.addButton(withTitle: "Later")
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+
+        let url = Bundle.main.bundleURL
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.createsNewApplicationInstance = true
+        NSWorkspace.shared.openApplication(at: url, configuration: configuration) { _, _ in
+            Task { @MainActor in NSApp.terminate(nil) }
+        }
+    }
+
     // MARK: 01 General
 
     private var generalTab: some View {
@@ -117,25 +166,34 @@ struct PreferencesView: View {
             stepperRow("Maximum recent repositories", "Number of repositories to keep in the Recent list.", $draft.maxRecentRepositories, range: 1...50)
             toggleRow("Confirm before quitting while a build is running", "Prevent accidental quit when a build process is active.", $draft.confirmBeforeQuittingDuringBuild)
             toggleRow("Confirm before clearing history or logs", "Ask for confirmation before clearing history or deleting logs.", $draft.confirmBeforeClearing)
-            toggleRow("Check for updates automatically", "Not active yet — the app has no updater, so this preference is stored but does nothing.", $draft.checkForUpdatesAutomatically)
-                .disabled(true)
-            pickerRow("Update channel", "Not active yet — there is no update feed behind this.") {
+            toggleRow("Check for updates automatically", "Check GitHub Releases for a newer version when Build Manager starts.", $draft.checkForUpdatesAutomatically)
+            pickerRow("Update channel", "Stable skips prereleases. Beta includes them.") {
                 Picker("", selection: $draft.updateChannel) {
                     Text("Stable (Recommended)").tag("Stable (Recommended)")
                     Text("Beta").tag("Beta")
                 }
                 .labelsHidden()
                 .frame(width: 200)
-                .disabled(true)
             }
-            pickerRow("Language", "Not active yet — the app is not localized, so only System Default applies.") {
+            pickerRow("Updates", updateStatusText) {
+                Button(isCheckingForUpdates ? "Checking…" : "Check Now") {
+                    Task { await checkForUpdatesNow() }
+                }
+                .disabled(isCheckingForUpdates)
+            }
+            if let url = availableUpdateURL {
+                Link("Open the release page", destination: url)
+                    .font(.callout)
+                    .padding(.leading, 4)
+            }
+            pickerRow("Language", "English is the main language. Changing this needs a relaunch.") {
                 Picker("", selection: $draft.language) {
-                    Text("System Default").tag("System Default")
-                    Text("English").tag("English")
+                    ForEach(AppLanguage.allCases) { language in
+                        Text(language.nativeName).tag(language.rawValue)
+                    }
                 }
                 .labelsHidden()
-                .frame(width: 160)
-                .disabled(true)
+                .frame(width: 180)
             }
         }
     }

@@ -67,6 +67,21 @@ struct ContentView: View {
             delegate?.runners = runners
             delegate?.preferencesStore = preferencesStore
         }
+        .task {
+            // "Check for updates automatically". Deliberately fire-and-forget: a failed or slow
+            // check must never delay launch or interrupt the user, so only a found update is
+            // surfaced, and only in the diagnostics log plus the Preferences screen.
+            guard preferencesStore.preferences.checkForUpdatesAutomatically else { return }
+            let preferences = preferencesStore.preferences
+            let result = await UpdateChecker.check(preferences: preferences)
+            if case .updateAvailable(let update, let current) = result {
+                DiagnosticsLog.write(
+                    .info,
+                    "Update available: \(update.version) (running \(current))",
+                    preferences: preferences
+                )
+            }
+        }
     }
 
     private var splitView: some View {

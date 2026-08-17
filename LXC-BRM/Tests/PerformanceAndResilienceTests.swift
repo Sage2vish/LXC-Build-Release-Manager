@@ -392,3 +392,159 @@ final class GitHubRateLimitTests: XCTestCase {
         XCTAssertNil(GitHubRateLimit.message(statusCode: 200, remaining: nil, limit: nil, warnPercent: 20))
     }
 }
+
+/// Covers update checking and language selection — the last two preferences that had nothing
+/// behind them.
+final class UpdateAndLanguageTests: XCTestCase {
+    private func release(_ tag: String, prerelease: Bool = false, draft: Bool = false) -> UpdateChecker.ReleaseEntry {
+        UpdateChecker.ReleaseEntry(
+            tagName: tag,
+            name: "Release \(tag)",
+            htmlURL: "https://github.com/Sage2vish/LXC-Build-Release-Manager/releases/tag/\(tag)",
+            prerelease: prerelease,
+            draft: draft
+        )
+    }
+
+    func testVersionOrderingHandlesTheCasesStringComparisonGetsWrong() {
+        // The classic failure: as text, "0.1.10" sorts before "0.1.9".
+        XCTAssertTrue(AppVersion("0.1.9")! < AppVersion("0.1.10")!)
+        XCTAssertTrue(AppVersion("0.9.0")! < AppVersion("0.10.0")!)
+        XCTAssertTrue(AppVersion("1.0")! < AppVersion("1.0.1")!)
+        // Missing trailing components are zero.
+        XCTAssertEqual(AppVersion("1.0")!, AppVersion("1.0.0")!)
+        // A "v" prefix is accepted.
+        XCTAssertEqual(AppVersion("v0.1.2")!, AppVersion("0.1.2")!)
+        // Prereleases sort below the release they lead to.
+        XCTAssertTrue(AppVersion("1.0.0-beta.1")! < AppVersion("1.0.0")!)
+    }
+
+    func testUnparseableVersionsNeverReportAnUpdate() {
+        XCTAssertNil(AppVersion(""))
+        XCTAssertNil(AppVersion("latest"))
+        XCTAssertNil(AppVersion("release-candidate"))
+        XCTAssertNil(AppVersion("1.x.3"))
+
+        let current = AppVersion("0.1.2")!
+        let result = UpdateChecker.evaluate(
+            releases: [release("nightly"), release("latest")],
+            channel: .stable,
+            current: current
+        )
+        XCTAssertEqual(result, .upToDate(current: current))
+    }
+
+    func testChannelFilteringPicksTheRightReleaseFromAMixedFeed() {
+        let current = AppVersion("0.1.2")!
+        let feed = [
+            release("0.1.3"),
+            release("0.2.0-beta.1", prerelease: true),
+            release("9.9.9", draft: true)     // drafts are never offered on any channel
+        ]
+
+        // Stable ignores the prerelease and the draft.
+        XCTAssertEqual(
+            UpdateChecker.evaluate(releases: feed, channel: .stable, current: current),
+            .updateAvailable(
+                AvailableUpdate(
+                    version: AppVersion("0.1.3")!,
+                    name: "Release 0.1.3",
+                    releaseURL: URL(string: "https://github.com/Sage2vish/LXC-Build-Release-Manager/releases/tag/0.1.3"),
+                    isPrerelease: false
+                ),
+                current: current
+            )
+        )
+
+        // Beta takes the newer prerelease.
+        guard case .updateAvailable(let betaUpdate, _) = UpdateChecker.evaluate(
+            releases: feed, channel: .beta, current: current
+        ) else {
+            return XCTFail("Beta should find the prerelease")
+        }
+        XCTAssertEqual(betaUpdate.version, AppVersion("0.2.0-beta.1")!)
+        XCTAssertTrue(betaUpdate.isPrerelease)
+    }
+
+    func testEqualOrOlderReleasesReportUpToDate() {
+        let current = AppVersion("1.0.0")!
+        XCTAssertEqual(
+            UpdateChecker.evaluate(releases: [release("1.0.0")], channel: .stable, current: current),
+            .upToDate(current: current)
+        )
+        XCTAssertEqual(
+            UpdateChecker.evaluate(releases: [release("0.9.9")], channel: .stable, current: current),
+            .upToDate(current: current)
+        )
+        XCTAssertEqual(
+            UpdateChecker.evaluate(releases: [], channel: .stable, current: current),
+            .upToDate(current: current)
+        )
+    }
+
+    func testChannelIsDerivedFromThePreferenceString() {
+        XCTAssertEqual(UpdateChecker.Channel(preference: "Stable (Recommended)"), .stable)
+        XCTAssertEqual(UpdateChecker.Channel(preference: "Beta"), .beta)
+        // Anything unrecognised is treated as stable, the safer default.
+        XCTAssertEqual(UpdateChecker.Channel(preference: "nonsense"), .stable)
+    }
+
+    func testLanguagePreferenceMapsToCodesAndFallsBackSafely() {
+        XCTAssertNil(AppLanguage(preference: "System Default").languageCode)
+        XCTAssertEqual(AppLanguage(preference: "English").languageCode, "en")
+        XCTAssertEqual(AppLanguage(preference: "Hindi").languageCode, "hi")
+        // An old or hand-edited value must not break loading.
+        XCTAssertEqual(AppLanguage(preference: "Klingon"), .systemDefault)
+        XCTAssertEqual(AppLanguage(preference: ""), .systemDefault)
+        // Hindi is shown in its own script.
+        XCTAssertEqual(AppLanguage.hindi.nativeName, "हिन्दी")
+        XCTAssertEqual(AppLanguage.english.nativeName, "English")
+    }
+
+    func testApplyingAndClearingTheLanguageOverrideWritesAppleLanguages() throws {
+        let suiteName = "lxc-brm-language-\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        XCTAssertTrue(AppLanguageController.apply(.hindi, defaults: defaults))
+        XCTAssertEqual(AppLanguageController.currentOverride(defaults: defaults), "hi")
+        // Re-applying the same language is not a change, so no relaunch is offered.
+        XCTAssertFalse(AppLanguageController.apply(.hindi, defaults: defaults))
+
+        XCTAssertTrue(AppLanguageController.apply(.english, defaults: defaults))
+        XCTAssertEqual(AppLanguageController.currentOverride(defaults: defaults), "en")
+
+        // System Default clears the override entirely.
+        XCTAssertTrue(AppLanguageController.apply(.systemDefault, defaults: defaults))
+        XCTAssertNil(AppLanguageController.currentOverride(defaults: defaults))
+        XCTAssertFalse(AppLanguageController.apply(.systemDefault, defaults: defaults))
+    }
+
+    func testHindiCatalogCoversEveryEnglishKey() throws {
+        // The catalog ships with the app; every declared key must have a Hindi value, or the
+        // language picker silently shows English.
+        let path = try XCTUnwrap(
+            Bundle.main.path(forResource: "Localizable", ofType: "strings", inDirectory: nil, forLocalization: "hi"),
+            "Hindi localization missing from the app bundle"
+        )
+        let data = try Data(contentsOf: URL(fileURLWithPath: path))
+        let strings = try XCTUnwrap(
+            PropertyListSerialization.propertyList(from: data, format: nil) as? [String: String]
+        )
+        XCTAssertGreaterThan(strings.count, 40, "Expected the Hindi catalog to be populated")
+        for (key, value) in strings {
+            XCTAssertFalse(value.trimmingCharacters(in: .whitespaces).isEmpty, "\(key) has an empty Hindi value")
+            // A value identical to its key means the translation was never filled in.
+            if !["GitHub"].contains(key) {
+                XCTAssertNotEqual(value, key, "\(key) is untranslated in Hindi")
+            }
+        }
+        XCTAssertEqual(strings["Run"], "चलाएँ")
+        XCTAssertEqual(strings["Repositories"], "रिपॉज़िटरी")
+        XCTAssertEqual(strings["Preferences"], "प्राथमिकताएँ")
+
+        // English is the source language and needs no compiled catalog; it falls back to the
+        // literal strings in code.
+        XCTAssertTrue(Bundle.main.localizations.contains("hi"))
+    }
+}

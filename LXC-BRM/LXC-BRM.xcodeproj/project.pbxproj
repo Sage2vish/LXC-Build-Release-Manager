@@ -29,6 +29,9 @@
 		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
 		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
 		F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */; };
+		5CF2D8BE79444AF6A77AA7A1 /* App/Services/AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F2EA63DB8D411B8E3A239A /* App/Services/AppLanguage.swift */; };
+		6C53F9FD7E64459199CD6FA6 /* App/Services/UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06AE7FC5855549EA9655D7D6 /* App/Services/UpdateChecker.swift */; };
+		EC6395CE280C4D269EC32899 /* App/Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F7C44FFF40214773A687078E /* App/Resources/Localizable.xcstrings */; };
 		1D30AFBBB9F24B77975AB16A /* App/Services/DiagnosticsLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6D5291E54545FFB6DEDDD3 /* App/Services/DiagnosticsLog.swift */; };
 		CAA9465E4934471685850294 /* App/Models/AppearanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58F8A9711954FC4A3BC8983 /* App/Models/AppearanceSettings.swift */; };
 		F72BE43DFB94459A9184A8D2 /* App/Views/RepositoryOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F688A5AC1A2B40178A7C72FD /* App/Views/RepositoryOverviewView.swift */; };
@@ -124,6 +127,9 @@
 		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
+		D9F2EA63DB8D411B8E3A239A /* App/Services/AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/AppLanguage.swift; sourceTree = "<group>"; };
+		06AE7FC5855549EA9655D7D6 /* App/Services/UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/UpdateChecker.swift; sourceTree = "<group>"; };
+		F7C44FFF40214773A687078E /* App/Resources/Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = App/Resources/Localizable.xcstrings; sourceTree = "<group>"; };
 		4A6D5291E54545FFB6DEDDD3 /* App/Services/DiagnosticsLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/DiagnosticsLog.swift; sourceTree = "<group>"; };
 		D58F8A9711954FC4A3BC8983 /* App/Models/AppearanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Models/AppearanceSettings.swift; sourceTree = "<group>"; };
 		F688A5AC1A2B40178A7C72FD /* App/Views/RepositoryOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RepositoryOverviewView.swift; sourceTree = "<group>"; };
@@ -294,6 +300,9 @@
 			isa = PBXGroup;
 			children = (
 				F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */,
+				F7C44FFF40214773A687078E /* App/Resources/Localizable.xcstrings */,
+				D9F2EA63DB8D411B8E3A239A /* App/Services/AppLanguage.swift */,
+				06AE7FC5855549EA9655D7D6 /* App/Services/UpdateChecker.swift */,
 				4A6D5291E54545FFB6DEDDD3 /* App/Services/DiagnosticsLog.swift */,
 				D58F8A9711954FC4A3BC8983 /* App/Models/AppearanceSettings.swift */,
 				F688A5AC1A2B40178A7C72FD /* App/Views/RepositoryOverviewView.swift */,
@@ -517,6 +526,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				hi,
 				Base,
 			);
 			mainGroup = 71A7D17D78B11C20BC9E04E0;
@@ -536,6 +546,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC6395CE280C4D269EC32899 /* App/Resources/Localizable.xcstrings in Resources */,
 				F50576263031ABBA00601A4A /* build-android.sh in Resources */,
 				F50576273031ABBA00601A4A /* build-ios.sh in Resources */,
 				F50576283031ABBA00601A4A /* requirements.md in Resources */,
@@ -579,6 +590,8 @@
 				F50575ED30318AE800601A4A /* App/Views/RepositoryRow.swift in Sources */,
 				861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */,
 				F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */,
+				5CF2D8BE79444AF6A77AA7A1 /* App/Services/AppLanguage.swift in Sources */,
+				6C53F9FD7E64459199CD6FA6 /* App/Services/UpdateChecker.swift in Sources */,
 				1D30AFBBB9F24B77975AB16A /* App/Services/DiagnosticsLog.swift in Sources */,
 				CAA9465E4934471685850294 /* App/Models/AppearanceSettings.swift in Sources */,
 				F72BE43DFB94459A9184A8D2 /* App/Views/RepositoryOverviewView.swift in Sources */,
