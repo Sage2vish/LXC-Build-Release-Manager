@@ -53,6 +53,7 @@ struct RepositoryDetailView: View {
         case logs = "Logs"
         case history = "History"
         case overview = "Overview"
+        case docs = "Docs"
         case settings = "Settings"
         var id: String { rawValue }
 
@@ -88,6 +89,7 @@ struct RepositoryDetailView: View {
                     case .logs: logsTab
                     case .history: historyTab
                     case .overview: overviewTab
+                    case .docs: docsTab
                     case .settings: settingsTab
                     }
                 }
@@ -870,6 +872,14 @@ struct RepositoryDetailView: View {
 
     private var overviewTab: some View {
         RepositoryOverviewView(repository: repository, stats: stats) { statusBadge }
+    }
+
+    // MARK: Docs
+
+    /// Markdown explorer and viewer. Given its own scroll handling, so it opts out of the
+    /// surrounding tab ScrollView padding.
+    private var docsTab: some View {
+        MarkdownExplorerView(repository: repository)
     }
 
     // MARK: Settings

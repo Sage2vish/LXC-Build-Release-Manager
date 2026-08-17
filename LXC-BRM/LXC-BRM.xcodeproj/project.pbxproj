@@ -29,6 +29,11 @@
 		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
 		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
 		F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */; };
+		546DFA9AE122443D8F4CB7A4 /* App/Views/MarkdownExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF36C3D4A16487EAB3B1F68 /* App/Views/MarkdownExplorerView.swift */; };
+		139012B1878649659E34DA94 /* App/Views/MarkdownRenderedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAEA0E57C6354D10B2C92288 /* App/Views/MarkdownRenderedView.swift */; };
+		29FA348FEC1E4166B7AA82E7 /* App/Services/MarkdownFileTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23505507A719409CB1BEF33C /* App/Services/MarkdownFileTree.swift */; };
+		FF6F8795A85A4918A8E87F60 /* App/Models/MarkdownParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CBBA8C125D48F897441F4F /* App/Models/MarkdownParser.swift */; };
+		B9F71155AD8444DEA9DC2D4A /* App/Models/MarkdownBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2135B85648764E8FB1F5480E /* App/Models/MarkdownBlock.swift */; };
 		5CF2D8BE79444AF6A77AA7A1 /* App/Services/AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F2EA63DB8D411B8E3A239A /* App/Services/AppLanguage.swift */; };
 		6C53F9FD7E64459199CD6FA6 /* App/Services/UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06AE7FC5855549EA9655D7D6 /* App/Services/UpdateChecker.swift */; };
 		EC6395CE280C4D269EC32899 /* App/Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F7C44FFF40214773A687078E /* App/Resources/Localizable.xcstrings */; };
@@ -127,6 +132,11 @@
 		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
+		0EF36C3D4A16487EAB3B1F68 /* App/Views/MarkdownExplorerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/MarkdownExplorerView.swift; sourceTree = "<group>"; };
+		EAEA0E57C6354D10B2C92288 /* App/Views/MarkdownRenderedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/MarkdownRenderedView.swift; sourceTree = "<group>"; };
+		23505507A719409CB1BEF33C /* App/Services/MarkdownFileTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/MarkdownFileTree.swift; sourceTree = "<group>"; };
+		20CBBA8C125D48F897441F4F /* App/Models/MarkdownParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Models/MarkdownParser.swift; sourceTree = "<group>"; };
+		2135B85648764E8FB1F5480E /* App/Models/MarkdownBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Models/MarkdownBlock.swift; sourceTree = "<group>"; };
 		D9F2EA63DB8D411B8E3A239A /* App/Services/AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/AppLanguage.swift; sourceTree = "<group>"; };
 		06AE7FC5855549EA9655D7D6 /* App/Services/UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/UpdateChecker.swift; sourceTree = "<group>"; };
 		F7C44FFF40214773A687078E /* App/Resources/Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = App/Resources/Localizable.xcstrings; sourceTree = "<group>"; };
@@ -300,6 +310,11 @@
 			isa = PBXGroup;
 			children = (
 				F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */,
+				0EF36C3D4A16487EAB3B1F68 /* App/Views/MarkdownExplorerView.swift */,
+				EAEA0E57C6354D10B2C92288 /* App/Views/MarkdownRenderedView.swift */,
+				23505507A719409CB1BEF33C /* App/Services/MarkdownFileTree.swift */,
+				20CBBA8C125D48F897441F4F /* App/Models/MarkdownParser.swift */,
+				2135B85648764E8FB1F5480E /* App/Models/MarkdownBlock.swift */,
 				F7C44FFF40214773A687078E /* App/Resources/Localizable.xcstrings */,
 				D9F2EA63DB8D411B8E3A239A /* App/Services/AppLanguage.swift */,
 				06AE7FC5855549EA9655D7D6 /* App/Services/UpdateChecker.swift */,
@@ -590,6 +605,11 @@
 				F50575ED30318AE800601A4A /* App/Views/RepositoryRow.swift in Sources */,
 				861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */,
 				F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */,
+				546DFA9AE122443D8F4CB7A4 /* App/Views/MarkdownExplorerView.swift in Sources */,
+				139012B1878649659E34DA94 /* App/Views/MarkdownRenderedView.swift in Sources */,
+				29FA348FEC1E4166B7AA82E7 /* App/Services/MarkdownFileTree.swift in Sources */,
+				FF6F8795A85A4918A8E87F60 /* App/Models/MarkdownParser.swift in Sources */,
+				B9F71155AD8444DEA9DC2D4A /* App/Models/MarkdownBlock.swift in Sources */,
 				5CF2D8BE79444AF6A77AA7A1 /* App/Services/AppLanguage.swift in Sources */,
 				6C53F9FD7E64459199CD6FA6 /* App/Services/UpdateChecker.swift in Sources */,
 				1D30AFBBB9F24B77975AB16A /* App/Services/DiagnosticsLog.swift in Sources */,
