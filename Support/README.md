@@ -23,7 +23,7 @@ LXC Build Release Manager is a native macOS build and release manager for reposi
 3. Preserve the result as a log, history record, and release signal.
 4. Keep the knowledge needed for the next change close to the code.
 
-The Support tree makes that loop understandable and repeatable. It is intentionally separated into five roles:
+The Support tree makes that loop understandable and repeatable. It is intentionally separated into six roles:
 
 | Role | What it answers | Folder |
 | --- | --- | --- |
@@ -32,6 +32,7 @@ The Support tree makes that loop understandable and repeatable. It is intentiona
 | Frameworks | Which system frameworks, adapters, and package ideas are available? | [`frameworks/`](frameworks/README.md) |
 | Shared | Which conventions and reusable support ideas should stay consistent? | [`shared/`](shared/README.md) |
 | Worklog | What is planned, what shipped, and what still needs verification? | [`worklog/`](worklog/README.md) |
+| Research | What are we considering, and what would have to be true for it to work? | [`research/`](research/README.md) |
 
 ## Current release snapshot
 
@@ -130,6 +131,7 @@ Start with [`worklog/README.md`](worklog/README.md) for the rules, then go to th
 | Frameworks | [`frameworks/README.md`](frameworks/README.md) | System framework matrix and future package/adapter notes. |
 | Shared | [`shared/README.md`](shared/README.md) | Reusable conventions and cross-feature ideas. |
 | Worklog | [`worklog/README.md`](worklog/README.md) | Tracking rules and file ownership. |
+| Research | [`research/README.md`](research/README.md) | The reading file: every open topic, its question, and its stage. |
 
 ### Delivery plans
 
@@ -193,3 +195,4 @@ Every plan is reachable from the index; these are the ones a newcomer usually wa
 - [Context diagrams](context/diagrams/README.md)
 - [Worklog](worklog/README.md)
 - [Master plan index](worklog/BRM-Plan-todo.md)
+- [Research](research/README.md)

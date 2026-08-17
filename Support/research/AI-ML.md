@@ -1,10 +1,14 @@
 # Research — AI and machine learning in the build room
 
-**Stage:** exploring — no commitment, no tasks, nothing promised in the product.
+**Stage:** exploring
+**Opened:** 2026-08-18
+**Question:** Where would a model earn its place in a tool whose whole value is inspectability?
+
+No commitment, no tasks, nothing promised in the product.
 
 > Research files are not plans. They hold thinking that has not earned a checklist yet. Nothing
 > here is scheduled, and nothing here should be counted as work in progress. When one idea is
-> agreed, it is promoted into a `Plan-<Area>-todo.md` with a boundary and real items, and this file
+> agreed, it is promoted into a `../worklog/Plan-<Area>-todo.md` with a boundary and real items, and this file
 > keeps only a line saying where it went. See [`README.md`](README.md) for that promotion path.
 
 ## The question
@@ -21,7 +25,7 @@ the evidence?**
 
 | Constraint | Consequence |
 | --- | --- |
-| No third-party packages ([refactor plan's non-goals](Plan-CodeRefactoring-Reusability-todo.md)) | Apple frameworks only: NaturalLanguage, CoreML/CreateML, Accelerate, and FoundationModels on macOS 26. No Python runtime, no vendored inference library. |
+| No third-party packages ([refactor plan's non-goals](../worklog/Plan-CodeRefactoring-Reusability-todo.md)) | Apple frameworks only: NaturalLanguage, CoreML/CreateML, Accelerate, and FoundationModels on macOS 26. No Python runtime, no vendored inference library. |
 | Offline is a feature | Build logs and history are local files that open with no network. Anything requiring a server breaks that promise for the whole app, not just the new feature. |
 | Deployment target is macOS 15 | FoundationModels is macOS 26+. Any on-device LLM work needs `if #available` and a defined path for people on 15. |
 | Logs may contain secrets | Tokens, signing identities, internal hostnames. Nothing leaves the machine without an explicit, per-repository opt-in. This is the single hardest requirement to retrofit, so it is decided now. |
@@ -64,7 +68,7 @@ but only if you already know the index exists. Sentence embeddings over the mark
 questions instead of listing files.
 
 - Small, self-contained, no network, and it uses an Apple framework already available on macOS 15.
-- Fits an existing surface rather than inventing one — it is the [Docs tab](Plan-MarkdownExplorer-todo.md)
+- Fits an existing surface rather than inventing one — it is the [Docs tab](../worklog/Plan-MarkdownExplorer-todo.md)
   getting better search.
 - Probably the best first *shipped* piece of intelligence: low risk, visible payoff, no trust cost.
 
@@ -122,7 +126,7 @@ tab)** — smallest, most self-contained, no trust cost, no network, and it land
 already has a plan. **01 (failure explanation)** is the bigger prize, and its non-ML half is worth
 doing regardless of whether a model ever appears.
 
-Promotion, when it happens: agree the idea, write `Plan-<Area>-todo.md` with a boundary statement
+Promotion, when it happens: agree the idea, write `../worklog/Plan-<Area>-todo.md` with a boundary statement
 and real items, add it to the `AREAS` list in
 [`../build-release/scripts/update-plan-index.py`](../build-release/scripts/update-plan-index.py),
 and leave a line here pointing at it.

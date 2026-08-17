@@ -18,41 +18,17 @@ linked from the master index.
 | --- | --- |
 | [`BRM-Plan-todo.md`](BRM-Plan-todo.md) | The master index. Links every plan, carries its generated counts, and says where a new task goes. Holds no tasks of its own. |
 | `Plan-<Area>-todo.md` | One plan per area. Owns its own checklist, tracking table, boundary statement, and the record of what shipped. |
-| `Research-<Area>.md` | Thinking that has not earned a checklist yet. No tasks, no counts, no schedule. |
 | `assets/` | Images referenced by a plan. |
 
-## Research, and how it becomes a plan
+## Research lives next door
 
-Not every idea is ready to be work. A `Research-<Area>.md` file is where an idea is explored
-honestly — including the reasons it might be wrong — without pretending it is scheduled.
+Ideas that have not been agreed do **not** live in this folder. They live in
+[`../research/`](../research/README.md), which has its own reading file listing every open topic.
 
-The rules that keep research from quietly becoming debt:
-
-- **No checkboxes.** A research note carries no `[ ]` items, so it can never be counted as work in
-  progress. The index lists it separately and counts nothing from it.
-- **It states its stage.** A line reading `**Stage:** exploring` (or `proposal`, or
-  `promoted → Plan-X`) near the top. The index reads that line directly.
-- **It says what would have to be true.** Constraints, open questions, and the reasons an idea
-  might not survive them are the substance of a research note, not an appendix to it.
-
-**Promotion** happens when an idea is agreed, and only then:
-
-1. Write `Plan-<Area>-todo.md` with a boundary statement, a checklist, and a tracking table.
-2. Add one line to the `AREAS` list in
-   [`../build-release/scripts/update-plan-index.py`](../build-release/scripts/update-plan-index.py)
-   so the index picks it up in the right place and order.
-3. Leave the research note in place with a pointer to the plan, so the thinking behind the
-   decision stays readable.
-
-Current research: [`Research-AI-ML.md`](Research-AI-ML.md) — where a model could earn its place in
-a tool whose value is inspectability.
-
-There are no dated `todo-YYYY-MM-DD.md` or `worklog-YYYY-MM-DD.md` files. That convention was
-retired on 2026-08-18: a single dated checklist could not hold a product this size without going
-stale, and a separate narrative file duplicated what the plans already recorded. Their content was
-distributed into the owning plans — the mapping is in the master index under **Retired files** —
-and the decision is recorded in
-[`../context/decisions/decision-2026-08-18.md`](../context/decisions/decision-2026-08-18.md).
+The separation is the point: this folder answers *"what is left to build?"* and every item in it is
+counted. Research answers *"should we?"* and nothing in it is counted, scheduled, or promised. An
+idea only crosses over when it is agreed — at which point it becomes a `Plan-<Area>-todo.md` here,
+and the research topic keeps a pointer to it.
 
 ## The mapping model
 

@@ -14,9 +14,9 @@
 9. Do not create dated `todo-YYYY-MM-DD.md` or `worklog-YYYY-MM-DD.md` files. The narrative of what
    shipped belongs in the plan that owns the work; cross-cutting evidence belongs in
    `worklog/Plan-QualityVerification-todo.md`.
-10. Keep unproven ideas in `worklog/Research-<Area>.md`, with no checkboxes and a stated stage, so
-    nothing unagreed is ever counted as work in progress. An idea becomes a plan only when it is
-    agreed, and the research note then points at the plan.
+10. Keep unproven ideas in `research/`, one topic per file, with no checkboxes and a stated stage,
+    so nothing unagreed is ever counted as work in progress. Research and worklog stay separate:
+    an idea becomes a plan only when it is agreed, and the topic then points at the plan.
 11. Regenerate the plan index with
     `python3 Support/build-release/scripts/update-plan-index.py` rather than editing the counts
     by hand; CI runs the same script with `--check`.
@@ -36,6 +36,6 @@
 - Architecture lives in `architecture.md`.
 - Decisions live in `decisions/`, dated, and a later decision names the one it supersedes.
 - Delivery tracking starts at `../worklog/BRM-Plan-todo.md` and continues in the plan it links to.
-- Unproven ideas live in `../worklog/Research-*.md` until they are agreed and promoted to a plan.
+- Unproven ideas live in `../research/`, indexed by its reading file, until they are agreed and promoted to a plan.
 - Verification evidence lives in `../worklog/Plan-QualityVerification-todo.md`.
 - PDF requirements are reference input; decisions are the implementation authority.

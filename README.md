@@ -237,6 +237,7 @@ flowchart LR
 | Frameworks | System framework inventory and future package or adapter records. | [Support/frameworks](Support/frameworks/README.md) |
 | Shared | Reusable conventions and cross-feature ideas. | [Support/shared](Support/shared/README.md) |
 | Worklog | The plan index, one plan per area, and the verification ledger. | [Support/worklog](Support/worklog/README.md) |
+| Research | Open topics being considered, with no tasks attached and nothing promised. | [Support/research](Support/research/README.md) |
 
 ## The delivery plan
 
@@ -342,6 +343,7 @@ The remaining hardening work is kept honest in [Plan-QualityVerification](Suppor
 | Follow what is actually complete | [Quality & verification](Support/worklog/Plan-QualityVerification-todo.md) |
 | See the Build workspace record | [Build tab plan](Support/worklog/Plan-Tab-Build-todo.md) |
 | Package or publish a release | [Release & packaging](Support/worklog/Plan-ReleasePackaging-todo.md) |
+| Read what is being considered, not built | [Research](Support/research/README.md) |
 | Browse visual references | [Concepts and Designs](Support/context/concepts-designs/README.md) |
 
 ## Contributing

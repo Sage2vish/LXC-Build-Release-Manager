@@ -64,6 +64,18 @@ settings screen must say so rather than appearing to do nothing.
 - [x] Every key present in English is present in Hindi, or deliberately falls back.
 - [x] Applying and clearing the override writes and removes `AppleLanguages` correctly.
 
+## 05. Driving it from the header picker
+
+Added 2026-08-18. The language control moving into the top band changes how often the switch is
+exercised: from "once, in Preferences" to "whenever someone feels like it".
+
+- [ ] Confirm a live switch fully re-renders every visible surface, and name the ones that do not.
+- [ ] Expose the shipped localizations as data — the picker reads them, rather than a second
+      hardcoded list drifting from the string catalogue.
+- [ ] Verify Hindi at the narrow panel width, where longer strings meet the tightest layout.
+- [ ] Decide what happens to an in-flight build's already-emitted output on a language switch;
+      log lines are the program's own words, not the app's, and should almost certainly not change.
+
 ## Tracking
 
 | Section | Checked / Total | Status |
@@ -72,7 +84,8 @@ settings screen must say so rather than appearing to do nothing.
 | 02 — Language selection | 5 / 5 | Done |
 | 03 — Strings | 6 / 6 | Done (see scope note) |
 | 04 — Tests | 4 / 4 | Done |
-| **Total** | **19 / 19** | **Shipped** |
+| 05 — Header picker | 0 / 4 | Open |
+| **Total** | **19 / 23** | **In progress** |
 
 ## Scope note on strings
 

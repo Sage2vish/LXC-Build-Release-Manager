@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**617 of 785 items done — 168 still pending (79%).**
+**617 of 814 items done — 197 still pending (76%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
-| The window, by region | 54 | 30 | In progress |
-| Inside the main panel | 20 | 12 | In progress |
+| The window, by region | 54 | 38 | In progress |
+| Inside the main panel | 20 | 28 | In progress |
 | The six tabs, inside the container | 256 | 24 | In progress |
-| Features | 186 | 37 | In progress |
-| Engineering, quality, and release | 101 | 65 | In progress |
-| **All areas** | **617** | **168** | **In progress** |
+| Features | 186 | 41 | In progress |
+| Engineering, quality, and release | 101 | 66 | In progress |
+| **All areas** | **617** | **197** | **In progress** |
 
 ## The plans, by area
 
@@ -40,12 +40,12 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
-| [Plan-AppShellUI-todo](Plan-AppShellUI-todo.md) | Whole window — background, material and glass language, theme and accent | 0 | 15 | Open |
+| [Plan-AppShellUI-todo](Plan-AppShellUI-todo.md) | Whole window — background, material and glass language, theme and accent | 0 | 22 | Open |
 | [Plan-LeftSidebar-todo](Plan-LeftSidebar-todo.md) | Left sidebar — repositories, recents, add/remove, the footer buttons | 33 | 2 | In progress |
 | [Plan-MainPanel-todo](Plan-MainPanel-todo.md) | Main panel — index over the three bands and six tabs below | — | — | Index only |
 | [Plan-DetailViewPanel-todo](Plan-DetailViewPanel-todo.md) | Detail View panel — the right inspector and its cards | 12 | 6 | In progress |
-| [Plan-StatusBar-todo](Plan-StatusBar-todo.md) | Status bar — repository, branch, platform, auto-detect chips | 9 | 7 | In progress |
-| **The window, by region — subtotal** | | **54** | **30** | **In progress** |
+| [Plan-StatusBar-todo](Plan-StatusBar-todo.md) | Status bar — repository, branch, platform, auto-detect chips | 9 | 8 | In progress |
+| **The window, by region — subtotal** | | **54** | **38** | **In progress** |
 
 ### Inside the main panel
 
@@ -53,10 +53,10 @@ The centre column is three stacked bands, each with its own plan.
 
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
-| [Plan-MainPanel-Header-todo](Plan-MainPanel-Header-todo.md) | Header — repository name, badge, path lines, Reveal / Terminal / Copy | 8 | 5 | In progress |
+| [Plan-MainPanel-Header-todo](Plan-MainPanel-Header-todo.md) | Header — repository name, badge, path lines, Reveal / Terminal / Copy | 8 | 21 | In progress |
 | [Plan-MainPanel-Toolbar-todo](Plan-MainPanel-Toolbar-todo.md) | Toolbar — the six-tab picker and the rule beneath it | 7 | 4 | In progress |
 | [Plan-MainPanel-Container-todo](Plan-MainPanel-Container-todo.md) | Container — work-area surface, padding, scrolling, card treatment | 5 | 3 | In progress |
-| **Inside the main panel — subtotal** | | **20** | **12** | **In progress** |
+| **Inside the main panel — subtotal** | | **20** | **28** | **In progress** |
 
 ### The six tabs, inside the container
 
@@ -80,9 +80,9 @@ Product behaviour that spans regions rather than living in one of them.
 | --- | --- | ---: | ---: | --- |
 | [Plan-PreferenceScreen-todo](Plan-PreferenceScreen-todo.md) | Preferences window — seven tabs, every field, and the wiring audit | 55 | 36 | In progress |
 | [Plan-Updates-todo](Plan-Updates-todo.md) | Update checking — GitHub Releases feed, version comparison, channels | 22 | 1 | In progress |
-| [Plan-Localization-todo](Plan-Localization-todo.md) | Localization — English and Hindi, the string catalogue, switching | 19 | 0 | Done ✅ |
+| [Plan-Localization-todo](Plan-Localization-todo.md) | Localization — English and Hindi, the string catalogue, switching | 19 | 4 | In progress |
 | [Plan-WindowLayout-todo](Plan-WindowLayout-todo.md) | Window layout — resizing, the View menu, panel visibility | 90 | 0 | Done ✅ |
-| **Features — subtotal** | | **186** | **37** | **In progress** |
+| **Features — subtotal** | | **186** | **41** | **In progress** |
 
 ### Engineering, quality, and release
 
@@ -91,20 +91,11 @@ Work that has no visible surface of its own, but decides whether the visible one
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
 | [Plan-CodeRefactoring-Reusability-todo](Plan-CodeRefactoring-Reusability-todo.md) | Feature extraction, dependency seams, reuse — behaviour preserving | 31 | 38 | In progress |
-| [Plan-XcodeProject-todo](Plan-XcodeProject-todo.md) | Target membership, build settings, schemes, project-file hygiene | 12 | 11 | In progress |
+| [Plan-XcodeProject-todo](Plan-XcodeProject-todo.md) | Target membership, build settings, schemes, project-file hygiene | 12 | 12 | In progress |
 | [Plan-QualityVerification-todo](Plan-QualityVerification-todo.md) | Non-functional targets, tests, GUI coverage, the evidence ledger | 19 | 6 | In progress |
 | [Plan-ReleasePackaging-todo](Plan-ReleasePackaging-todo.md) | Release script, staging, the `.dmg`, tags, signing, publication | 14 | 10 | In progress |
 | [Plan-ContextArchitectureVisuals-todo](Plan-ContextArchitectureVisuals-todo.md) | The SVG diagram set and its documentation wiring | 25 | 0 | Done ✅ |
-| **Engineering, quality, and release — subtotal** | | **101** | **65** | **In progress** |
-
-### Research
-
-Thinking that has not earned a checklist yet. Nothing here is scheduled or counted; when an idea is agreed it becomes a plan above and leaves a pointer behind.
-
-| Note | Stage |
-| --- | --- |
-| [Research-AI-ML](Research-AI-ML.md) | exploring — no commitment, no tasks, nothing promised in the product. |
-| [Research-StateAndLogging](Research-StateAndLogging.md) | exploring — your idea, captured. No plan, no tasks, nothing scheduled. |
+| **Engineering, quality, and release — subtotal** | | **101** | **66** | **In progress** |
 
 <!-- plan-index:end -->
 
@@ -126,6 +117,13 @@ the routing table, the retired-file map and these conventions are hand-written a
 `--check` runs in CI, so a plan whose counts move without the index following fails the build
 rather than quietly drifting. Adding a plan means adding one line to the `AREAS` list in the
 script; that list is also what fixes the order the plans appear in.
+
+## Research is elsewhere
+
+Ideas that have not been agreed are not tracked here and are not counted in the numbers above.
+They live in [`../research/`](../research/README.md), whose reading file lists every open topic,
+the question it exists to answer, and its stage. A topic becomes a plan in this folder only when
+it is agreed — at which point it appears in the tables above like any other.
 
 ## Requirements coverage
 

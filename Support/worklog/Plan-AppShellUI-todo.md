@@ -49,6 +49,25 @@ Glass is currently requested per region. Deciding it once here stops three diffe
 - [ ] Confirm the accent preference reaches every region consistently.
 - [ ] Check the shell at the minimum window width of 1513pt and at full screen.
 
+## 04. App icon
+
+The app currently ships with no icon, so macOS falls back to the blank generic document icon in
+the Dock, the Cmd+Tab switcher, Finder, and the DMG. It is the first thing anyone sees and the
+only part of the visual identity that appears before the window does.
+
+- [ ] Design the icon from the existing brand mark
+      (`Support/context/concepts-designs/brand-mark.svg`), rather than inventing a second identity.
+- [ ] Produce a full `AppIcon` set: 16, 32, 128, 256 and 512 pt, each at 1x and 2x, as macOS
+      expects — a single large PNG scaled down reads as mush at 16pt.
+- [ ] Follow the macOS icon language: rounded-square silhouette, consistent margins, and a shape
+      that survives being 16 points wide.
+- [ ] Add an `Assets.xcassets` catalogue with the `AppIcon` set and register it in the target
+      exactly once. *(Registration mechanics belong to
+      [`Plan-XcodeProject-todo.md`](Plan-XcodeProject-todo.md).)*
+- [ ] Check it in the Dock, Cmd+Tab, Finder, Get Info, and on the mounted DMG volume.
+- [ ] Check it against both light and dark Dock backgrounds.
+- [ ] Decide whether the DMG gets a matching volume icon and background, or stays plain.
+
 ## Non-Goals
 
 - No per-repository theming.
@@ -62,4 +81,5 @@ Glass is currently requested per region. Deciding it once here stops three diffe
 | 01 — Window background | 0 / 8 | Open |
 | 02 — Material and glass language | 0 / 4 | Open |
 | 03 — Theme and accent | 0 / 3 | Open |
-| **Total** | **0 / 15** | **Open** |
+| 04 — App icon | 0 / 7 | Open |
+| **Total** | **0 / 22** | **Open** |

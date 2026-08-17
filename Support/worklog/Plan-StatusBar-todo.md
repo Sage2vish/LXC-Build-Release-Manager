@@ -49,6 +49,10 @@ Not committed to — listed so the ideas are not lost.
 - [ ] Show the active build, if any, so a running build is visible from any tab.
 - [ ] Show the count of repositories, or the last build result.
 - [ ] Make a chip clickable — Repository jumping to Overview, Branch revealing the repo in Finder.
+- [ ] **Host the language picker here instead of the header.** This strip already carries small,
+      persistent state, and language is closer to that than to repository identity. The control is
+      being built in the header first; if it belongs here, only its placement moves. See
+      [`Plan-MainPanel-Header-todo.md`](Plan-MainPanel-Header-todo.md) section 03.
 
 ## Non-Goals
 
@@ -61,5 +65,5 @@ Not committed to — listed so the ideas are not lost.
 | --- | --- | --- |
 | Already shipped | 9 / 9 | Done |
 | 01 — Known gaps | 0 / 4 | Open |
-| 02 — Possible additions | 0 / 3 | Not committed |
-| **Total** | **9 / 16** | **In progress** |
+| 02 — Possible additions | 0 / 4 | Not committed |
+| **Total** | **9 / 17** | **In progress** |

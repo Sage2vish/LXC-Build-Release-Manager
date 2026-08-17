@@ -43,6 +43,55 @@ rather than as a band above it.
 - [ ] The GitHub line has no edit affordance here — it is only settable from the Settings tab.
       Decide whether that is right or whether the header should offer it.
 
+## 03. Theme and language pickers — top band, right side
+
+Two settings are reached often enough that burying them in Preferences is wrong: **appearance**
+and **language**. Both get a compact control in this band, right-aligned, opposite the repository
+identity on the left.
+
+The shared rule for both: **no label outside the control.** The segments carry their own words, so
+the control explains itself without a "Theme:" prefix eating horizontal space next to a repository
+name that already truncates.
+
+**Boundary.** This band owns the *controls* — that they exist, where they sit, how they look, and
+that they move the right preference. What the preference then *does* belongs elsewhere:
+appearance to [`Plan-PreferenceScreen-todo.md`](Plan-PreferenceScreen-todo.md), language switching
+to [`Plan-Localization-todo.md`](Plan-Localization-todo.md). Neither control introduces a new
+setting; both drive the value that already exists, so Preferences and the header can never
+disagree.
+
+### Appearance picker
+
+- [ ] A three-segment control: **System · Light · Dark**, in that order, with System first because
+      it is the default and the one most people should stay on.
+- [ ] Bound to the existing `theme` preference — not a new one — so changing it here updates
+      Preferences → Appearance, and vice versa, with no second source of truth.
+- [ ] Applies immediately, with no restart and no confirmation.
+- [ ] Segment labels are localized, and the control must not clip when they are longer in Hindi.
+- [ ] Icon-only fallback at narrow panel widths, keeping the same three positions.
+- [ ] Accessibility: the control is one labelled radio group; each segment states what it selects.
+- [ ] Survives a relaunch, because it writes the same persisted preference.
+
+### Language picker
+
+- [ ] A picker listing every language the app actually ships — today English and Hindi — read from
+      the available localizations rather than a hardcoded list, so adding a language adds an entry.
+- [ ] Each language is named in **its own script** (English, हिन्दी), which is what people scan for.
+- [ ] Bound to the existing `language` preference and applied live.
+- [ ] Says plainly if any part of the UI needs a relaunch to fully re-render, rather than leaving a
+      half-translated window unexplained.
+- [ ] Same no-outside-label rule; a globe symbol carries the meaning when space is tight.
+
+### Placement, and the open question
+
+- [ ] Build both as standalone components so their position is a layout decision, not a rewrite.
+- [ ] Place them in this band, right-aligned, with the repository identity keeping the left.
+- [ ] Confirm the band still holds at the minimum panel width with Reveal / Terminal / Copy Path
+      present — that row is already the tightest part of the header.
+- [ ] **Decide where language finally lives.** The header is the starting position; the status bar
+      is the alternative, since it already carries small persistent state chips. Deliberately left
+      open — see [`Plan-StatusBar-todo.md`](Plan-StatusBar-todo.md) section 02.
+
 ## Tracking
 
 | Section | Checked / Total | Status |
@@ -50,4 +99,5 @@ rather than as a band above it.
 | Already shipped | 6 / 6 | Done |
 | 01 — Glass effect | 2 / 5 | In progress |
 | 02 — Open items | 0 / 2 | Open |
-| **Total** | **8 / 13** | **In progress** |
+| 03 — Theme and language pickers | 0 / 16 | Open |
+| **Total** | **8 / 29** | **In progress** |

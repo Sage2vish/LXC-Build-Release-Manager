@@ -54,6 +54,8 @@ The key boundary is intentional: GitHub URLs can be inspected through the Conten
 - `Support/frameworks/` owns the framework and integration inventory.
 - `Support/shared/` owns reusable conventions and cross-feature ideas.
 - `Support/worklog/` owns the master plan index and every area plan beneath it.
+- `Support/research/` owns unproven ideas, one topic per file, with its own reading file. It
+  carries no checklists, so nothing in it can be counted as work in progress.
 
 ## Documentation architecture
 

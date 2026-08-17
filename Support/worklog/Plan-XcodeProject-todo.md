@@ -57,6 +57,9 @@ The project moved to the repository root and the `LXC-BRM` codename was retired.
       path (`App/Models/HTMLSupport`) and filed Models, Services and Resources files all under
       Views. All 31 references now carry a display name and sit in their real group, Resources
       has its own group, and the dangling `BUILD_SCREEN_TODO.md` reference is gone.
+- [ ] Register the `AppIcon` asset catalogue once the icon exists, and confirm the built bundle
+      carries it. *(The icon itself is designed in
+      [`Plan-AppShellUI-todo.md`](Plan-AppShellUI-todo.md) section 04.)*
 - [ ] Add a check that every `.swift` file under `App/` and `Tests/` appears in the right target,
       so a missed registration is caught before it becomes a confusing scope error.
 - [x] **Decided for `Support/`:** it is now a `PBXFileSystemSynchronizedRootGroup`, so the whole
@@ -96,8 +99,8 @@ The project moved to the repository root and the `LXC-BRM` codename was retired.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | 00 — Flatten and rename | 6 / 7 | Done, pending an IDE open |
-| 01 — File registration | 6 / 8 | In progress |
+| 01 — File registration | 6 / 9 | In progress |
 | 02 — Build settings | 0 / 3 | Open |
 | 03 — Test target | 0 / 2 | Open |
 | 04 — Hygiene | 0 / 3 | Open |
-| **Total** | **12 / 23** | **In progress** |
+| **Total** | **12 / 24** | **In progress** |

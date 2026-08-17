@@ -1,9 +1,13 @@
-# Research — how the tool keeps its own state, and how it logs itself
+# Research — How the tool keeps its own state, and how it logs itself
 
-**Stage:** exploring — your idea, captured. No plan, no tasks, nothing scheduled.
+**Stage:** exploring
+**Opened:** 2026-08-18
+**Question:** How should the tool keep its own state, and how should it log its own behaviour?
+
+Your idea, captured. No plan, no tasks, nothing scheduled.
 
 > A research note, not a plan. It holds the question, what is actually true today, and the options
-> with their trade-offs. When one option is agreed it becomes a `Plan-<Area>-todo.md`; until then
+> with their trade-offs. When one option is agreed it becomes a `../worklog/Plan-<Area>-todo.md`; until then
 > nothing here is counted as work. See [`README.md`](README.md).
 
 ## The idea, as raised
