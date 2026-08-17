@@ -2,6 +2,16 @@
 
 Context is the reasoning layer for LXC-BRM. It gives contributors and AI tools the material needed to understand the product before changing code.
 
+## Visual context
+
+The architecture is also available as a self-contained SVG set for quick orientation and documentation previews. Start with the [Context Diagram Index](diagrams/README.md), then read the maps in order:
+
+![LXC-BRM system context](diagrams/system-context.svg)
+
+![LXC-BRM runtime architecture](diagrams/runtime-architecture.svg)
+
+![LXC-BRM release flow](diagrams/release-flow.svg)
+
 ## Read in this order
 
 1. [`rules-context.md`](rules-context.md) - non-negotiable workspace rules.
@@ -9,7 +19,8 @@ Context is the reasoning layer for LXC-BRM. It gives contributors and AI tools t
 3. [`requirements.md`](requirements.md) - the functional requirements input.
 4. [`decisions/`](decisions/) - dated decisions that clarify or override the input.
 5. [`../worklog/todo-2026-08-16.md`](../worklog/todo-2026-08-16.md) - the current implementation status.
-6. [`concepts-designs/`](concepts-designs/) - screenshots, mockups, and the source requirements PDF.
+6. [`diagrams/`](diagrams/) - system context, runtime architecture, and release-flow maps.
+7. [`concepts-designs/`](concepts-designs/) - screenshots, mockups, and the source requirements PDF.
 
 ## Source-of-truth rules
 
@@ -23,6 +34,8 @@ The most important recorded implementation choice is that this product is a nati
 ## AI context contract
 
 When an AI tool starts work, it should read this README, the rules, the architecture, the relevant decision record, and the mapped worklog plan before editing. When a task changes a rule, architecture boundary, release path, or product decision, update the matching Context file in the same change.
+
+The diagrams are orientation aids, not a replacement for code. Use them to understand boundaries quickly, then verify implementation details against the architecture table and source files.
 
 ## Tracking
 

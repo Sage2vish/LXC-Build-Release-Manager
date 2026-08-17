@@ -28,7 +28,7 @@ The Support tree makes that loop understandable and repeatable. It is intentiona
 | Role | What it answers | Folder |
 | --- | --- | --- |
 | Build and release | How do we build, package, stage, and describe an artifact? | [`build-release/`](build-release/README.md) |
-| Context | What are we building, why, and which decisions are authoritative? | [`context/`](context/README.md) |
+| Context | What are we building, why, which decisions are authoritative, and how do the system boundaries connect? | [`context/`](context/README.md) |
 | Frameworks | Which system frameworks, adapters, and package ideas are available? | [`frameworks/`](frameworks/README.md) |
 | Shared | Which conventions and reusable support ideas should stay consistent? | [`shared/`](shared/README.md) |
 | Worklog | What is planned, what shipped, and what still needs verification? | [`worklog/`](worklog/README.md) |
@@ -115,6 +115,7 @@ Start with [`worklog/README.md`](worklog/README.md), then use the [master todo](
 | [`context/rules-context.md`](context/rules-context.md) | Rules that keep the workspace coherent. |
 | [`context/decisions/`](context/decisions/) | Dated records of choices that override or clarify the input. |
 | [`context/concepts-designs/`](context/concepts-designs/) | Screens, mockups, and the source requirements PDF. |
+| [`context/diagrams/`](context/diagrams/) | Self-contained SVG maps for system context, runtime architecture, and release flow. |
 
 ### Frameworks, shared, and worklog
 
@@ -127,6 +128,8 @@ Start with [`worklog/README.md`](worklog/README.md), then use the [master todo](
 | Build screen | [`worklog/BuildScreen-plan-todo.md`](worklog/BuildScreen-plan-todo.md) | Build workspace execution record. |
 | Preferences | [`worklog/Plan-PreferenceScreen-todo.md`](worklog/Plan-PreferenceScreen-todo.md) | Preferences design and wiring plan. |
 | Window layout | [`worklog/Plan-WindowLayout-todo.md`](worklog/Plan-WindowLayout-todo.md) | Layout and View menu pass. |
+| Context architecture visuals | [`worklog/Plan-ContextArchitectureVisuals-todo.md`](worklog/Plan-ContextArchitectureVisuals-todo.md) | SVG diagrams and documentation wiring pass. |
+| Code refactoring and reusability | [`worklog/Plan-CodeRefactoring-Reusability-todo.md`](worklog/Plan-CodeRefactoring-Reusability-todo.md) | Code structure, dependency seams, feature extraction, and reuse pass. |
 | Daily narrative | [`worklog/worklog-2026-08-16.md`](worklog/worklog-2026-08-16.md) | What changed and how it was verified. |
 | Archived plan | [`worklog/BuildScreen-plan-todo_OLD.md`](worklog/BuildScreen-plan-todo_OLD.md) | Historical plan retained for traceability; not an active tracker. |
 
@@ -169,4 +172,5 @@ Start with [`worklog/README.md`](worklog/README.md), then use the [master todo](
 - [Build and release](build-release/README.md)
 - [User guide](build-release/USER_GUIDE.md)
 - [Context](context/README.md)
+- [Context diagrams](context/diagrams/README.md)
 - [Worklog](worklog/README.md)

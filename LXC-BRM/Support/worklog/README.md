@@ -10,6 +10,8 @@ The Worklog is the delivery ledger for LXC-BRM. It maps requirements and decisio
 | `BuildScreen-plan-todo.md` | Detailed Build workspace execution record. |
 | `Plan-PreferenceScreen-todo.md` | Detailed Preferences design and wiring plan. |
 | `Plan-WindowLayout-todo.md` | Detailed window layout and View menu pass. |
+| `Plan-ContextArchitectureVisuals-todo.md` | Documentation diagram set and Context/Architecture wiring pass. |
+| `Plan-CodeRefactoring-Reusability-todo.md` | Code structure, dependency seams, feature extraction, and reuse pass. |
 | `worklog-YYYY-MM-DD.md` | Narrative record of work completed and verification evidence. |
 | `*_OLD.md` | Historical archive; never treat it as the active tracker. |
 

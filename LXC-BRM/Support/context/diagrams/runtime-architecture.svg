@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1040" role="img" aria-labelledby="title desc">
+  <title id="title">LXC-BRM runtime architecture</title>
+  <desc id="desc">A layered runtime architecture diagram showing SwiftUI and AppKit surfaces, service responsibilities, GitHub discovery, local build execution, state stores, repository logs, and release scripts.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#081121"/>
+      <stop offset="0.6" stop-color="#111D36"/>
+      <stop offset="1" stop-color="#211B37"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B3F7D"/>
+      <stop offset="1" stop-color="#29204E"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#020817" flood-opacity="0.4"/>
+    </filter>
+    <marker id="blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#6E8BFF"/></marker>
+    <marker id="coral" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#FF876C"/></marker>
+    <marker id="mint" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#5BE3B2"/></marker>
+    <style>
+      .eyebrow { font: 700 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 2.2px; text-transform: uppercase; fill: #91A9D7; }
+      .title { font: 700 36px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #F7FAFF; }
+      .subtitle { font: 400 17px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #ADBCD8; }
+      .section { font: 700 18px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #F7FAFF; }
+      .node-title { font: 700 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #F7FAFF; }
+      .copy { font: 400 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #B7C6E2; }
+      .tiny { font: 600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #A7B9DC; }
+      .layer { fill: #101B32; stroke: #354B72; stroke-width: 1.4; }
+      .node { fill: #182845; stroke: #47618F; stroke-width: 1; }
+      .service { fill: #1D3155; stroke: #5675AD; stroke-width: 1; }
+      .store { fill: #173A38; stroke: #4A9D88; stroke-width: 1; }
+      .external { fill: #2B1E31; stroke: #895849; stroke-width: 1.2; }
+    </style>
+  </defs>
+
+  <rect width="1800" height="1040" fill="url(#bg)"/>
+  <circle cx="1650" cy="160" r="300" fill="#3155E8" opacity="0.07"/>
+  <circle cx="160" cy="970" r="260" fill="#FF7357" opacity="0.05"/>
+  <text x="64" y="58" class="eyebrow">LXC-BRM / RUNTIME ARCHITECTURE</text>
+  <text x="64" y="108" class="title">The path from intent to evidence.</text>
+  <text x="64" y="139" class="subtitle">UI commands move through focused services, cross explicit boundaries, and leave durable build evidence.</text>
+
+  <!-- External boundary -->
+  <g filter="url(#shadow)">
+    <rect x="64" y="200" width="260" height="680" rx="24" class="external"/>
+    <text x="92" y="242" class="eyebrow">EXTERNAL BOUNDARY</text>
+    <text x="92" y="277" class="section">Sources and outputs</text>
+    <rect x="92" y="310" width="204" height="126" rx="16" class="node"/>
+    <text x="112" y="345" class="node-title">GitHub Contents API</text>
+    <text x="112" y="374" class="copy">Remote script metadata</text>
+    <text x="112" y="397" class="copy">Discovery only</text>
+    <rect x="92" y="466" width="204" height="126" rx="16" class="node"/>
+    <text x="112" y="501" class="node-title">Local repository</text>
+    <text x="112" y="530" class="copy">Filesystem + .git/HEAD</text>
+    <text x="112" y="553" class="copy">Executable source</text>
+    <rect x="92" y="622" width="204" height="126" rx="16" class="node"/>
+    <text x="112" y="657" class="node-title">Release filesystem</text>
+    <text x="112" y="686" class="copy">version/staging/*.app</text>
+    <text x="112" y="709" class="copy">version/*.dmg</text>
+    <rect x="92" y="778" width="204" height="62" rx="14" fill="#0D172B" stroke="#5D7098" stroke-dasharray="5 5"/>
+    <text x="112" y="805" class="tiny">Optional GitHub tag/release</text>
+    <text x="112" y="824" class="tiny">after local verification</text>
+  </g>
+
+  <!-- App architecture -->
+  <g filter="url(#shadow)">
+    <rect x="365" y="200" width="1090" height="680" rx="26" fill="url(#panel)" stroke="#6B89E8" stroke-width="1.5"/>
+    <rect x="393" y="226" width="1034" height="82" rx="17" fill="#0D1830" opacity="0.8" stroke="#4260A4"/>
+    <text x="423" y="260" class="eyebrow">APPLICATION CORE</text>
+    <text x="423" y="289" class="section">LXC-BRM native macOS application</text>
+    <text x="1070" y="260" class="tiny">Swift 6</text>
+    <text x="1070" y="283" class="tiny">SwiftUI + AppKit</text>
+    <text x="1250" y="260" class="tiny">macOS 15+</text>
+
+    <!-- UI layer -->
+    <rect x="393" y="336" width="1034" height="114" rx="17" class="layer"/>
+    <text x="419" y="367" class="eyebrow">PRESENTATION LAYER</text>
+    <rect x="419" y="384" width="230" height="43" rx="11" class="node"/>
+    <text x="438" y="411" class="node-title">NavigationSplitView</text>
+    <rect x="670" y="384" width="200" height="43" rx="11" class="node"/>
+    <text x="689" y="411" class="node-title">Repository sidebar</text>
+    <rect x="891" y="384" width="200" height="43" rx="11" class="node"/>
+    <text x="910" y="411" class="node-title">Build detail + tabs</text>
+    <rect x="1112" y="384" width="288" height="43" rx="11" class="node"/>
+    <text x="1131" y="411" class="node-title">Inspector + preferences</text>
+
+    <!-- service layer -->
+    <rect x="393" y="480" width="1034" height="208" rx="17" class="layer"/>
+    <text x="419" y="511" class="eyebrow">SERVICE LAYER</text>
+    <rect x="419" y="530" width="232" height="62" rx="12" class="service"/>
+    <text x="438" y="556" class="node-title">RepositoryStore</text>
+    <text x="438" y="578" class="copy">local + GitHub sources</text>
+    <rect x="670" y="530" width="232" height="62" rx="12" class="service"/>
+    <text x="689" y="556" class="node-title">BuildScriptScanner</text>
+    <text x="689" y="578" class="copy">standard + remote scan</text>
+    <rect x="921" y="530" width="232" height="62" rx="12" class="service"/>
+    <text x="940" y="556" class="node-title">DeepScriptSearch</text>
+    <text x="940" y="578" class="copy">workspace discovery</text>
+    <rect x="1172" y="530" width="228" height="62" rx="12" class="external"/>
+    <text x="1191" y="556" class="node-title">BuildRunner</text>
+    <text x="1191" y="578" class="copy">local shell execution</text>
+    <rect x="419" y="608" width="232" height="56" rx="12" class="service"/>
+    <text x="438" y="633" class="node-title">GitBranchReader</text>
+    <text x="438" y="653" class="copy">local branch metadata</text>
+    <rect x="670" y="608" width="232" height="56" rx="12" class="service"/>
+    <text x="689" y="633" class="node-title">BuildHistoryStore</text>
+    <text x="689" y="653" class="copy">durable result history</text>
+    <rect x="921" y="608" width="232" height="56" rx="12" class="service"/>
+    <text x="940" y="633" class="node-title">LogFileService</text>
+    <text x="940" y="653" class="copy">build log files</text>
+    <rect x="1172" y="608" width="228" height="56" rx="12" class="service"/>
+    <text x="1191" y="633" class="node-title">PreferencesStore</text>
+    <text x="1191" y="653" class="copy">user defaults + layout</text>
+
+    <!-- infrastructure -->
+    <rect x="393" y="718" width="1034" height="128" rx="17" class="layer"/>
+    <text x="419" y="750" class="eyebrow">INFRASTRUCTURE + SUPPORT</text>
+    <rect x="419" y="771" width="300" height="48" rx="11" class="store"/>
+    <text x="438" y="801" class="node-title">Application Support JSON stores</text>
+    <rect x="742" y="771" width="280" height="48" rx="11" class="store"/>
+    <text x="761" y="801" class="node-title">Repository build/logs/</text>
+    <rect x="1045" y="771" width="355" height="48" rx="11" class="external"/>
+    <text x="1064" y="801" class="node-title">build-release/scripts/release.sh</text>
+  </g>
+
+  <!-- Flow lines -->
+  <path d="M324 374 C350 374 350 430 393 430" fill="none" stroke="#6E8BFF" stroke-width="2.4" marker-end="url(#blue)"/>
+  <path d="M324 530 C350 530 350 560 419 560" fill="none" stroke="#FF876C" stroke-width="2.4" marker-end="url(#coral)"/>
+  <path d="M324 684 C350 684 350 795 393 795" fill="none" stroke="#FF876C" stroke-width="2.4" marker-end="url(#coral)"/>
+  <path d="M393 810 C350 810 350 809 296 809" fill="none" stroke="#9BA9FF" stroke-width="2" stroke-dasharray="6 7" marker-end="url(#blue)"/>
+  <path d="M651 561 C660 561 660 561 670 561" fill="none" stroke="#6E8BFF" stroke-width="2" marker-end="url(#blue)"/>
+  <path d="M902 561 C912 561 912 561 921 561" fill="none" stroke="#6E8BFF" stroke-width="2" marker-end="url(#blue)"/>
+  <path d="M1153 561 C1162 561 1162 561 1172 561" fill="none" stroke="#FF876C" stroke-width="2" marker-end="url(#coral)"/>
+  <path d="M1286 592 C1286 608 1286 608 1286 608" fill="none" stroke="#FF876C" stroke-width="2" marker-end="url(#coral)"/>
+  <path d="M786 664 C786 700 720 740 620 771" fill="none" stroke="#5BE3B2" stroke-width="2" marker-end="url(#mint)"/>
+  <path d="M1037 664 C1037 710 920 740 880 771" fill="none" stroke="#5BE3B2" stroke-width="2" marker-end="url(#mint)"/>
+  <path d="M1286 664 C1286 710 1260 740 1220 771" fill="none" stroke="#FF876C" stroke-width="2" marker-end="url(#coral)"/>
+  <path d="M530 450 C530 474 530 474 530 480" fill="none" stroke="#6E8BFF" stroke-width="2" marker-end="url(#blue)"/>
+  <path d="M1010 450 C1010 474 1010 474 1010 480" fill="none" stroke="#6E8BFF" stroke-width="2" marker-end="url(#blue)"/>
+
+  <!-- footer -->
+  <rect x="64" y="930" width="1672" height="54" rx="16" fill="#0D172B" stroke="#34496E"/>
+  <circle cx="92" cy="957" r="6" fill="#6E8BFF"/><text x="108" y="962" class="tiny">discovery</text>
+  <circle cx="220" cy="957" r="6" fill="#FF876C"/><text x="236" y="962" class="tiny">execution</text>
+  <circle cx="335" cy="957" r="6" fill="#5BE3B2"/><text x="351" y="962" class="tiny">persistence</text>
+  <text x="530" y="962" class="tiny">Code authority: LXC-BRM/App and Support/build-release/scripts</text>
+  <text x="1305" y="962" class="tiny">No third-party packages</text>
+</svg>

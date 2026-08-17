@@ -1,0 +1,38 @@
+<svg width="960" height="240" viewBox="0 0 960 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">LXC-BRM mark</title>
+  <desc id="desc">A premium navy and blue-coral mark for LXC Build and Release Manager.</desc>
+  <defs>
+    <linearGradient id="bg" x1="40" y1="24" x2="920" y2="216" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1020"/>
+      <stop offset="0.58" stop-color="#101A38"/>
+      <stop offset="1" stop-color="#182A55"/>
+    </linearGradient>
+    <linearGradient id="signal" x1="92" y1="60" x2="206" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6EE7F9"/>
+      <stop offset="0.52" stop-color="#4F7CFF"/>
+      <stop offset="1" stop-color="#FF8F78"/>
+    </linearGradient>
+    <linearGradient id="word" x1="304" y1="64" x2="774" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FBFF"/>
+      <stop offset="0.62" stop-color="#DDE9FF"/>
+      <stop offset="1" stop-color="#AABFFF"/>
+    </linearGradient>
+    <filter id="shadow" x="28" y="28" width="904" height="204" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#050814" flood-opacity="0.34"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <rect x="40" y="28" width="880" height="184" rx="34" fill="url(#bg)"/>
+    <rect x="40.75" y="28.75" width="878.5" height="182.5" rx="33.25" stroke="#6F86C7" stroke-opacity="0.34" stroke-width="1.5"/>
+  </g>
+
+  <circle cx="132" cy="120" r="62" fill="#0A1127" stroke="#344B86" stroke-width="2"/>
+  <path d="M101 76V157C101 165.284 107.716 172 116 172H166" stroke="url(#signal)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M163 76L205 120L163 164" stroke="url(#signal)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M148 120H205" stroke="#F7FAFF" stroke-width="7" stroke-linecap="round" stroke-opacity="0.88"/>
+  <circle cx="205" cy="120" r="7" fill="#FF9B83"/>
+
+  <text x="286" y="122" fill="url(#word)" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif" font-size="56" font-weight="700" letter-spacing="5">LXC-BRM</text>
+  <text x="292" y="164" fill="#AAB8DA" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif" font-size="18" font-weight="600" letter-spacing="4">BUILD  /  RELEASE  /  MANAGER</text>
+</svg>

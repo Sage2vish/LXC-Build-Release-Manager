@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 960" role="img" aria-labelledby="title desc">
+  <title id="title">LXC Build and Release Manager system context</title>
+  <desc id="desc">A system context diagram showing a developer, GitHub discovery, local repositories, the native macOS LXC-BRM application, persisted state, logs, release artifacts, and an optional GitHub release handoff.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#081121"/>
+      <stop offset="0.58" stop-color="#101A34"/>
+      <stop offset="1" stop-color="#241B39"/>
+    </linearGradient>
+    <linearGradient id="app" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#193A78"/>
+      <stop offset="1" stop-color="#272052"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5B7CFF"/>
+      <stop offset="1" stop-color="#3155E8"/>
+    </linearGradient>
+    <linearGradient id="coral" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF9A7B"/>
+      <stop offset="1" stop-color="#FF654D"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#020817" flood-opacity="0.42"/>
+    </filter>
+    <marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#6E8BFF"/>
+    </marker>
+    <marker id="arrow-coral" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#FF876C"/>
+    </marker>
+    <marker id="arrow-mint" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#5BE3B2"/>
+    </marker>
+    <style>
+      .eyebrow { font: 700 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 2.5px; text-transform: uppercase; fill: #8FA8D8; }
+      .title { font: 700 38px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #F7FAFF; }
+      .subtitle { font: 400 17px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #AAB9D5; }
+      .card-title { font: 700 21px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #F7FAFF; }
+      .card-copy { font: 400 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #B7C6E2; }
+      .small { font: 600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #9EB2D8; }
+      .label { font: 700 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 1.2px; text-transform: uppercase; fill: #D5E0F8; }
+      .box { fill: #111D35; stroke: #34496E; stroke-width: 1.5; }
+      .inner { fill: #182746; stroke: #3D5785; stroke-width: 1; }
+      .note { fill: #0D172B; stroke: #5D7098; stroke-width: 1; stroke-dasharray: 5 5; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="960" fill="url(#bg)"/>
+  <circle cx="1440" cy="100" r="260" fill="#5B7CFF" opacity="0.06"/>
+  <circle cx="220" cy="900" r="230" fill="#FF7357" opacity="0.05"/>
+
+  <text x="70" y="64" class="eyebrow">LXC-BRM / CONTEXT MAP</text>
+  <text x="70" y="112" class="title">One workspace. Clear boundaries.</text>
+  <text x="70" y="143" class="subtitle">How people, repositories, GitHub, build services, state, logs, and release artifacts connect.</text>
+
+  <g transform="translate(1220 68)">
+    <rect width="310" height="66" rx="18" fill="#111D35" stroke="#34496E"/>
+    <circle cx="28" cy="33" r="8" fill="#5BE3B2"/>
+    <text x="48" y="29" class="label">CURRENT BOUNDARY</text>
+    <text x="48" y="49" class="small">GitHub discovery + local execution</text>
+  </g>
+
+  <!-- External actors and sources -->
+  <g filter="url(#shadow)">
+    <rect x="70" y="190" width="320" height="176" rx="22" class="box"/>
+    <rect x="70" y="190" width="7" height="176" rx="3" fill="url(#blue)"/>
+    <text x="98" y="229" class="eyebrow">ACTOR</text>
+    <text x="98" y="263" class="card-title">Developer / release owner</text>
+    <text x="98" y="296" class="card-copy">Chooses a repository, reviews scripts,</text>
+    <text x="98" y="320" class="card-copy">runs builds, watches output, and stages</text>
+    <text x="98" y="344" class="card-copy">a release artifact.</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="70" y="410" width="320" height="220" rx="22" class="box"/>
+    <rect x="70" y="410" width="7" height="220" rx="3" fill="url(#blue)"/>
+    <text x="98" y="449" class="eyebrow">REMOTE SOURCE</text>
+    <text x="98" y="483" class="card-title">GitHub repository</text>
+    <text x="98" y="517" class="card-copy">Contents API discovery</text>
+    <text x="98" y="543" class="card-copy">Script names, paths, and metadata</text>
+    <rect x="98" y="568" width="240" height="34" rx="10" class="note"/>
+    <text x="114" y="590" class="small">Remote scripts are not executable here</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="70" y="674" width="320" height="220" rx="22" class="box"/>
+    <rect x="70" y="674" width="7" height="220" rx="3" fill="url(#coral)"/>
+    <text x="98" y="713" class="eyebrow">LOCAL SOURCE</text>
+    <text x="98" y="747" class="card-title">Repository on disk</text>
+    <text x="98" y="781" class="card-copy">Filesystem scan and Git metadata</text>
+    <text x="98" y="807" class="card-copy">The only source allowed to execute</text>
+    <rect x="98" y="832" width="240" height="34" rx="10" fill="#2D1D30" stroke="#845044"/>
+    <text x="114" y="854" class="small" fill="#FFB39D">Selected folder + local scripts</text>
+  </g>
+
+  <!-- Product boundary -->
+  <g filter="url(#shadow)">
+    <rect x="470" y="190" width="680" height="704" rx="28" fill="url(#app)" stroke="#6B89E8" stroke-width="1.5"/>
+    <rect x="495" y="215" width="630" height="82" rx="18" fill="#0D1830" opacity="0.74" stroke="#4260A4"/>
+    <circle cx="533" cy="256" r="18" fill="url(#blue)"/>
+    <path d="M525 256h16M533 248v16" stroke="#FFF" stroke-width="2.4" stroke-linecap="round"/>
+    <text x="565" y="249" class="eyebrow">PRODUCT BOUNDARY</text>
+    <text x="565" y="277" class="card-title">LXC Build &amp; Release Manager</text>
+    <text x="495" y="334" class="subtitle">Native macOS SwiftUI + AppKit workspace</text>
+
+    <rect x="495" y="365" width="298" height="130" rx="18" class="inner"/>
+    <text x="520" y="400" class="label">DISCOVERY</text>
+    <text x="520" y="430" class="card-title">Repository workspace</text>
+    <text x="520" y="458" class="card-copy">RepositoryStore</text>
+    <text x="520" y="480" class="card-copy">BuildScriptScanner + DeepScriptSearch</text>
+
+    <rect x="827" y="365" width="298" height="130" rx="18" fill="#2D1D30" stroke="#8B554A"/>
+    <text x="852" y="400" class="label">EXECUTION</text>
+    <text x="852" y="430" class="card-title">Build workspace</text>
+    <text x="852" y="458" class="card-copy">BuildRunner</text>
+    <text x="852" y="480" class="card-copy">Local shell process + live output</text>
+
+    <rect x="495" y="525" width="298" height="130" rx="18" class="inner"/>
+    <text x="520" y="560" class="label">OBSERVABILITY</text>
+    <text x="520" y="590" class="card-title">History and logs</text>
+    <text x="520" y="618" class="card-copy">BuildHistoryStore</text>
+    <text x="520" y="640" class="card-copy">LogFileService + live console</text>
+
+    <rect x="827" y="525" width="298" height="130" rx="18" class="inner"/>
+    <text x="852" y="560" class="label">CONTROL PLANE</text>
+    <text x="852" y="590" class="card-title">Preferences and state</text>
+    <text x="852" y="618" class="card-copy">PreferencesStore</text>
+    <text x="852" y="640" class="card-copy">BuildWorkspaceStateStore</text>
+
+    <rect x="495" y="685" width="630" height="166" rx="18" fill="#0D1830" opacity="0.72" stroke="#4260A4"/>
+    <text x="520" y="720" class="label">RELEASE ORCHESTRATION</text>
+    <text x="520" y="752" class="card-title">Build, test, stage, and package</text>
+    <text x="520" y="782" class="card-copy">Support/build-release/scripts/release.sh</text>
+    <text x="520" y="808" class="card-copy">Debug validation, Release build, version staging, DMG creation</text>
+    <rect x="520" y="820" width="196" height="18" rx="9" fill="#FF7357" opacity="0.85"/>
+    <rect x="724" y="820" width="151" height="18" rx="9" fill="#5BE3B2" opacity="0.85"/>
+    <rect x="883" y="820" width="130" height="18" rx="9" fill="#8E9EFF" opacity="0.85"/>
+    <text x="520" y="844" class="small">local build</text>
+    <text x="724" y="844" class="small">staging</text>
+    <text x="883" y="844" class="small">artifact</text>
+  </g>
+
+  <!-- Outputs and storage -->
+  <g filter="url(#shadow)">
+    <rect x="1230" y="190" width="300" height="176" rx="22" class="box"/>
+    <rect x="1230" y="190" width="7" height="176" rx="3" fill="#5BE3B2"/>
+    <text x="1258" y="229" class="eyebrow">PERSISTENCE</text>
+    <text x="1258" y="263" class="card-title">Application Support</text>
+    <text x="1258" y="297" class="card-copy">projects.json</text>
+    <text x="1258" y="321" class="card-copy">build-history.json</text>
+    <text x="1258" y="345" class="card-copy">preferences + workspace state</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="1230" y="410" width="300" height="176" rx="22" class="box"/>
+    <rect x="1230" y="410" width="7" height="176" rx="3" fill="#5BE3B2"/>
+    <text x="1258" y="449" class="eyebrow">OBSERVABILITY</text>
+    <text x="1258" y="483" class="card-title">Repository logs</text>
+    <text x="1258" y="517" class="card-copy">&lt;repository&gt;/build/logs/*.log</text>
+    <text x="1258" y="551" class="card-copy">Exportable build evidence</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="1230" y="630" width="300" height="176" rx="22" class="box"/>
+    <rect x="1230" y="630" width="7" height="176" rx="3" fill="url(#coral)"/>
+    <text x="1258" y="669" class="eyebrow">DELIVERY</text>
+    <text x="1258" y="703" class="card-title">Version artifacts</text>
+    <text x="1258" y="737" class="card-copy">version/staging/*.app</text>
+    <text x="1258" y="761" class="card-copy">version/*.dmg</text>
+    <text x="1258" y="785" class="card-copy">Release-ready output</text>
+  </g>
+
+  <g>
+    <rect x="1230" y="840" width="300" height="54" rx="16" class="note"/>
+    <text x="1252" y="864" class="label">OPTIONAL HANDOFF</text>
+    <text x="1252" y="884" class="small">GitHub tag / release after local verification</text>
+  </g>
+
+  <!-- Flows -->
+  <path d="M390 278 C425 278 430 278 470 278" fill="none" stroke="#6E8BFF" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <text x="402" y="258" class="small">intent</text>
+  <path d="M390 520 C430 520 430 430 495 430" fill="none" stroke="#6E8BFF" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <text x="408" y="466" class="small">Contents API</text>
+  <path d="M390 780 C432 780 430 455 495 455" fill="none" stroke="#FF876C" stroke-width="2.5" marker-end="url(#arrow-coral)"/>
+  <text x="402" y="700" class="small">filesystem</text>
+  <path d="M793 430 C810 430 810 430 827 430" fill="none" stroke="#FF876C" stroke-width="2.5" marker-end="url(#arrow-coral)"/>
+  <text x="793" y="412" class="small">local only</text>
+  <path d="M1150 250 C1190 250 1190 278 1230 278" fill="none" stroke="#5BE3B2" stroke-width="2.5" marker-end="url(#arrow-mint)"/>
+  <path d="M1125 590 C1180 590 1180 498 1230 498" fill="none" stroke="#5BE3B2" stroke-width="2.5" marker-end="url(#arrow-mint)"/>
+  <path d="M1150 768 C1180 768 1190 718 1230 718" fill="none" stroke="#FF876C" stroke-width="2.5" marker-end="url(#arrow-coral)"/>
+  <path d="M1380 806 C1380 825 1380 825 1380 840" fill="none" stroke="#9BA9FF" stroke-width="2" stroke-dasharray="6 7" marker-end="url(#arrow-blue)"/>
+
+  <!-- Legend -->
+  <g transform="translate(70 925)">
+    <circle cx="8" cy="0" r="6" fill="#6E8BFF"/><text x="24" y="5" class="small">context / discovery</text>
+    <circle cx="190" cy="0" r="6" fill="#FF876C"/><text x="206" y="5" class="small">execution / delivery</text>
+    <circle cx="385" cy="0" r="6" fill="#5BE3B2"/><text x="401" y="5" class="small">persistence / evidence</text>
+    <circle cx="602" cy="0" r="6" fill="#9BA9FF"/><text x="618" y="5" class="small">optional future handoff</text>
+  </g>
+</svg>

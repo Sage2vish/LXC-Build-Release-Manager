@@ -2,6 +2,18 @@
 
 This document describes the current shape of both the native app and the Support workspace around it.
 
+## Visual architecture
+
+The canonical visual set lives in [`diagrams/`](diagrams/). These SVGs make the boundaries legible before a contributor opens the Xcode project:
+
+![LXC-BRM system context](diagrams/system-context.svg)
+
+![LXC-BRM runtime architecture](diagrams/runtime-architecture.svg)
+
+![LXC-BRM release flow](diagrams/release-flow.svg)
+
+The key boundary is intentional: GitHub URLs can be inspected through the Contents API, but only a local repository path is passed to the build runner. Build history and preferences persist in Application Support, repository execution logs stay under `build/logs/`, and local release artifacts are staged under `version/`.
+
 ## Product architecture
 
 - The product is a native macOS application built with Swift 6, SwiftUI, AppKit, Foundation, and XCTest.
@@ -22,12 +34,23 @@ This document describes the current shape of both the native app and the Support
 | Preferences and layout | `App/Services/PreferencesStore.swift` | `~/Library/Application Support/LXC-BRM/preferences.json` |
 | Build workspace selections | `App/Services/BuildWorkspaceStateStore.swift` | `~/Library/Application Support/LXC-BRM/build-workspace-state.json` |
 
+## External and release boundaries
+
+| Boundary | Current behavior | Evidence |
+| --- | --- | --- |
+| GitHub discovery | `BuildScriptScanner` can inspect a GitHub Contents API response and represent remote scripts as metadata. | `App/Services/BuildScriptScanner.swift` |
+| Local execution | `BuildRunner` launches a configured local shell process; remote script metadata is not executable. | `App/Services/BuildRunner.swift` |
+| Build evidence | `BuildHistoryStore` records results and `LogFileService` writes repository-local log files. | `App/Services/BuildHistoryStore.swift`, `App/Services/LogFileService.swift` |
+| Release packaging | `release.sh` builds a Release app, stages the `.app`, and creates a dated DMG under `version/`. | `Support/build-release/scripts/release.sh` |
+| GitHub distribution | A tag or release can be a later handoff after local verification; it is not presented as the local build executor. | Release workflow documentation |
+
 ## Workspace architecture
 
 - `LXC-BRM/` is the Xcode-openable native app container.
 - `Support/` is the non-app project handbook and delivery workspace.
 - `Support/build-release/` owns scripts, release instructions, configuration examples, and version staging.
 - `Support/context/` owns requirements, architecture, rules, decisions, and design references.
+- `Support/context/diagrams/` owns the source-controlled visual maps of those boundaries.
 - `Support/frameworks/` owns the framework and integration inventory.
 - `Support/shared/` owns reusable conventions and cross-feature ideas.
 - `Support/worklog/` owns the master checklist, feature plans, and dated execution narratives.
