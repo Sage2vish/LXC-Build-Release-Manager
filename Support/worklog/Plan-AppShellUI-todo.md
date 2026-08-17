@@ -1,6 +1,6 @@
 # Plan — App shell UI (whole window)
 
-> The visual identity of the **whole BRM window**, above and across the four regions. Anything
+> The visual identity of the **whole LXC Build Release Manager window**, above and across the four regions. Anything
 > scoped to one region belongs to that region's plan instead:
 > [left sidebar](Plan-LeftSidebar-todo.md) · [main panel](Plan-MainPanel-todo.md) ·
 > [Detail View panel](Plan-DetailViewPanel-todo.md) · [status bar](Plan-StatusBar-todo.md).

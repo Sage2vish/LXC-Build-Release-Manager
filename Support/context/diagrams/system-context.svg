@@ -49,7 +49,7 @@
   <circle cx="1440" cy="100" r="260" fill="#5B7CFF" opacity="0.06"/>
   <circle cx="220" cy="900" r="230" fill="#FF7357" opacity="0.05"/>
 
-  <text x="70" y="64" class="eyebrow">LXC-BRM / CONTEXT MAP</text>
+  <text x="70" y="64" class="eyebrow">LXC BUILD RELEASE MANAGER / CONTEXT MAP</text>
   <text x="70" y="112" class="title">One workspace. Clear boundaries.</text>
   <text x="70" y="143" class="subtitle">How people, repositories, GitHub, build services, state, logs, and release artifacts connect.</text>
 
