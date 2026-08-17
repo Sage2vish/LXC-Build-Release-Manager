@@ -89,6 +89,31 @@ The target is a direction, not permission to introduce layers without a consumer
 
 ## Work Plan
 
+### 00. Code Health Pass — completed before the refactor began
+
+The decluttering that made the codebase safe to refactor at all. Carried here from the retired
+dated checklist; every line below was verified when it landed.
+
+- [x] Repair an incomplete view extraction: remove the duplicate `Repository` and `Preferences`
+      declarations, keep one canonical model layer, and make the target build again.
+- [x] Extract the sidebar rows, the add-repository sheet, and the status bar out of
+      `ContentView.swift` into their own source files.
+- [x] Remove contributor documents and formatter/linter configuration from the app target's
+      resources, and drop the stray workspace file references.
+- [x] Remove the empty app-data usage `Info.plist` value that was producing an Xcode warning.
+- [x] Buffer stdout and stderr independently, so a split pipe read cannot fragment a live or
+      saved build-log line.
+- [x] Extract the production log pane into `App/Views/LogPane.swift`, with the pure parts in
+      `App/Models/LogPresentation.swift`, without changing filtering, search, or auto-scroll.
+- [x] Replace silent persistence failures (`try?`) with typed `AppDataError` values; every store
+      now publishes `lastError`.
+- [x] Add unit tests for repository persistence, build-script scanning, and log parsing before
+      treating the app as release-ready.
+
+Splitting `RepositoryDetailView` by tab and inspector responsibility began in this pass — History
+and Overview became `RepositoryHistoryView` and `RepositoryOverviewView` — and continues as
+section 04 below, which is where the remaining work is tracked.
+
 ### 01. Lock the Refactor Baseline
 
 - [x] Inventory the current App, Models, Services, Views, Tests, Xcode project, and Support ownership rules.
@@ -97,7 +122,11 @@ The target is a direction, not permission to introduce layers without a consumer
 - [x] Confirm the package-free constraint and native SwiftUI/AppKit stack.
 - [x] Run the baseline Debug build before changing architecture: `xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug CODE_SIGNING_ALLOWED=NO build`.
 - [x] Run the baseline test target and record the result before the first code refactor.
-- [x] Record a short dated worklog entry with the baseline build/test evidence.
+- [x] Record the baseline build/test evidence. `BUILD SUCCEEDED` and `TEST SUCCEEDED` with 14
+      tests and 0 failures; Xcode emitted environment-level AppIntents/service warnings during the
+      test launch, which failed neither the target nor any test. The commands and the full
+      evidence ledger live in
+      [`Plan-QualityVerification-todo.md`](Plan-QualityVerification-todo.md) section 06.
 
 ### 02. Establish Safe Seams Before Moving Code
 

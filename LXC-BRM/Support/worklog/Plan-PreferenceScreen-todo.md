@@ -22,7 +22,7 @@ Image files (naming convention: `Preference-Screen-N-<TabName>.png`):
 
 None are on disk yet. This is a hard tool limitation: a chat-pasted image reaches me only as something I can look at, never as file bytes, and nothing in my toolset exports it. The only way these land in `assets/` is saving them from Finder (drag the image out of the chat, or right-click → Save Image As) under the exact names above. Everything else below is written directly from reading each screen.
 
-This is a **plan document**, not a duplicate todo list — the single active todo file is still `todo-2026-08-16.md`. This file holds the detailed design + checklist for one feature (the Preferences screen); the master todo links to it as one line item so tracking still has one home.
+This is a **plan document**, not a duplicate todo list. It holds the detailed design and checklist for one feature — the Preferences window — and the master index [`BRM-Plan-todo.md`](BRM-Plan-todo.md) links to it as a single row, so tracking still has one home. Anything about the sidebar **gear button** that opens this window belongs to [`Plan-LeftSidebar-todo.md`](Plan-LeftSidebar-todo.md); everything inside the window is owned here.
 
 ## Decision: How Preferences Opens
 
@@ -167,6 +167,52 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 - Settings apply immediately after Save where possible (theme, font, etc.).
 - Persisted at `~/Library/Application Support/LXC-BRM/preferences.json` — keeping the existing `LXC-BRM` app-support folder name (the mockup's note said `BuildManager`; staying consistent with `RepositoryStore`/`BuildHistoryStore`, which already use `LXC-BRM`).
 
+## Wiring status — the 2026-08-16 audit
+
+Carried here from the retired dated todo and worklog, because this is the plan that owns it.
+
+The question the audit asked of every stored field was narrow and deliberately unkind: *does
+anything outside `Preferences.swift` and the settings screen itself read this?* A control that
+saves a value the app never consults is a promise the product does not keep.
+
+**All 73 stored fields were checked. 54 drove real behaviour. 19 were stored and rendered but
+never read.** Those 19 were:
+
+`confirmBeforeClearing`, `checkForUpdatesAutomatically`, `updateChannel`, `language`,
+`defaultRepositoryRootDetection`, `uiDensity`, `textSizePercent`, `accentColorHex`,
+`showAnimations`, `roundWindowCorners`, `reduceTransparency`, `notifyLongRunningBuildCompleted`,
+`notificationDuration`, `groupMultipleNotifications`, `detectExecutableFilesAutomatically`,
+`verboseDebugLogging`, `logInternalDiagnosticsToFile`, `diagnosticsLogLocation`,
+`gitHubRateLimitAlertThreshold`.
+
+`confirmBeforeClearing` was the worst of them: Clear wiped the output pane with no confirmation
+at all while the preference claimed otherwise. It now shows an alert that also states plainly
+that saved logs and history are unaffected.
+
+**What happened next.** The wireable ones were connected in the same pass — appearance (accent,
+density, text size, corners, transparency, animations), notification grouping/duration/long-running,
+scanner executable and root detection, diagnostics logging, and the GitHub rate-limit alert. The
+three with no subsystem behind them — update checking, update channel, and language — were
+disabled in the settings screen with copy saying so, rather than left pretending to work. Those
+three were then delivered by their own plans:
+[`Plan-Updates-todo.md`](Plan-Updates-todo.md) and
+[`Plan-Localization-todo.md`](Plan-Localization-todo.md).
+
+- [x] Preferences load and save to `~/Library/Application Support/LXC-BRM/preferences.json`.
+- [x] The window opens from the sidebar gear and at Cmd+, as a native `Settings` scene.
+- [x] Build and scan code read the live preferences object instead of ignoring it.
+- [x] Shared app state backs both the main window and the Settings scene.
+- [x] Every one of the 73 fields has a named consumer outside the model and the settings screen.
+- [ ] **Reconcile the `P` markers in the checklist below against this audit.** Each of the fields
+      listed above now has a consumer on disk — `AppearanceSettings.swift`, `UpdateChecker.swift`,
+      `AppLanguage.swift`, `DiagnosticsLog.swift`, `BuildNotificationService.swift`,
+      `BuildScriptScanner.swift`, `SectionCard.swift` — but "a consumer exists" is not the same
+      claim as "the behaviour was checked", so the markers are left honest until each is verified
+      in the running app rather than flipped from a grep.
+- [ ] Manual settings QA pass in the running app: change a value, Save, confirm the behaviour
+      changes and the value survives a relaunch. *(Tracked as GUI coverage in
+      [`Plan-QualityVerification-todo.md`](Plan-QualityVerification-todo.md) section 04.)*
+
 ## Checklist
 
 Status legend:
@@ -285,6 +331,7 @@ Every field in every tab below now exists as an editable, `preferences.json`-per
 
 | Section | X | D | P | Total | Status |
 | --- | --- | --- | --- | --- | --- |
+| Wiring status (2026-08-16 audit) | 5 | 0 | 2 | 7 | Audit done; reconciliation and manual QA open |
 | Data & persistence | 3 | 0 | 0 | 3 | Done |
 | Window & navigation | 5 | 0 | 0 | 5 | Done |
 | 01 General | 6 | 1 | 3 | 10 | In Progress |
@@ -295,7 +342,7 @@ Every field in every tab below now exists as an editable, `preferences.json`-per
 | 06 Notifications | 3 | 2 | 2 | 7 | In Progress |
 | 07 Advanced | 1 | 0 | 14 | 15 | Open |
 | Polish | 0 | 0 | 1 | 1 | Open |
-| **Total** | **50** | **6** | **28** | **84** | **PreferencesView is fully built; 50 items are X, 6 are D, 28 are P** |
+| **Total** | **55** | **6** | **30** | **91** | **PreferencesView is fully built; 55 items are X, 6 are D, 30 are P** |
 
 ## Screens Received
 

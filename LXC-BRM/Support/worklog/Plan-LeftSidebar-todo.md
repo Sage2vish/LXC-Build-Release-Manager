@@ -3,10 +3,11 @@
 > Named **left** sidebar deliberately: the app has a right sidebar too — the Detail View Window
 > inspector — and "sidebar" alone is ambiguous once both exist.
 
-The single home for everything in the left panel. Sidebar work was previously scattered across
-`todo-2026-08-16.md`, `Plan-WindowLayout-todo.md`, `Plan-PreferenceScreen-todo.md`,
-`Plan-CodeRefactoring-Reusability-todo.md`, and the worklog; it is consolidated here, with what
-is already shipped recorded so nothing gets rebuilt by accident.
+The single home for everything in the left panel, including how repositories enter the app at all.
+Sidebar work was previously scattered across the dated master checklist,
+`Plan-WindowLayout-todo.md`, `Plan-PreferenceScreen-todo.md`,
+`Plan-CodeRefactoring-Reusability-todo.md`, and the dated worklog; it is consolidated here, with
+what is already shipped recorded so nothing gets rebuilt by accident.
 
 ## The four features of the panel
 
@@ -64,6 +65,27 @@ Open items about this panel that were living in other plans.
       `RecentRepositoryRow` reusable with injected stores rather than reaching for singletons.
       *(Carried from the refactoring plan, section 04.)*
 
+## 03. Repository input and multi-repository support
+
+Requirements §1 and §5. This is how a repository gets into the app and how several coexist —
+it belongs to this panel because the sidebar is the surface that owns it. What happens *inside*
+a repository once selected — scanning `/build/scripts`, running a script — belongs to
+[`Plan-Tab-Build-todo.md`](Plan-Tab-Build-todo.md).
+
+- [x] Validate the source before accepting it: a GitHub URL is checked for a `github.com` host
+      and an owner/repo path before the Add button enables; a local path is always valid because
+      it comes from a folder picker.
+- [x] Add a repository through a local folder picker (`NSOpenPanel`) or a pasted GitHub URL.
+- [x] Persist the repository list as JSON in Application Support, so it survives a restart.
+- [x] Add and remove repositories.
+- [x] List every opened and recent repository; switching between them is instant, with no
+      loading screen.
+- [x] Switching refreshes the build buttons, clears the log display, and reloads that
+      repository's stats and history — the detail view is keyed to the repository id, so all
+      `@State` resets on switch.
+- [x] Build history stays isolated per repository, keyed by repository UUID.
+- [x] Each repository keeps its own discovered scripts within a session.
+
 ## Boundary with the Preferences plan
 
 This panel owns the **gear button**: that it exists, sits in the footer above the status bar,
@@ -91,4 +113,5 @@ Anything about *what a preference does* goes there, not here.
 | Preferences boundary | 2 / 3 | Pointer to the Preferences plan |
 | 01 — Name and path visibility | 12 / 12 | Done |
 | 02 — Consolidation carried over | 0 / 1 | Open |
-| **Total** | **25 / 27** | **In progress** |
+| 03 — Repository input and multi-repository | 8 / 8 | Done |
+| **Total** | **33 / 35** | **In progress** |

@@ -165,8 +165,6 @@
 		F505761C3031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F505761F3031ABBA00601A4A /* Plan-PreferenceScreen-todo.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Plan-PreferenceScreen-todo.md"; sourceTree = "<group>"; };
 		F50576203031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		F50576213031ABBA00601A4A /* todo-2026-08-16.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "todo-2026-08-16.md"; sourceTree = "<group>"; };
-		F50576223031ABBA00601A4A /* worklog-2026-08-16.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "worklog-2026-08-16.md"; sourceTree = "<group>"; };
 		F50576243031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -446,8 +444,6 @@
 				F505761E3031ABBA00601A4A /* assets */,
 				F505761F3031ABBA00601A4A /* Plan-PreferenceScreen-todo.md */,
 				F50576203031ABBA00601A4A /* README.md */,
-				F50576213031ABBA00601A4A /* todo-2026-08-16.md */,
-				F50576223031ABBA00601A4A /* worklog-2026-08-16.md */,
 			);
 			path = worklog;
 			sourceTree = "<group>";

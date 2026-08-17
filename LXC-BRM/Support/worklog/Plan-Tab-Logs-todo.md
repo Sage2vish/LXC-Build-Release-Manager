@@ -13,6 +13,17 @@ Saved build logs, opened from History or chosen directly.
 - [x] Filters, search, line numbers, wrapping and auto-scroll follow the Logs preferences.
 - [x] Export a log to a chosen location.
 
+### Log storage and retrieval (requirements §3)
+
+- [x] Every run writes a log file to `<repository>/build/logs/` named
+      `build-YYYY-MM-DD-HH-MM-SS.log`, holding the full stdout and stderr as plain text.
+- [x] Both the current live output and past logs opened from History are viewable.
+- [x] Monospace, terminal-style presentation — dark background, light text, per-line timestamps,
+      scrollable.
+- [x] In-log search highlights matches, shows a match count, and navigates next/previous.
+- [x] Filters for Errors Only, Warnings Only, and Info Only.
+- [x] Export the current log to a chosen location, defaulting to Downloads, as `.log`.
+
 ## 01. Open items
 
 - [ ] Live output and saved logs still take two code paths into the same pane; consolidate them.
@@ -23,4 +34,6 @@ Saved build logs, opened from History or chosen directly.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 3 / 3 | Done |
+| Log storage and retrieval (§3) | 6 / 6 | Done |
 | 01 — Open items | 0 / 2 | Open |
+| **Total** | **9 / 11** | **In progress** |

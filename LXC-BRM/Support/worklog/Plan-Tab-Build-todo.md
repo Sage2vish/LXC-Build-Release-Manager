@@ -209,7 +209,34 @@ never reaches the status bar.
 - [x] Add accessibility checks for labels, focus order, and keyboard navigation.
 - [x] Run the Build screen through Xcode previews or the closest equivalent visual check before marking the checklist complete.
 
-## 17. Final acceptance
+## 17. Requirements coverage — discovery and execution
+
+Requirements §1 (detection) and §2 (execution), carried here from the retired dated checklist
+because this tab is the surface that owns them. How a repository *enters* the app belongs to
+[`Plan-LeftSidebar-todo.md`](Plan-LeftSidebar-todo.md); what the log file looks like afterwards
+belongs to [`Plan-Tab-Logs-todo.md`](Plan-Tab-Logs-todo.md).
+
+- [x] Scan the repository root for `/build`, and show "No `/build` folder found" when it is missing.
+- [x] Scan `/build/scripts/` for `.sh` files when `/build` exists, and show "No build scripts
+      found in `/build/scripts/`" when it is empty.
+- [x] Convert each script filename into a readable label (`build-ios.sh` → "build-ios").
+- [x] Display every discovered script as a clickable command row.
+- [x] List build commands with their last-run information — "Last run: 2 hours ago ✓" or
+      "Never run".
+- [x] Run `bash <repo>/build/scripts/<script>.sh` as a background subprocess with the repository
+      root as the working directory.
+- [x] Stream stdout and stderr live, line by line, each line timestamped.
+- [x] Track status per build — In Progress with a spinner, then Success / Failed / Cancelled with
+      a duration — and record the result to history on completion.
+- [x] Cancelling preserves the partial output and records the run as "Cancelled".
+
+**Product boundary.** A GitHub-sourced repository can be *scanned* through the Contents API but
+never *built*: running `bash` needs a real working directory, which a URL does not have. The
+requirements do not resolve this, so it is recorded as a deliberate boundary rather than a gap —
+see `context/architecture.md` and
+[`Plan-QualityVerification-todo.md`](Plan-QualityVerification-todo.md) section 05.
+
+## 18. Final acceptance
 
 - [x] The Build tab center workspace matches the provided screenshot and requirements while leaving the shell, sidebars, and top header untouched.
 - [x] A user can select a build script, review parameters, launch a build, watch live output, stop it, clear it, and save the log.
