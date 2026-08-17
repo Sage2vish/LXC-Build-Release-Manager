@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A11E00000000000000000001 /* BuildWorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E00000000000000000003 /* BuildWorkspaceTests.swift */; };
+		EBC685F8EBD04492A7C840D2 /* BuildScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93C7BCC7E8842C59006D61C /* BuildScreenTests.swift */; };
 		A11E0000000000000000000F /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11E0000000000000000000E /* XCTest.framework */; };
 		2069CF7280E3EFC8FE58FDDF /* BuildScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925160EB5C5E561373968382 /* BuildScript.swift */; };
 		251FCCFB1823E848C6967B7C /* BuildScriptScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */; };
@@ -27,6 +28,7 @@
 		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
 		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
 		F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */; };
+		7D48811E21C84684A81E3F27 /* App/Models/BuildScreenRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180CBE85700D41CCAA3FEF18 /* App/Models/BuildScreenRules.swift */; };
 		690F46128E344F69AEC9E870 /* App/Views/RepositoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1244FF58E6B406CBF6C437A /* App/Views/RepositoryDetailView.swift */; };
 		80CBEB839C5A4A5EB2125C68 /* App/Models/BuildPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28AAA8F0F60490DBC0C6686 /* App/Models/BuildPresentation.swift */; };
 		BED536027379480A9D9E44D8 /* App/Models/BuildCommandBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B47C22892D497FB697C5D8 /* App/Models/BuildCommandBuilder.swift */; };
@@ -106,6 +108,7 @@
 		9ABC2F1F39F8FB25110771D4 /* Preferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = App/Models/Preferences.swift; sourceTree = "<group>"; };
 		A11E00000000000000000002 /* LXC-BRMTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "LXC-BRMTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A11E00000000000000000003 /* BuildWorkspaceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BuildWorkspaceTests.swift; sourceTree = "<group>"; };
+		E93C7BCC7E8842C59006D61C /* BuildScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildScreenTests.swift; sourceTree = "<group>"; };
 		A11E0000000000000000000E /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
 		B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LXC_BRMApp.swift; path = App/LXC_BRMApp.swift; sourceTree = "<group>"; };
 		C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildNotificationService.swift; path = App/Services/BuildNotificationService.swift; sourceTree = "<group>"; };
@@ -115,6 +118,7 @@
 		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
+		180CBE85700D41CCAA3FEF18 /* App/Models/BuildScreenRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Models/BuildScreenRules.swift; sourceTree = "<group>"; };
 		E1244FF58E6B406CBF6C437A /* App/Views/RepositoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RepositoryDetailView.swift; sourceTree = "<group>"; };
 		F28AAA8F0F60490DBC0C6686 /* App/Models/BuildPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Models/BuildPresentation.swift; sourceTree = "<group>"; };
 		F9B47C22892D497FB697C5D8 /* App/Models/BuildCommandBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Models/BuildCommandBuilder.swift; sourceTree = "<group>"; };
@@ -270,6 +274,7 @@
 			isa = PBXGroup;
 			children = (
 				A11E00000000000000000003 /* BuildWorkspaceTests.swift */,
+				E93C7BCC7E8842C59006D61C /* BuildScreenTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -278,6 +283,7 @@
 			isa = PBXGroup;
 			children = (
 				F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */,
+				180CBE85700D41CCAA3FEF18 /* App/Models/BuildScreenRules.swift */,
 				E1244FF58E6B406CBF6C437A /* App/Views/RepositoryDetailView.swift */,
 				F28AAA8F0F60490DBC0C6686 /* App/Models/BuildPresentation.swift */,
 				F9B47C22892D497FB697C5D8 /* App/Models/BuildCommandBuilder.swift */,
@@ -558,6 +564,7 @@
 				F50575ED30318AE800601A4A /* App/Views/RepositoryRow.swift in Sources */,
 				861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */,
 				F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */,
+				7D48811E21C84684A81E3F27 /* App/Models/BuildScreenRules.swift in Sources */,
 				690F46128E344F69AEC9E870 /* App/Views/RepositoryDetailView.swift in Sources */,
 				80CBEB839C5A4A5EB2125C68 /* App/Models/BuildPresentation.swift in Sources */,
 				BED536027379480A9D9E44D8 /* App/Models/BuildCommandBuilder.swift in Sources */,
@@ -594,6 +601,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A11E00000000000000000001 /* BuildWorkspaceTests.swift in Sources */,
+				EBC685F8EBD04492A7C840D2 /* BuildScreenTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

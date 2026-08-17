@@ -54,10 +54,15 @@ struct BuildScriptTableRow: View {
                     .buttonStyle(.bordered)
                     .accessibilityLabel("Stop \(script.label)")
             } else {
+                // The label goes on before `.disabled`, otherwise a disabled Run button
+                // exposes no accessible name at all.
                 Button("Run", action: onRun)
                     .buttonStyle(.borderedProminent)
-                    .disabled(!canRun)
                     .accessibilityLabel("Run \(script.label)")
+                    .accessibilityHint(canRun
+                        ? "Runs this build script."
+                        : "Unavailable: this script cannot run right now.")
+                    .disabled(!canRun)
             }
 
             Menu {

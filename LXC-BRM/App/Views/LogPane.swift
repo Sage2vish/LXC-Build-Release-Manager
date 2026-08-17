@@ -85,15 +85,17 @@ struct LogPane: View {
                     Button(role: .destructive) { onStop() } label: {
                         Label("Stop", systemImage: "stop.fill")
                     }
-                    .disabled(!isRunning)
+                    .accessibilityLabel("Stop build")
                     .accessibilityHint("Stops the active build process.")
+                    .disabled(!isRunning)
                 }
                 if let onClear {
                     Button { onClear() } label: {
                         Label("Clear", systemImage: "trash")
                     }
-                    .disabled(lines.isEmpty)
+                    .accessibilityLabel("Clear output")
                     .accessibilityHint("Clears visible output without deleting saved build history.")
+                    .disabled(lines.isEmpty)
                 }
                 Button {
                     isExpanded.toggle()
@@ -104,21 +106,23 @@ struct LogPane: View {
                     )
                 }
                 .buttonStyle(.borderless)
+                .accessibilityLabel(isExpanded ? "Restore log pane" : "Maximize log pane")
                 .help(isExpanded ? "Restore log pane" : "Maximize log pane")
                 if let onOpenInWindow {
                     Button { onOpenInWindow() } label: {
                         Label("Open in Separate Window", systemImage: "window")
                     }
                     .buttonStyle(.borderless)
+                    .accessibilityLabel("Open log in a separate window")
                 }
                 if let onExport {
                     Button { onExport() } label: {
                         Label("Save Log", systemImage: "square.and.arrow.down")
                     }
                     .tint(Color(red: 166/255, green: 209/255, blue: 247/255)) // pastel blue tone
-                    .disabled(lines.isEmpty)
                     .accessibilityLabel("Save Log to file")
                     .help("Export the full output to a file.")
+                    .disabled(lines.isEmpty)
                 }
             }
 

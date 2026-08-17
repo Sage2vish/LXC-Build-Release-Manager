@@ -154,9 +154,9 @@ Already complete and verified in code:
 
 - [x] Verify the Build tab logic through the existing Xcode build and the real repo scan path.
 - [x] Verify script discovery against a local repository with `/build/scripts/`.
-- [ ] Add dedicated unit tests for the Build screen helpers.
-- [ ] Add UI/integration tests for selecting a script, launching a build, streaming output, and stopping the process.
-- [ ] Add accessibility checks and additional visual verification before calling the screen release-perfect.
+- [x] Add dedicated unit tests for the Build screen helpers. Selection fallback, run-eligibility, and the last-run readout moved out of the view into `BuildScreenRules` and are covered in `Tests/BuildScreenTests.swift`.
+- [x] Add UI/integration tests for selecting a script, launching a build, streaming output, and stopping the process. `testSelectLaunchStreamStopAndHistoryFlow` drives discovery → select → launch → stream → stop → history → clear against a real script and the real stores.
+- [ ] Add accessibility checks and additional visual verification before calling the screen release-perfect. **Attempted and not achieved — see the note below.**
 
 ## 17. Final acceptance
 
@@ -166,4 +166,26 @@ Already complete and verified in code:
 - [x] Refresh, scrolling, and window behavior are predictable on macOS.
 - [x] Validation failures and runtime failures are visible and recoverable.
 - [x] The UI stays native-feeling and consistent with the rest of the app.
-- [ ] Add tests for the remaining helper and integration paths before treating the screen as fully hardened.
+- [x] Add tests for the remaining helper and integration paths before treating the screen as fully hardened. Parameter visibility, command preview, validation messages, and the concurrency limit are covered; suite is 28 tests, 0 failures.
+
+
+## Accessibility Verification — Attempted, Not Achieved
+
+Explicit `.accessibilityLabel` values were added to the Build screen controls that had none, and
+the labels on Run, Stop, Clear, and Save Log were moved **above** `.disabled(...)`, because a
+modifier applied after `disabled` can be dropped and leave a disabled control with no accessible
+name at all. Those are correct changes and they ship.
+
+What could **not** be established is that the screen now reads correctly to VoiceOver. The audit
+used here walked the accessibility tree through AppleScript and counted controls whose name was
+empty or merely the role word. It reported 34 named and 33 unnamed both before and after the
+fixes — an identical result, which means the probe was reading role descriptions rather than the
+accessible names SwiftUI publishes, not that the fixes had no effect.
+
+So this item stays open. Closing it honestly needs one of:
+
+1. A VoiceOver pass driven by a human, or
+2. Xcode's Accessibility Inspector audit against the running app, or
+3. XCUITest coverage asserting on accessibility identifiers.
+
+No claim of accessibility conformance should be made from the checklist until one of those runs.

@@ -307,14 +307,17 @@ struct RepositoryDetailView: View {
                 Button { revealInFinder() } label: {
                     Label("Reveal in Finder", systemImage: "folder")
                 }
+                .accessibilityLabel("Reveal in Finder")
                 .disabled(!repository.source.isLocal)
                 Button { openInTerminal() } label: {
                     Label("Open in Terminal", systemImage: "terminal")
                 }
+                .accessibilityLabel("Open in Terminal")
                 .disabled(!repository.source.isLocal)
                 Button { copyPath() } label: {
                     Label("Copy Path", systemImage: "doc.on.doc")
                 }
+                .accessibilityLabel("Copy repository path")
             }
             // Local folder first, GitHub URL below it. Whichever does not apply is omitted
             // entirely rather than rendered blank.
@@ -412,6 +415,7 @@ struct RepositoryDetailView: View {
                         Label("Auto Find", systemImage: "sparkle.magnifyingglass")
                     }
                     .buttonStyle(.bordered)
+                    .accessibilityLabel("Auto Find build scripts")
                     .disabled(!repository.source.isLocal || isScanning)
                     .accessibilityHint("Search every folder in this repository for shell scripts.")
 
@@ -436,6 +440,7 @@ struct RepositoryDetailView: View {
                         Label("Refresh Scripts", systemImage: "arrow.clockwise")
                     }
                     .buttonStyle(.bordered)
+                    .accessibilityLabel("Refresh build scripts")
                     .disabled(isScanning || runner.isRunning)
                 }
 
@@ -540,16 +545,15 @@ struct RepositoryDetailView: View {
     }
 
     private func lastRunDescription(_ record: BuildRecord?, isRunning: Bool) -> String {
-        if isRunning { return runner.phase == .stopping ? "Stopping…" : "Building…" }
-        guard let record else { return "Never run" }
-        let icon = record.status == .success ? "✓" : (record.status == .cancelled ? "⊘" : "✗")
-        return "Last run: \(record.startedAt.relativeDescription) \(icon)"
+        BuildScreenRules.lastRunDescription(
+            record: record,
+            isRunning: isRunning,
+            isStopping: runner.phase == .stopping
+        )
     }
 
     private func lastRunColor(_ record: BuildRecord?, isRunning: Bool) -> Color {
-        if isRunning { return .blue }
-        guard let record else { return .secondary }
-        return BuildPresentation.color(for: record.status)
+        BuildScreenRules.lastRunColor(record: record, isRunning: isRunning)
     }
 
     private var selectedScriptID: String? {
@@ -557,10 +561,7 @@ struct RepositoryDetailView: View {
     }
 
     private func selectedScript(in scripts: [BuildScript]) -> BuildScript? {
-        if let selectedScriptID, let selected = scripts.first(where: { $0.id == selectedScriptID }) {
-            return selected
-        }
-        return scripts.first
+        BuildScreenRules.selectedScript(in: scripts, selectedID: selectedScriptID)
     }
 
     private func select(_ script: BuildScript) {
@@ -569,13 +570,14 @@ struct RepositoryDetailView: View {
     }
 
     private func canRun(_ script: BuildScript) -> Bool {
-        guard repository.source.isLocal,
-              script.location.isRunnable,
-              !runner.isRunning,
-              runners.runningCount < preferencesStore.preferences.maxConcurrentBuilds else {
-            return false
-        }
-        return script.location != .outsideRepository || preferencesStore.preferences.allowScriptsOutsideBuildScripts
+        BuildScreenRules.canRun(
+            script: script,
+            isLocalRepository: repository.source.isLocal,
+            isRunnerBusy: runner.isRunning,
+            runningCount: runners.runningCount,
+            maxConcurrentBuilds: preferencesStore.preferences.maxConcurrentBuilds,
+            allowScriptsOutsideRepository: preferencesStore.preferences.allowScriptsOutsideBuildScripts
+        )
     }
 
     private func run(_ script: BuildScript) {
