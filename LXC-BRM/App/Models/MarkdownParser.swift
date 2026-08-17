@@ -126,11 +126,12 @@ enum MarkdownParser {
 
             if isHTMLBlock(trimmed) {
                 flushParagraph()
-                blocks.append(.htmlBlock(text: trimmed))
-                index += 1
+                let consumed = parseHTML(lines: lines, startingAt: index, into: &blocks)
+                index += max(1, consumed)
                 continue
             }
 
+            // A paragraph can carry inline HTML — <strong>, <a href>, <code>, <br>.
             paragraph.append(trimmed)
             index += 1
         }
@@ -304,5 +305,231 @@ enum MarkdownParser {
         if text.hasPrefix("|") { text.removeFirst() }
         if text.hasSuffix("|") { text.removeLast() }
         return text.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespaces) }
+    }
+
+    // MARK: HTML
+
+    /// Handles a block-level HTML element, appending whatever it produces.
+    ///
+    /// Returns how many source lines were consumed. Anything not on the allow list is appended
+    /// as an escaped `htmlBlock` and never rendered as markup.
+    private static func parseHTML(
+        lines: [String],
+        startingAt start: Int,
+        into blocks: inout [MarkdownBlock]
+    ) -> Int {
+        let line = lines[start].trimmingCharacters(in: .whitespaces)
+        guard let tag = HTMLSupport.parseTag(line) else {
+            blocks.append(.htmlBlock(text: line))
+            return 1
+        }
+
+        // Denied tags: the element and its content are dropped from rendering and shown as
+        // escaped text, so a document cannot smuggle anything executable through.
+        if HTMLSupport.isDenied(tag.name) {
+            var consumed = 1
+            if !tag.isSelfClosing {
+                while start + consumed < lines.count {
+                    let candidate = lines[start + consumed].lowercased()
+                    consumed += 1
+                    if candidate.contains("</\(tag.name)") { break }
+                }
+            }
+            blocks.append(.htmlBlock(text: line))
+            return consumed
+        }
+
+        guard HTMLSupport.isAllowed(tag.name) else {
+            // Unknown tag: keep whatever text it wrapped rather than losing content. This is
+            // what keeps placeholders like <repository> visible.
+            blocks.append(.paragraph(text: line))
+            return 1
+        }
+
+        switch tag.name {
+        case "br":
+            blocks.append(.lineBreak)
+            return 1
+
+        case "hr":
+            blocks.append(.rule)
+            return 1
+
+        case "img":
+            blocks.append(imageBlock(from: tag, alignment: .leading))
+            return 1
+
+        case "div", "center", "p":
+            let alignment = tag.name == "center"
+                ? MarkdownBlock.BlockAlignment.center
+                : MarkdownBlock.BlockAlignment(attribute: tag.attributes["align"])
+            let (inner, consumed) = collectElement(named: tag.name, lines: lines, startingAt: start)
+            let innerBlocks = parse(inner).map { block -> MarkdownBlock in
+                // Push the container's alignment onto any image it wraps, which is how
+                // `<div align="center"><img …></div>` is meant to read.
+                if case .htmlImage(let alt, let source, let width, _) = block {
+                    return .htmlImage(alt: alt, source: source, width: width, alignment: alignment)
+                }
+                return block
+            }
+            if innerBlocks.isEmpty {
+                return consumed
+            }
+            blocks.append(.aligned(alignment: alignment, blocks: innerBlocks))
+            return consumed
+
+        case "details":
+            let (inner, consumed) = collectElement(named: "details", lines: lines, startingAt: start)
+            var summary = "Details"
+            var body = inner
+            if let range = inner.range(of: "<summary[^>]*>(.*?)</summary>", options: [.regularExpression, .caseInsensitive]) {
+                let raw = String(inner[range])
+                summary = HTMLSupport.convertInlineHTML(raw)
+                body = inner.replacingCharacters(in: range, with: "")
+            }
+            blocks.append(.disclosure(summary: summary, blocks: parse(body)))
+            return consumed
+
+        case "table", "thead", "tbody":
+            let (inner, consumed) = collectElement(named: tag.name, lines: lines, startingAt: start)
+            if let table = htmlTable(from: inner) {
+                blocks.append(.table(table))
+            } else {
+                blocks.append(.paragraph(text: HTMLSupport.convertInlineHTML(inner)))
+            }
+            return consumed
+
+        case "h1", "h2", "h3", "h4", "h5", "h6":
+            let level = Int(tag.name.dropFirst()) ?? 1
+            let text = HTMLSupport.innerText(of: tag.name, in: line) ?? ""
+            blocks.append(.heading(level: level, text: HTMLSupport.convertInlineHTML(text)))
+            return 1
+
+        case "ul", "ol", "li", "blockquote":
+            let (inner, consumed) = collectElement(named: tag.name, lines: lines, startingAt: start)
+            let cleaned = HTMLSupport.convertInlineHTML(
+                inner.replacingOccurrences(of: "</?li[^>]*>", with: "\n- ", options: [.regularExpression, .caseInsensitive])
+            )
+            blocks.append(contentsOf: parse(cleaned))
+            return consumed
+
+        default:
+            // Inline-only tag sitting on its own line: convert and treat as a paragraph.
+            let converted = HTMLSupport.convertInlineHTML(line)
+            if !converted.isEmpty { blocks.append(.paragraph(text: converted)) }
+            return 1
+        }
+    }
+
+    private static func imageBlock(
+        from tag: HTMLSupport.Tag,
+        alignment: MarkdownBlock.BlockAlignment
+    ) -> MarkdownBlock {
+        let source = tag.attributes["src"] ?? ""
+        let alt = tag.attributes["alt"] ?? ""
+        let width = tag.attributes["width"].flatMap { Double($0.replacingOccurrences(of: "px", with: "")) }
+        guard HTMLSupport.isSafeURL(source) else {
+            return .paragraph(text: alt.isEmpty ? "Image omitted" : alt)
+        }
+        return .htmlImage(alt: alt, source: source, width: width, alignment: alignment)
+    }
+
+    /// Gathers everything between an opening tag and its matching close, tracking nesting.
+    private static func collectElement(
+        named name: String,
+        lines: [String],
+        startingAt start: Int
+    ) -> (inner: String, consumed: Int) {
+        var depth = 0
+        var collected: [String] = []
+        var index = start
+
+        while index < lines.count {
+            let lower = lines[index].lowercased()
+            depth += occurrences(of: "<\(name)", in: lower)
+            let closes = occurrences(of: "</\(name)", in: lower)
+            depth -= closes
+
+            var text = lines[index]
+            if index == start {
+                // Drop the opening tag itself.
+                if let close = text.firstIndex(of: ">") {
+                    text = String(text[text.index(after: close)...])
+                }
+            }
+            if depth <= 0 {
+                // Drop the closing tag.
+                if let range = text.range(of: "</\(name)", options: .caseInsensitive) {
+                    text = String(text[..<range.lowerBound])
+                }
+                collected.append(text)
+                index += 1
+                break
+            }
+            collected.append(text)
+            index += 1
+        }
+
+        return (collected.joined(separator: "\n"), max(1, index - start))
+    }
+
+    private static func occurrences(of needle: String, in haystack: String) -> Int {
+        guard !needle.isEmpty else { return 0 }
+        return haystack.components(separatedBy: needle).count - 1
+    }
+
+    /// Builds a table from `<tr>` / `<td>` / `<th>` rows.
+    private static func htmlTable(from inner: String) -> MarkdownBlock.MarkdownTable? {
+        guard let rowRegex = try? NSRegularExpression(
+            pattern: "<tr[^>]*>(.*?)</tr>",
+            options: [.caseInsensitive, .dotMatchesLineSeparators]
+        ) else { return nil }
+
+        let range = NSRange(inner.startIndex..., in: inner)
+        let rowMatches = rowRegex.matches(in: inner, range: range)
+        guard !rowMatches.isEmpty else { return nil }
+
+        var parsedRows: [[String]] = []
+        var headerRow: [String] = []
+
+        for match in rowMatches {
+            guard let rowRange = Range(match.range(at: 1), in: inner) else { continue }
+            let rowText = String(inner[rowRange])
+            let isHeader = rowText.lowercased().contains("<th")
+            let cells = cellTexts(in: rowText)
+            guard !cells.isEmpty else { continue }
+            if isHeader, headerRow.isEmpty {
+                headerRow = cells
+            } else {
+                parsedRows.append(cells)
+            }
+        }
+
+        if headerRow.isEmpty, !parsedRows.isEmpty {
+            headerRow = parsedRows.removeFirst()
+        }
+        guard !headerRow.isEmpty else { return nil }
+
+        return MarkdownBlock.MarkdownTable(
+            headers: headerRow,
+            alignments: Array(repeating: .leading, count: headerRow.count),
+            rows: parsedRows.map { row in
+                var cells = row
+                while cells.count < headerRow.count { cells.append("") }
+                return Array(cells.prefix(headerRow.count))
+            }
+        )
+    }
+
+    private static func cellTexts(in rowText: String) -> [String] {
+        guard let regex = try? NSRegularExpression(
+            pattern: "<t[dh][^>]*>(.*?)</t[dh]>",
+            options: [.caseInsensitive, .dotMatchesLineSeparators]
+        ) else { return [] }
+        let range = NSRange(rowText.startIndex..., in: rowText)
+        return regex.matches(in: rowText, range: range).compactMap { match in
+            guard let cell = Range(match.range(at: 1), in: rowText) else { return nil }
+            return HTMLSupport.convertInlineHTML(String(rowText[cell]))
+        }
     }
 }

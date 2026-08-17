@@ -15,8 +15,28 @@ enum MarkdownBlock: Equatable, Identifiable {
     case table(MarkdownTable)
     case rule
     case image(alt: String, source: String)
-    /// Raw HTML, shown escaped rather than executed.
+    /// An `<img>` from HTML, which unlike Markdown can carry a width and an alignment.
+    case htmlImage(alt: String, source: String, width: Double?, alignment: BlockAlignment)
+    /// `<br>` — an explicit blank line, which Markdown has no syntax for.
+    case lineBreak
+    /// Content wrapped by `<div align=…>` or `<center>`.
+    case aligned(alignment: BlockAlignment, blocks: [MarkdownBlock])
+    /// `<details><summary>` — collapsible content.
+    case disclosure(summary: String, blocks: [MarkdownBlock])
+    /// Raw HTML that is not on the allow list. Shown escaped, never executed.
     case htmlBlock(text: String)
+
+    enum BlockAlignment: String, Equatable {
+        case leading, center, trailing
+
+        init(attribute: String?) {
+            switch attribute?.lowercased() {
+            case "center", "middle": self = .center
+            case "right", "end": self = .trailing
+            default: self = .leading
+            }
+        }
+    }
 
     struct ListItem: Equatable {
         /// Indent level, 0 for top level.
@@ -48,6 +68,11 @@ enum MarkdownBlock: Equatable, Identifiable {
         case .table(let table): return "table:\(table.headers.joined(separator: "|"))"
         case .rule: return "rule:\(UUID().uuidString)"
         case .image(let alt, let source): return "img:\(alt):\(source)"
+        case .htmlImage(let alt, let source, let width, let alignment):
+            return "himg:\(alt):\(source):\(width ?? 0):\(alignment.rawValue)"
+        case .lineBreak: return "br:\(UUID().uuidString)"
+        case .aligned(let alignment, let blocks): return "align:\(alignment.rawValue):\(blocks.count)"
+        case .disclosure(let summary, let blocks): return "details:\(summary):\(blocks.count)"
         case .htmlBlock(let text): return "html:\(text.prefix(64))"
         }
     }

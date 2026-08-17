@@ -130,6 +130,68 @@ Target the GitHub Flavored Markdown subset that actually appears in this reposit
 - [x] File discovery skips the noise directories and builds the expected tree.
 - [x] A large synthetic document parses well inside a sensible time budget.
 
+### 07. Inline and block HTML
+
+Markdown files in this project use HTML for the things Markdown cannot express. A survey of every
+`.md` file here found **`<br>` ×22, `<img>` ×20, `<strong>` ×16, `<sub>` ×14, `<td>` ×13,
+`<a>` ×10, `<p>` ×6, `<tr>` ×5, `<table>` ×3, `<div>` ×2, `<code>` ×2** — and one `<script>`.
+The root `README.md` opens with a centred `<div>` wrapping an `<img>` and a row of `<a>` links,
+which currently renders as escaped source text.
+
+GitHub renders a **whitelist** of HTML and strips the rest. That is the model to copy: unknown or
+dangerous tags must never render, and nothing may execute or fetch.
+
+- [ ] Add a tag parser that reads a tag name, its attributes, and its inner content.
+- [ ] Define an explicit **allow list**: `img`, `br`, `hr`, `p`, `div`, `span`, `center`, `a`, `b`, `strong`, `i`, `em`, `code`, `kbd`, `sub`, `sup`, `del`, `s`, `mark`, `h1`–`h6`, `ul`, `ol`, `li`, `blockquote`, `table`, `thead`, `tbody`, `tr`, `td`, `th`, `details`, `summary`.
+- [ ] Define an explicit **deny list** that is never rendered and is shown escaped instead: `script`, `iframe`, `style`, `object`, `embed`, `link`, `meta`, `form`, `input`, `button`, `svg`, `video`, `audio`, `applet`, `base`.
+- [ ] Drop every `on*` event attribute, and reject `javascript:` and `data:` URLs, wherever they appear.
+- [ ] `<img>`: honour `src`, `alt`, `width`, `height`; resolve local paths relative to the document; never fetch a remote source.
+- [ ] `<br>`: render a real line break rather than swallowing it.
+- [ ] `<div align>` / `<center>`: align the content they wrap, including a centred image.
+- [ ] `<a href>`: render as a link, with the same scheme rules as Markdown links.
+- [ ] Inline tags inside a paragraph — `<strong>`, `<b>`, `<em>`, `<i>`, `<code>`, `<sub>`, `<sup>`, `<del>` — convert to their inline equivalents rather than showing as text.
+- [ ] `<table>`/`<tr>`/`<td>`/`<th>`: render through the existing table view.
+- [ ] `<details>`/`<summary>`: render as a disclosure group.
+- [ ] Unknown tags degrade to their inner text, so content is never lost.
+- [ ] Text that merely looks like a tag — `<repository>`, `<tabname>`, `<hex>` in this repo's docs — stays literal text, not a dropped element.
+- [ ] Tests: allow list renders, deny list stays escaped, `on*` and `javascript:` are stripped, unknown tags keep their text, and tag-shaped placeholders survive.
+
+### 08. Preview / Source modes, with editing
+
+Reading a rendered document is the common case, but sometimes you need the file as it actually
+is — to check the exact Markdown, copy a table's pipes, or work out why something is not
+rendering as expected. And once you are looking at the source, the natural next thing is to fix
+it.
+
+**Naming.** GitHub labels these *Preview* and *Code*. "Code" reads oddly for a prose document, so
+this uses **Preview** and **Source** — the pairing Xcode and most editors use, accurate whether
+the file is prose or a fenced script.
+
+**Shape.** A segmented control, exactly like the Build / Logs / History / Overview / Docs /
+Settings picker above it. The two modes are mutually exclusive by construction — there is no
+state where both are active.
+
+**Editing is only reachable from Source.** Preview is a reader and must never mutate a file.
+Source starts read-only; an explicit **Edit** turns it into an editor. That ordering matters:
+writing to a file in the user's repository is destructive if it happens by accident.
+
+- [ ] Segmented control in the document header, matching the tab picker's style.
+- [ ] **Preview** is the default and is selected when a document opens.
+- [ ] **Source** shows the file's exact bytes as text: monospaced, nothing rewritten.
+- [ ] Source is read-only until **Edit** is pressed; Preview has no edit affordance at all.
+- [ ] Edit swaps the header actions for **Save** and **Cancel**.
+- [ ] Save writes atomically, then re-parses so Preview reflects the new content immediately.
+- [ ] Cancel restores the file's content and leaves the file untouched.
+- [ ] Save is disabled until something actually changes, so it cannot rewrite a file needlessly.
+- [ ] Refuse to save when the file changed on disk after it was loaded, rather than clobbering
+      someone else's edit; offer to reload instead.
+- [ ] Warn before discarding unsaved edits — switching mode, switching file, or leaving the tab.
+- [ ] Source keeps text selectable and copyable in both read-only and editing states.
+- [ ] Line numbers in read-only Source, so a rendering problem can be pointed at a line.
+- [ ] Both modes and every action carry accessibility labels.
+- [ ] Tests: Preview is the default; Source is verbatim; the dirty check; the changed-on-disk
+      guard; and that a save round-trips exactly, including trailing newlines.
+
 ## Tracking
 
 | Section | Checked / Total | Status |
@@ -140,7 +202,9 @@ Target the GitHub Flavored Markdown subset that actually appears in this reposit
 | 04 — Viewer | 8 / 9 | Done (text-size preference open) |
 | 05 — Explorer and tab | 7 / 8 | Done (open-in-editor open) |
 | 06 — Tests | 10 / 10 | Done |
-| **Total** | **46 / 49** | **Shipped** |
+| 07 — Inline and block HTML | 0 / 14 | Open |
+| 08 — Preview / Source modes, with editing | 0 / 14 | Open |
+| **Total** | **46 / 77** | **In progress** |
 
 ## Verified in the running app
 

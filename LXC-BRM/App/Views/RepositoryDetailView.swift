@@ -157,7 +157,10 @@ struct RepositoryDetailView: View {
                 .padding(16)
             }
             // Wide enough to host parameter controls and a wrapped command preview.
-            .inspectorColumnWidth(min: 320, ideal: 460, max: 900)
+            // These minimums add straight into the window's own minimum width. Kept low
+            // enough that opening the panel cannot pin the window — measured before this
+            // change at 1853pt with the panel open.
+            .inspectorColumnWidth(min: 240, ideal: 340, max: 900)
         }
     }
 
@@ -477,11 +480,11 @@ struct RepositoryDetailView: View {
                 }
 
                 HStack(spacing: 12) {
-                    Text("Script").frame(minWidth: 200, maxWidth: .infinity, alignment: .leading)
-                    Text("Source").frame(width: 122, alignment: .leading)
-                    Text("Parameters").frame(width: 108, alignment: .leading)
-                    Text("Last run").frame(width: 126, alignment: .leading)
-                    Text("Actions").frame(width: 118, alignment: .leading)
+                    Text("Script").frame(minWidth: 140, maxWidth: .infinity, alignment: .leading)
+                    Text("Source").frame(minWidth: 80, idealWidth: 122, maxWidth: 140, alignment: .leading)
+                    Text("Parameters").frame(minWidth: 72, idealWidth: 108, maxWidth: 130, alignment: .leading)
+                    Text("Last run").frame(minWidth: 84, idealWidth: 126, maxWidth: 150, alignment: .leading)
+                    Text("Actions").frame(minWidth: 78, idealWidth: 118, maxWidth: 140, alignment: .leading)
                 }
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)

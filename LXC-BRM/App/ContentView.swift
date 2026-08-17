@@ -26,6 +26,12 @@ struct ContentView: View {
         )
     }
 
+    private func toggleSidebarPaths() {
+        var updated = preferencesStore.preferences
+        updated.showRepositoryPathInSidebar.toggle()
+        preferencesStore.save(updated)
+    }
+
     private func toggleSidebar() {
         var updated = preferencesStore.preferences
         updated.showRepositorySidebar.toggle()
@@ -159,7 +165,11 @@ struct ContentView: View {
     /// Extracted from the `sidebar` body: inline, the row plus its context menu and
     /// accessibility modifiers made the surrounding `List` too large for the type checker.
     private func repositorySidebarRow(_ repository: Repository) -> some View {
-        RepositoryRow(repository: repository, store: store)
+        RepositoryRow(
+            repository: repository,
+            store: store,
+            showsPath: preferencesStore.preferences.showRepositoryPathInSidebar
+        )
             .tag(repository.id)
             .contextMenu { // Screenshot UI Parity: Sidebar - Context menu actions for repository row
                 Button("Reveal in Finder") {
@@ -182,6 +192,7 @@ struct ContentView: View {
                     NSPasteboard.general.setString(repository.source.displayPath, forType: .string)
                 }
             }
+            // The path stays in the accessible description even when hidden visually.
             .accessibilityLabel("\(repository.name), \(repository.source.displayPath)")
             .accessibilityHint("Select repository \(repository.name)")
     }
@@ -254,13 +265,29 @@ struct ContentView: View {
                     }
                 } header: {
                     // Screenshot UI Parity: Sidebar - Clean section header for Repositories
-                    Text("Repositories")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                        .textCase(nil)
-                        .padding(.leading, 4)
-                        .padding(.vertical, 4)
-                        .accessibilityAddTraits(.isHeader)
+                    HStack(spacing: 6) {
+                        Text("Repositories")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                            .textCase(nil)
+                            .accessibilityAddTraits(.isHeader)
+                        Spacer()
+                        // The name is identity and always shows; only the path is optional.
+                        Button(action: toggleSidebarPaths) {
+                            Image(systemName: preferencesStore.preferences.showRepositoryPathInSidebar
+                                  ? "text.alignleft"
+                                  : "text.justify.left")
+                        }
+                        .buttonStyle(.borderless)
+                        .help(preferencesStore.preferences.showRepositoryPathInSidebar
+                              ? "Hide repository paths"
+                              : "Show repository paths")
+                        .accessibilityLabel(preferencesStore.preferences.showRepositoryPathInSidebar
+                                            ? "Hide repository paths"
+                                            : "Show repository paths")
+                    }
+                    .padding(.leading, 4)
+                    .padding(.vertical, 4)
                 }
 
                 // Screenshot UI Parity: Sidebar - Recent Repositories section with header and icons for each

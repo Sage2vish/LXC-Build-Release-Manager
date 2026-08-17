@@ -348,6 +348,7 @@ struct PreferencesView: View {
             toggleRow("Show animations", "Enable subtle animations for a smoother experience.", $draft.showAnimations)
             toggleRow("Round window corners", "Use rounded corners for windows and panels.", $draft.roundWindowCorners)
             toggleRow("Reduce transparency", "Minimize transparency effects for better readability.", $draft.reduceTransparency)
+            toggleRow("Show repository paths in the sidebar", "Repository names always show; the path under each name is optional.", $draft.showRepositoryPathInSidebar)
             toggleRow("Use system font (San Francisco)", "Use macOS system font for a native look.", $draft.useSystemFont)
         }
     }

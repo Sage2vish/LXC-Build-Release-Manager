@@ -34,20 +34,20 @@ struct BuildScriptTableRow: View {
                     .lineLimit(1)
                     .truncationMode(.middle)
             }
-            .frame(minWidth: 180, maxWidth: .infinity, alignment: .leading)
+            .frame(minWidth: 130, maxWidth: .infinity, alignment: .leading)
 
             locationBadge
-                .frame(width: 122, alignment: .leading)
+                .frame(minWidth: 80, idealWidth: 122, maxWidth: 140, alignment: .leading)
 
             Text(script.parameters.isEmpty ? "No parameters" : "\(script.parameters.count) parameter\(script.parameters.count == 1 ? "" : "s")")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-                .frame(width: 108, alignment: .leading)
+                .frame(minWidth: 72, idealWidth: 108, maxWidth: 130, alignment: .leading)
 
             Label(lastRunText, systemImage: isRunning ? "circle.dotted" : "clock")
                 .font(.caption)
                 .foregroundStyle(lastRunColor)
-                .frame(width: 126, alignment: .leading)
+                .frame(minWidth: 84, idealWidth: 126, maxWidth: 150, alignment: .leading)
 
             if isRunning {
                 Button("Stop", role: .destructive, action: onStop)

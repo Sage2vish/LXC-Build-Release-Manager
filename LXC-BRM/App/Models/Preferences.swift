@@ -92,6 +92,9 @@ struct Preferences: Codable, Equatable {
     var showStatusBar = true
     var showRepositorySidebar = true
     var showDetailInspector = true
+    /// Whether the repository rows in the sidebar show their full path under the name.
+    /// The name is identity and is always shown; the path is detail.
+    var showRepositoryPathInSidebar = true
 
     // 06 Notifications
     var enableBuildNotifications = true

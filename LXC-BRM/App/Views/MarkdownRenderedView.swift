@@ -57,6 +57,35 @@ struct MarkdownRenderedView: View {
         case .image(let alt, let source):
             imageView(alt: alt, source: source)
 
+        case .htmlImage(let alt, let source, let width, let alignment):
+            HStack {
+                if alignment != .leading { Spacer(minLength: 0) }
+                imageView(alt: alt, source: source, width: width)
+                if alignment != .trailing { Spacer(minLength: 0) }
+            }
+
+        case .lineBreak:
+            // <br> is an explicit blank line; Markdown has no syntax for one.
+            Spacer().frame(height: 8)
+
+        case .aligned(let alignment, let inner):
+            HStack {
+                if alignment != .leading { Spacer(minLength: 0) }
+                // Recursing through the concrete view type rather than calling `view(for:)`
+                // again: a `some View` function that returns itself is self-referential and
+                // will not compile.
+                MarkdownRenderedView(blocks: inner, baseURL: baseURL)
+                if alignment != .trailing { Spacer(minLength: 0) }
+            }
+
+        case .disclosure(let summary, let inner):
+            DisclosureGroup {
+                MarkdownRenderedView(blocks: inner, baseURL: baseURL)
+                    .padding(.top, 6)
+            } label: {
+                inlineText(summary).font(.callout.weight(.semibold))
+            }
+
         case .htmlBlock(let text):
             // Shown escaped. Never executed — a document on disk must not be able to run
             // anything or reach the network.
@@ -123,13 +152,14 @@ struct MarkdownRenderedView: View {
     }
 
     @ViewBuilder
-    private func imageView(alt: String, source: String) -> some View {
+    private func imageView(alt: String, source: String, width: Double? = nil) -> some View {
         if let url = resolvedImageURL(source), let image = NSImage(contentsOf: url) {
             VStack(alignment: .leading, spacing: 4) {
                 Image(nsImage: image)
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    // An HTML width attribute is respected, but never beyond the column.
+                    .frame(maxWidth: width.map { CGFloat($0) } ?? .infinity, alignment: .leading)
                     .accessibilityLabel(alt.isEmpty ? "Image" : alt)
                 if !alt.isEmpty {
                     Text(alt).font(.caption).foregroundStyle(.secondary)

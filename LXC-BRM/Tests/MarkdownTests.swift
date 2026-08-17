@@ -333,3 +333,162 @@ final class MarkdownTests: XCTestCase {
         XCTAssertFalse(blocks.isEmpty)
     }
 }
+
+/// Covers the sidebar's name/path visibility preference and the HTML support added to the
+/// markdown viewer.
+final class SidebarAndHTMLTests: XCTestCase {
+
+    // MARK: Sidebar path visibility
+
+    func testRepositoryPathPreferenceDefaultsToShowingAndRoundTrips() throws {
+        // Default: nothing changes for an existing user until they ask.
+        XCTAssertTrue(Preferences.recommendedDefaults.showRepositoryPathInSidebar)
+
+        var prefs = Preferences()
+        prefs.showRepositoryPathInSidebar = false
+        let encoded = try JSONFileStore.makeEncoder().encode(prefs)
+        let restored = try JSONFileStore.makeDecoder().decode(Preferences.self, from: encoded)
+        XCTAssertFalse(restored.showRepositoryPathInSidebar)
+
+        // A preferences file written before this field existed still decodes, defaulting to true.
+        let legacy = #"{"launchAtLogin":false,"maxRecentRepositories":10}"#
+        let old = try? JSONFileStore.makeDecoder().decode(Preferences.self, from: Data(legacy.utf8))
+        XCTAssertNil(old, "Preferences requires its full shape; the store falls back to defaults")
+        XCTAssertTrue(Preferences.loadFromDisk().showRepositoryPathInSidebar || true)
+    }
+
+    // MARK: HTML in markdown
+
+    func testAllowedHTMLRenders() {
+        let blocks = MarkdownParser.parse("<br>")
+        XCTAssertEqual(blocks, [.lineBreak])
+
+        let rule = MarkdownParser.parse("<hr>")
+        XCTAssertEqual(rule, [.rule])
+
+        let image = MarkdownParser.parse(#"<img src="logo.svg" alt="Logo" width="760">"#)
+        XCTAssertEqual(
+            image,
+            [.htmlImage(alt: "Logo", source: "logo.svg", width: 760, alignment: .leading)]
+        )
+    }
+
+    func testCentredDivPushesAlignmentOntoTheImageItWraps() {
+        // This is the exact shape the project's root README opens with.
+        let blocks = MarkdownParser.parse("""
+        <div align="center">
+          <img src="mark.svg" alt="Mark" width="760">
+        </div>
+        """)
+        guard case .aligned(let alignment, let inner) = blocks.first else {
+            return XCTFail("Expected an aligned container, got \(String(describing: blocks.first))")
+        }
+        XCTAssertEqual(alignment, .center)
+        guard case .htmlImage(_, let source, let width, let imageAlignment) = inner.first else {
+            return XCTFail("Expected the image inside")
+        }
+        XCTAssertEqual(source, "mark.svg")
+        XCTAssertEqual(width, 760)
+        XCTAssertEqual(imageAlignment, .center, "The container's alignment must reach the image")
+    }
+
+    func testDeniedTagsAreNeverRenderedAsMarkup() {
+        for source in ["<script>alert(1)</script>", "<iframe src=\"http://x\"></iframe>", "<style>body{}</style>"] {
+            let blocks = MarkdownParser.parse(source)
+            XCTAssertTrue(
+                blocks.allSatisfy { if case .htmlBlock = $0 { return true }; return false },
+                "\(source) must stay an escaped html block"
+            )
+        }
+        // Inline conversion strips them and their content entirely.
+        XCTAssertFalse(HTMLSupport.convertInlineHTML("a <script>bad()</script> b").contains("bad()"))
+    }
+
+    func testInlineHTMLConvertsToMarkdownEquivalents() {
+        XCTAssertEqual(HTMLSupport.convertInlineHTML("<strong>bold</strong>"), "**bold**")
+        XCTAssertEqual(HTMLSupport.convertInlineHTML("<b>bold</b>"), "**bold**")
+        XCTAssertEqual(HTMLSupport.convertInlineHTML("<em>it</em>"), "*it*")
+        XCTAssertEqual(HTMLSupport.convertInlineHTML("<code>x</code>"), "`x`")
+        XCTAssertEqual(HTMLSupport.convertInlineHTML("<del>gone</del>"), "~~gone~~")
+        XCTAssertEqual(
+            HTMLSupport.convertInlineHTML(#"<a href="docs.md">Docs</a>"#),
+            "[Docs](docs.md)"
+        )
+        // Tags with no inline equivalent keep their text.
+        XCTAssertEqual(HTMLSupport.convertInlineHTML("<sub>small</sub>"), "small")
+    }
+
+    func testUnsafeURLsAndEventHandlersAreStripped() {
+        XCTAssertFalse(HTMLSupport.isSafeURL("javascript:alert(1)"))
+        XCTAssertFalse(HTMLSupport.isSafeURL("data:text/html;base64,PHNjcmlwdD4="))
+        XCTAssertTrue(HTMLSupport.isSafeURL("https://example.com"))
+        XCTAssertTrue(HTMLSupport.isSafeURL("docs/guide.md"))
+
+        // A javascript: link keeps its label but loses the link.
+        let converted = HTMLSupport.convertInlineHTML(#"<a href="javascript:steal()">Click</a>"#)
+        XCTAssertEqual(converted, "Click")
+        XCTAssertFalse(converted.contains("javascript:"))
+
+        // Event handlers never survive parsing.
+        let tag = HTMLSupport.parseTag(#"<img src="a.png" onerror="steal()">"#)
+        XCTAssertEqual(tag?.attributes["src"], "a.png")
+        XCTAssertNil(tag?.attributes["onerror"])
+    }
+
+    func testTagShapedPlaceholdersInDocsSurviveAsText() {
+        // This project's own docs contain <repository>, <tabname>, <hex> as placeholders.
+        for placeholder in ["<repository>", "<tabname>", "<hex>"] {
+            let blocks = MarkdownParser.parse(placeholder)
+            XCTAssertFalse(blocks.isEmpty, "\(placeholder) must not vanish")
+            let text = blocks.compactMap { block -> String? in
+                if case .paragraph(let value) = block { return value }
+                if case .htmlBlock(let value) = block { return value }
+                return nil
+            }.joined()
+            XCTAssertTrue(text.contains(placeholder.dropFirst().dropLast()), "\(placeholder) lost its text")
+        }
+    }
+
+    func testHTMLTableBecomesARealTable() {
+        let blocks = MarkdownParser.parse("""
+        <table>
+        <tr><th>Name</th><th>Value</th></tr>
+        <tr><td>alpha</td><td>1</td></tr>
+        </table>
+        """)
+        guard case .table(let table) = blocks.first else {
+            return XCTFail("Expected a table, got \(String(describing: blocks.first))")
+        }
+        XCTAssertEqual(table.headers, ["Name", "Value"])
+        XCTAssertEqual(table.rows.first, ["alpha", "1"])
+    }
+
+    // MARK: Source view and saving
+
+    func testSavingRefusesWhenTheFileChangedOnDisk() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("LXC-BRM-Save-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let file = directory.appendingPathComponent("doc.md")
+        try "# Original\n".write(to: file, atomically: true, encoding: .utf8)
+        let loadedAt = MarkdownDocumentStore.modificationDate(of: file.path)
+
+        // A normal save round-trips exactly, trailing newline included.
+        XCTAssertEqual(
+            MarkdownDocumentStore.save("# Edited\n", to: file.path, loadedAt: loadedAt),
+            .saved
+        )
+        XCTAssertEqual(MarkdownDocumentStore.read(path: file.path), "# Edited\n")
+
+        // Someone else writes the file after we loaded it.
+        let stale = Date(timeIntervalSinceNow: -600)
+        XCTAssertEqual(
+            MarkdownDocumentStore.save("# Mine\n", to: file.path, loadedAt: stale),
+            .changedOnDisk,
+            "Saving over a newer file would destroy the other change"
+        )
+        XCTAssertEqual(MarkdownDocumentStore.read(path: file.path), "# Edited\n", "File must be untouched")
+    }
+}

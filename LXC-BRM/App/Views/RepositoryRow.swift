@@ -3,6 +3,8 @@ import SwiftUI
 struct RepositoryRow: View {
     let repository: Repository
     @ObservedObject var store: RepositoryStore
+    /// The name always shows; only the path is optional.
+    var showsPath: Bool = true
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
@@ -13,10 +15,13 @@ struct RepositoryRow: View {
                     Text(repository.name)
                         .font(.headline)
                 }
-                Text(repository.source.displayPath)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                if showsPath {
+                    Text(repository.source.displayPath)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
                 Text("Last accessed \(repository.lastAccessed.relativeDescription)")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)

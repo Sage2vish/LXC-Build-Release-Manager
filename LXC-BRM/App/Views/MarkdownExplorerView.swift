@@ -12,6 +12,21 @@ struct MarkdownExplorerView: View {
     @State private var filterText = ""
     @State private var isScanning = false
     @State private var scanTask: Task<Void, Never>?
+    @State private var viewMode: ViewMode = .preview
+    @State private var isEditing = false
+    @State private var sourceText = ""
+    @State private var draftText = ""
+    @State private var loadedAt: Date?
+    @State private var saveError: String?
+
+    /// Mutually exclusive by construction — there is no state where both are active.
+    enum ViewMode: String, CaseIterable, Identifiable {
+        case preview = "Preview"
+        case source = "Source"
+        var id: String { rawValue }
+    }
+
+    private var hasUnsavedChanges: Bool { isEditing && draftText != sourceText }
 
     private var filteredTree: [MarkdownNode] {
         MarkdownFileTree.filter(tree, term: filterText)
@@ -25,9 +40,9 @@ struct MarkdownExplorerView: View {
     var body: some View {
         HSplitView {
             explorer
-                .frame(minWidth: 220, idealWidth: 300, maxWidth: 460)
+                .frame(minWidth: 170, idealWidth: 280, maxWidth: 460)
             document
-                .frame(minWidth: 380)
+                .frame(minWidth: 260)
         }
         .frame(minHeight: 420)
         .task(id: repository.id) { await rescan() }
@@ -89,7 +104,12 @@ struct MarkdownExplorerView: View {
             }
         }
         .padding(12)
-        .onChange(of: selectedPath) { _, newValue in
+        .onChange(of: selectedPath) { oldValue, newValue in
+            // Switching files must not silently throw away an edit.
+            if hasUnsavedChanges, !confirmDiscardIfNeeded() {
+                selectedPath = oldValue
+                return
+            }
             loadDocument(path: newValue)
         }
     }
@@ -102,12 +122,21 @@ struct MarkdownExplorerView: View {
             VStack(alignment: .leading, spacing: 0) {
                 documentHeader(node)
                 Divider()
+                if let saveError {
+                    Label(saveError, systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .padding(.horizontal, 12)
+                        .padding(.top, 6)
+                }
                 if let documentError {
                     ContentUnavailableView(
                         "Could Not Open Document",
                         systemImage: "exclamationmark.triangle",
                         description: Text(documentError)
                     )
+                } else if viewMode == .source {
+                    MarkdownSourceView(text: sourceText, isEditing: isEditing, draft: $draftText)
                 } else {
                     ScrollView {
                         MarkdownRenderedView(
@@ -130,16 +159,69 @@ struct MarkdownExplorerView: View {
     }
 
     private func documentHeader(_ node: MarkdownNode) -> some View {
-        HStack(alignment: .firstTextBaseline) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(node.name).font(.headline)
-                Text(node.relativePath)
-                    .font(.caption.monospaced())
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(node.name).font(.headline)
+                    Text(node.relativePath)
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                }
+                Spacer()
+                headerActions(node)
             }
-            Spacer()
+
+            // Same segmented style as the tab picker above.
+            Picker("", selection: $viewMode) {
+                ForEach(ViewMode.allCases) { mode in
+                    Text(mode.rawValue).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(maxWidth: 220)
+            .accessibilityLabel("Document view mode")
+            .onChange(of: viewMode) { _, newValue in
+                // Editing only exists inside Source.
+                if newValue == .preview, !confirmDiscardIfNeeded() {
+                    viewMode = .source
+                    return
+                }
+                if newValue == .preview { isEditing = false }
+            }
+        }
+        .padding(12)
+    }
+
+    @ViewBuilder
+    private func headerActions(_ node: MarkdownNode) -> some View {
+        if isEditing {
+            Button("Cancel") {
+                draftText = sourceText
+                isEditing = false
+                saveError = nil
+            }
+            .accessibilityLabel("Cancel editing")
+
+            Button("Save") { save(node) }
+                .buttonStyle(.borderedProminent)
+                .disabled(draftText == sourceText)
+                .keyboardShortcut("s", modifiers: [.command])
+                .accessibilityLabel("Save document")
+        } else {
+            // Edit is reachable only from Source: Preview is a reader and must never write.
+            if viewMode == .source {
+                Button {
+                    draftText = sourceText
+                    saveError = nil
+                    isEditing = true
+                } label: {
+                    Label("Edit", systemImage: "pencil")
+                }
+                .accessibilityLabel("Edit document source")
+            }
             Button {
                 NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: node.path)])
             } label: {
@@ -154,7 +236,38 @@ struct MarkdownExplorerView: View {
             }
             .accessibilityLabel("Copy document path")
         }
-        .padding(12)
+    }
+
+    private func save(_ node: MarkdownNode) {
+        switch MarkdownDocumentStore.save(draftText, to: node.path, loadedAt: loadedAt) {
+        case .saved:
+            sourceText = draftText
+            documentBlocks = MarkdownParser.parse(draftText)
+            loadedAt = MarkdownDocumentStore.modificationDate(of: node.path)
+            isEditing = false
+            saveError = nil
+        case .changedOnDisk:
+            saveError = "This file changed on disk since it was opened. Reload it before saving, or your edit would overwrite that change."
+        case .failed(let reason):
+            saveError = "Could not save: \(reason)"
+        }
+    }
+
+    /// Returns false when the user chose to keep editing.
+    private func confirmDiscardIfNeeded() -> Bool {
+        guard hasUnsavedChanges else { return true }
+        let alert = NSAlert()
+        alert.messageText = "Discard unsaved changes?"
+        alert.informativeText = "This document has edits that have not been saved."
+        alert.addButton(withTitle: "Discard")
+        alert.addButton(withTitle: "Keep Editing")
+        alert.alertStyle = .warning
+        if alert.runModal() == .alertFirstButtonReturn {
+            draftText = sourceText
+            isEditing = false
+            return true
+        }
+        return false
     }
 
     // MARK: Loading
@@ -191,10 +304,15 @@ struct MarkdownExplorerView: View {
         guard let path, let node = findNode(path: path, in: tree), !node.isDirectory else { return }
 
         // The file can be deleted or replaced between the scan and this read.
-        guard let source = try? String(contentsOfFile: path, encoding: .utf8) else {
+        guard let source = MarkdownDocumentStore.read(path: path) else {
             documentError = "The file could not be read as UTF-8 text, or it is no longer at \(path)."
             return
         }
+        sourceText = source
+        draftText = source
+        loadedAt = MarkdownDocumentStore.modificationDate(of: path)
+        isEditing = false
+        saveError = nil
         documentBlocks = MarkdownParser.parse(source)
     }
 

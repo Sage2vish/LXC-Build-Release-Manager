@@ -1,12 +1,55 @@
-# LXC Build Manager Build Screen Plan Todo
+# Plan — Main Panel (centre)
 
-Scope: implement the Build tab and center workspace only.
+> The **main panel** is the centre column of the window: the repository header, the tab picker,
+> and whatever the selected tab shows — Build, Logs, History, Overview, Docs, Settings.
+> The other three regions have their own plans:
+> [left sidebar](Plan-LeftSidebar-todo.md) · [right Detail View panel](Plan-DetailViewPanel-todo.md) ·
+> [bottom status bar](Plan-StatusBar-todo.md).
+>
+> This file merges the former `BuildScreen-plan-todo.md` and `BuildScreen-plan-todo_OLD.md`.
+> Both are superseded by it; nothing from either was dropped.
 
-Already done and out of scope:
-- [x] Left sidebar shell/navigation frame
-- [x] Right sidebar shell/detail frame
-- [x] Top repository header shell
-- [x] Overall app chrome, spacing, and global layout scaffolding
+## Feature list — what the main panel does today
+
+Kept as a running feature list, not just a checklist, so it doubles as the "what we built" record.
+
+| Area | State |
+| --- | --- |
+| Repository header — name, connection badge, local folder, GitHub origin, Reveal/Terminal/Copy | Shipped |
+| Tab picker — Build, Logs, History, Overview, Docs, Settings | Shipped |
+| Build — script table, Auto Find, Add Script/Folder, Refresh | Shipped |
+| Build — live output pane with filters, search, auto-scroll, maximize, separate window, save | Shipped |
+| Logs — saved log viewing from history | Shipped |
+| History — per-run records, click through to the log | Shipped |
+| Overview — repository summary and build statistics | Shipped |
+| Docs — markdown explorer and Preview/Source viewer | Shipped |
+| Settings — pin, remove, GitHub origin | Shipped |
+
+## 01. Visual polish — live output and the scripts table
+
+Raised after using the screen: the live output area reads as a plain square block, visually
+unrelated to the panel above it, and the scripts table's header does not read as a table header.
+
+- [ ] Give the **Live Output** section the same card treatment as **Available Build Scripts** —
+      same corner radius, border, and background family, so the two read as siblings rather than
+      one card and one bare rectangle.
+- [ ] Give Live Output a title row matching the Available Build Scripts title, with its own
+      subtitle line in the same style.
+- [ ] Tint the subtitle line under each section title as a distinct bar, so the section title,
+      its subtitle, and the content below are visually separated.
+- [ ] Give the scripts **table header row** its own background, distinct from the rows beneath it.
+- [ ] Draw visible column separators in the table so the columns line up and can be read across.
+- [ ] Align the header columns to the row columns exactly — they currently drift because the row
+      and header set their widths independently.
+- [ ] Keep every change working in light and dark, and at the minimum panel width.
+- [ ] Do not regress the window's minimum width, which was just brought down from 1853 to 1513.
+
+
+## Carried over from the retired OLD checklist
+
+- [ ] Add accessibility checks and additional visual verification before calling the screen
+      release-perfect. *(Attempted; the AppleScript probe measured role descriptions rather than
+      accessible names, so it is unproven. Needs VoiceOver, Accessibility Inspector, or XCUITest.)*
 
 ## 1. Discovery and data model
 
