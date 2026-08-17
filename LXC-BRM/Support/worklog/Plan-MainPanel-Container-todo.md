@@ -30,6 +30,7 @@ Each has its own plan. Nothing about a tab's behaviour belongs in this file.
 
 ## 01. Open items
 
+- [x] Tinted subtitle bars under both section titles, matching between Available Build Scripts and Live Output.
 - [ ] Apply the shared `SectionCard` to the remaining tabs' sections, so History, Overview and
       Settings match Build rather than each inventing their own surface.
 - [ ] Verify the card surface in dark mode; it has only been checked in light.
@@ -41,5 +42,5 @@ Each has its own plan. Nothing about a tab's behaviour belongs in this file.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 4 / 4 | Done |
-| 01 — Open items | 0 / 3 | Open |
-| **Total** | **4 / 7** | **In progress** |
+| 01 — Open items | 1 / 4 | In progress |
+| **Total** | **5 / 8** | **In progress** |

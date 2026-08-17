@@ -28,10 +28,19 @@ Every file added during this work has needed that by hand, and a missed entry sh
 - [x] `Localizable.xcstrings` registered as a resource, and Hindi added to `knownRegions`.
 - [x] `*.profraw` / `*.profdata` ignored, so `xcodebuild test` stops dropping coverage artifacts
       into the project root.
+- [x] **Fixed a structural mess of my own making.** Every file added during this work was
+      anchored to the Views group and carried no `name` attribute, so Xcode displayed the full
+      path (`App/Models/HTMLSupport`) and filed Models, Services and Resources files all under
+      Views. All 31 references now carry a display name and sit in their real group, Resources
+      has its own group, and the dangling `BUILD_SCREEN_TODO.md` reference is gone.
 - [ ] Add a check that every `.swift` file under `App/` and `Tests/` appears in the right target,
       so a missed registration is caught before it becomes a confusing scope error.
 - [ ] Decide whether to migrate to a filesystem-synchronised group, which would remove this whole
       class of problem — weighing that against the churn to an actively edited project file.
+- [x] Stop shipping reference material inside the app. The bundle carried a recursive copy of the
+      app itself (32MB), the staged `.dmg`, fifteen design mockups, the requirements PDF, the
+      shell scripts and every markdown plan — **56MB down to 11MB**. `DEVELOPMENT_ASSET_PATHS`
+      removed; Resources now holds only the background asset and the Hindi strings.
 
 ## 02. Build settings
 
@@ -57,8 +66,8 @@ Every file added during this work has needed that by hand, and a missed entry sh
 
 | Section | Checked / Total | Status |
 | --- | --- | --- |
-| 01 — File registration | 3 / 5 | In progress |
+| 01 — File registration | 5 / 7 | In progress |
 | 02 — Build settings | 0 / 3 | Open |
 | 03 — Test target | 0 / 2 | Open |
 | 04 — Hygiene | 0 / 3 | Open |
-| **Total** | **3 / 13** | **In progress** |
+| **Total** | **5 / 15** | **In progress** |

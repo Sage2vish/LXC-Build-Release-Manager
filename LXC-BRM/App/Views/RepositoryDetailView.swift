@@ -72,15 +72,27 @@ struct RepositoryDetailView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            header
-            Picker("", selection: $selectedTab) {
-                ForEach(DetailTab.allCases) { tab in
-                    Text(tab.rawValue).tag(tab)
+            // Header and toolbar are one chrome band above the work area, so they read as
+            // window furniture rather than as content. Reduce transparency falls back to a
+            // solid surface rather than ignoring the setting.
+            VStack(alignment: .leading, spacing: 0) {
+                header
+                Picker("", selection: $selectedTab) {
+                    ForEach(DetailTab.allCases) { tab in
+                        Text(tab.rawValue).tag(tab)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .padding([.horizontal, .bottom])
+            }
+            .background {
+                if preferencesStore.preferences.reduceTransparency {
+                    Color(nsColor: .windowBackgroundColor)
+                } else {
+                    Rectangle().fill(.regularMaterial)
                 }
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .padding([.horizontal, .bottom])
 
             // One rule, not a box: the tabs read as a header for whatever is below them.
             Divider()
@@ -441,6 +453,9 @@ struct RepositoryDetailView: View {
                         Text("Auto-detected from /\(preferencesStore.preferences.defaultBuildFolderName)/\(preferencesStore.preferences.scriptsSubdirectory)")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(.tint.opacity(0.10), in: Capsule())
                     }
                     Spacer()
                     Button { isAutoFindingScripts = true } label: {
@@ -499,9 +514,10 @@ struct RepositoryDetailView: View {
                 }
 
                 HStack(spacing: 12) {
-                    // The leading 20pt matches the row's status icon, so the header columns
-                    // line up with the row columns instead of drifting.
-                    Color.clear.frame(width: 20)
+                    // Matches the row's status icon so the columns line up. Height is fixed
+                    // because a Color with only its width constrained expands to fill all
+                    // available vertical space and inflates the whole header row.
+                    Color.clear.frame(width: 20, height: 1)
                     Text("Script").frame(minWidth: 130, maxWidth: .infinity, alignment: .leading)
                     columnSeparator
                     Text("Source").frame(minWidth: 80, idealWidth: 122, maxWidth: 140, alignment: .leading)

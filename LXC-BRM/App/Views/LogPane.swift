@@ -78,6 +78,10 @@ struct LogPane: View {
                     Text(isRunning ? "Streaming output from the running build" : "Output from the most recent build")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        // Same tinted subtitle bar as Available Build Scripts.
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(.tint.opacity(0.10), in: Capsule())
                 }
                 Spacer()
                 Picker("", selection: $filter) {

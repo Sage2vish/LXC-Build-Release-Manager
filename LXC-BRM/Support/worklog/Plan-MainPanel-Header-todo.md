@@ -30,9 +30,8 @@ actions that act on the repository as a whole.
 The header currently sits on the flat window background, so it reads as part of the content
 rather than as a band above it.
 
-- [ ] Give the header a translucent material background so it reads as a distinct band.
-- [ ] Respect the existing **Reduce transparency** preference — fall back to a solid surface
-      when it is on, rather than ignoring the setting.
+- [x] Give the header a translucent material background so it reads as a distinct band. Header and toolbar share one chrome band.
+- [x] Respect the existing **Reduce transparency** preference — falls back to `windowBackgroundColor`.
 - [ ] Keep the text legible over the material in both light and dark.
 - [ ] Make sure the material does not fight the accent colour used by the three action buttons.
 - [ ] Verify at the minimum panel width, where the actions are closest to the title.
@@ -49,6 +48,6 @@ rather than as a band above it.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 6 / 6 | Done |
-| 01 — Glass effect | 0 / 5 | Open |
+| 01 — Glass effect | 2 / 5 | In progress |
 | 02 — Open items | 0 / 2 | Open |
-| **Total** | **6 / 13** | **In progress** |
+| **Total** | **8 / 13** | **In progress** |

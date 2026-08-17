@@ -23,9 +23,8 @@ six tabs the container shows.
 
 ## 01. Glass effect
 
-- [ ] Give the toolbar band the same translucent material as the header, so the two read as one
-      chrome region above the content.
-- [ ] Respect the **Reduce transparency** preference.
+- [x] Give the toolbar band the same translucent material as the header — they are now one band.
+- [x] Respect the **Reduce transparency** preference.
 - [ ] Keep the selected segment clearly readable over the material.
 - [ ] Verify in light and dark, and at the minimum panel width where six segments are tightest.
 
@@ -40,6 +39,6 @@ six tabs the container shows.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 5 / 5 | Done |
-| 01 — Glass effect | 0 / 4 | Open |
+| 01 — Glass effect | 2 / 4 | In progress |
 | 02 — Open items | 0 / 2 | Open |
-| **Total** | **5 / 11** | **In progress** |
+| **Total** | **7 / 11** | **In progress** |
