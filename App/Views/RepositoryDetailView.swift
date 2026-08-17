@@ -163,20 +163,28 @@ struct RepositoryDetailView: View {
             }
         }
         .inspector(isPresented: showInspector) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    // Parameters and the selected script's full path moved here from the
-                    // centre column, so the Detail View Window carries the detail.
-                    if case .success(let scripts) = scanResult,
-                       let selectedScript = selectedScript(in: scripts) {
-                        selectedScriptPathCard(for: selectedScript)
-                        buildParametersPanel(for: selectedScript)
-                    }
-                    buildStatusCard
-                    buildHistoryCard
-                    quickActionsCard
+            ZStack {
+                if preferencesStore.preferences.reduceTransparency {
+                    Color(nsColor: .windowBackgroundColor)
+                } else {
+                    Rectangle().fill(.regularMaterial)
                 }
-                .padding(16)
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        // Parameters and the selected script's full path moved here from the
+                        // centre column, so the Detail View Window carries the detail.
+                        if case .success(let scripts) = scanResult,
+                           let selectedScript = selectedScript(in: scripts) {
+                            selectedScriptPathCard(for: selectedScript)
+                            buildParametersPanel(for: selectedScript)
+                        }
+                        buildStatusCard
+                        buildHistoryCard
+                        quickActionsCard
+                    }
+                    .padding(16)
+                }
             }
             // Wide enough to host parameter controls and a wrapped command preview.
             // These minimums add straight into the window's own minimum width. Kept low

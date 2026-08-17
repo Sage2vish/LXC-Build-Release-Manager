@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**622 of 815 items done — 193 still pending (76%).**
+**623 of 816 items done — 193 still pending (76%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
-| The window, by region | 57 | 35 | In progress |
+| The window, by region | 58 | 35 | In progress |
 | Inside the main panel | 20 | 28 | In progress |
 | The six tabs, inside the container | 258 | 23 | In progress |
 | Features | 186 | 41 | In progress |
 | Engineering, quality, and release | 101 | 66 | In progress |
-| **All areas** | **622** | **193** | **In progress** |
+| **All areas** | **623** | **193** | **In progress** |
 
 ## The plans, by area
 
@@ -43,9 +43,9 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 | [Plan-AppShellUI-todo](Plan-AppShellUI-todo.md) | Whole window — background, material and glass language, theme and accent | 3 | 19 | In progress |
 | [Plan-LeftSidebar-todo](Plan-LeftSidebar-todo.md) | Left sidebar — repositories, recents, add/remove, the footer buttons | 33 | 2 | In progress |
 | [Plan-MainPanel-todo](Plan-MainPanel-todo.md) | Main panel — index over the three bands and six tabs below | — | — | Index only |
-| [Plan-DetailViewPanel-todo](Plan-DetailViewPanel-todo.md) | Detail View panel — the right inspector and its cards | 12 | 6 | In progress |
+| [Plan-DetailViewPanel-todo](Plan-DetailViewPanel-todo.md) | Detail View panel — the right inspector and its cards | 13 | 6 | In progress |
 | [Plan-StatusBar-todo](Plan-StatusBar-todo.md) | Status bar — repository, branch, platform, auto-detect chips | 9 | 8 | In progress |
-| **The window, by region — subtotal** | | **57** | **35** | **In progress** |
+| **The window, by region — subtotal** | | **58** | **35** | **In progress** |
 
 ### Inside the main panel
 

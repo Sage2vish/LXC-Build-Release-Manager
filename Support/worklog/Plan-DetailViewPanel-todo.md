@@ -27,6 +27,7 @@ current build status, recent history, and the quick actions.
 - [x] Resolved command wraps instead of truncating.
 - [x] Column widened from a 340pt cap to min 320 / ideal 460 / max 900.
 - [x] Behaves when no repository is selected.
+- [x] Inspector keeps a glass-like material surface even when the app shell background image changes, so the right panel still reads as frosted rather than flat.
 
 ## 01. The window will not resize while the panel is open — BUG
 
