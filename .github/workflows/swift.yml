@@ -48,3 +48,6 @@ jobs:
             -configuration Debug \
             -destination 'platform=macOS' \
             CODE_SIGNING_ALLOWED=NO
+
+      - name: Plan index is current
+        run: python3 Support/build-release/scripts/update-plan-index.py --check

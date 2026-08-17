@@ -312,7 +312,7 @@ files — are in [the worklog README](Support/worklog/README.md) and
     <td bgcolor="#EEF4FF"><strong>0.1.2</strong><br><sub>current product line</sub></td>
     <td bgcolor="#EEF4FF"><strong>Native macOS</strong><br><sub>Swift 6, SwiftUI, AppKit, Foundation</sub></td>
     <td bgcolor="#FFF1EE"><strong>Tagged build</strong><br><sub><code>release-2026-08-16</code></sub></td>
-    <td bgcolor="#ECFDF5"><strong>Verification</strong><br><sub>Debug build + 9 tests, 0 failures</sub></td>
+    <td bgcolor="#ECFDF5"><strong>Verification</strong><br><sub>Debug build + 80 tests, 0 failures</sub></td>
   </tr>
 </table>
 

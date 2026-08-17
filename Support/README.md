@@ -37,7 +37,7 @@ The Support tree makes that loop understandable and repeatable. It is intentiona
 
 | Signal | Current value |
 | --- | --- |
-| Product | LXC Build Release Manager Build Manager |
+| Product | LXC Build Release Manager |
 | Release line | `0.1.2` |
 | Tagged local release | `release-2026-08-16` |
 | Platform | macOS 15 or later |

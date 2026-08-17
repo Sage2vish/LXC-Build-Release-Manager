@@ -19,8 +19,32 @@ Every file added during this work has needed that by hand, and a missed entry sh
 | Swift version | 6.0 (both target configs) | Project-level Release still says 5.0; the target overrides it |
 | Third-party packages | None | Deliberate; see the refactoring plan's non-goals |
 | Code signing | Disabled for Debug | `CODE_SIGNING_ALLOWED=NO` |
-| Targets | App + `LXC-Build-Release-ManagerTests` | No UI-test target |
+| Targets | `LXC-Build-Release-Manager` + `LXC-Build-Release-ManagerTests` | No UI-test target |
 | Known regions | en, hi | |
+| Project location | Repository root | Flattened 2026-08-18; there is no container folder |
+| Scheme | `LXC-Build-Release-Manager`, **shared** | Added 2026-08-18; before that Xcode auto-generated a private one |
+| `Support/` in the navigator | Filesystem-synchronized group | No target membership — documentation is never an app resource |
+
+## 00. Flatten and rename — done 2026-08-18
+
+The project moved to the repository root and the `LXC-BRM` codename was retired. Recorded in
+[`../context/decisions/decision-2026-08-18.md`](../context/decisions/decision-2026-08-18.md) §6–§9.
+
+- [x] Move `App/`, `Tests/`, `Support/` and the project to the repository root. Every path in
+      `project.pbxproj` is project-relative, so moving the tree together left them valid.
+- [x] Rename the project, both targets, the module, the app entry file, and the bundle
+      identifiers off the codename.
+- [x] Add a **shared** scheme. There was none: `xcodebuild -scheme` only worked here because
+      Xcode had generated a private one under `xcuserdata`, which is exactly why CI could not be
+      trusted.
+- [x] Restore the workspace under the new name, without the dangling `BUILD_SCREEN_TODO.md`
+      reference it used to carry.
+- [x] Migrate `~/Library/Application Support/LXC-BRM/` to the new folder name on first launch,
+      guarded so it runs only when the new folder does not exist yet.
+- [x] Verified: clean Debug build, 80 tests / 0 failures, and `release.sh` producing
+      `LXC-Build-Release-Manager-0.1.2.dmg`.
+- [ ] Confirm the project opens cleanly in the Xcode UI — groups, scheme selector, and the
+      synchronized Support tree — since every check so far has been `xcodebuild`, not the IDE.
 
 ## 01. File registration
 
@@ -35,8 +59,13 @@ Every file added during this work has needed that by hand, and a missed entry sh
       has its own group, and the dangling `BUILD_SCREEN_TODO.md` reference is gone.
 - [ ] Add a check that every `.swift` file under `App/` and `Tests/` appears in the right target,
       so a missed registration is caught before it becomes a confusing scope error.
-- [ ] Decide whether to migrate to a filesystem-synchronised group, which would remove this whole
-      class of problem — weighing that against the churn to an actively edited project file.
+- [x] **Decided for `Support/`:** it is now a `PBXFileSystemSynchronizedRootGroup`, so the whole
+      documentation tree shows in the navigator and stays correct without hand-maintained entries.
+      The old group listed 34 files and had already gone stale. It belongs to no target, and the
+      built bundle was checked afterwards — only `hi.lproj` and the background asset.
+- [ ] Decide the same question for `App/` and `Tests/`, where the trade-off is different: a
+      synchronized group there changes what compiles, so it needs the target-membership check
+      above first.
 - [x] Stop shipping reference material inside the app. The bundle carried a recursive copy of the
       app itself (32MB), the staged `.dmg`, fifteen design mockups, the requirements PDF, the
       shell scripts and every markdown plan — **56MB down to 11MB**. `DEVELOPMENT_ASSET_PATHS`
@@ -66,8 +95,9 @@ Every file added during this work has needed that by hand, and a missed entry sh
 
 | Section | Checked / Total | Status |
 | --- | --- | --- |
-| 01 — File registration | 5 / 7 | In progress |
+| 00 — Flatten and rename | 6 / 7 | Done, pending an IDE open |
+| 01 — File registration | 6 / 8 | In progress |
 | 02 — Build settings | 0 / 3 | Open |
 | 03 — Test target | 0 / 2 | Open |
 | 04 — Hygiene | 0 / 3 | Open |
-| **Total** | **5 / 15** | **In progress** |
+| **Total** | **12 / 23** | **In progress** |
