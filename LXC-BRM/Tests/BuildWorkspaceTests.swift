@@ -498,6 +498,24 @@ final class BuildWorkspaceTests: XCTestCase {
         )
     }
 
+    // MARK: Shared build presentation
+
+    func testBuildPresentationFormatsDurationsAndStatuses() {
+        XCTAssertEqual(BuildPresentation.durationDescription(0), "0s")
+        XCTAssertEqual(BuildPresentation.durationDescription(45), "45s")
+        XCTAssertEqual(BuildPresentation.durationDescription(60), "1m 0s")
+        XCTAssertEqual(BuildPresentation.durationDescription(90), "1m 30s")
+        XCTAssertEqual(BuildPresentation.durationDescription(3_661), "61m 1s")
+        // A clock skew should not render "-1m -30s".
+        XCTAssertEqual(BuildPresentation.durationDescription(-90), "0s")
+
+        XCTAssertEqual(BuildPresentation.symbolName(for: .success), "checkmark.circle.fill")
+        XCTAssertEqual(BuildPresentation.symbolName(for: .failed), "xmark.circle.fill")
+        XCTAssertEqual(BuildPresentation.glyph(for: .success), "✓")
+        XCTAssertEqual(BuildPresentation.glyph(for: .cancelled), "⊘")
+        XCTAssertEqual(BuildPresentation.glyph(for: .failed), "✗")
+    }
+
     private func waitForRunner(_ runner: BuildRunner, timeout: Duration = .seconds(5)) async throws {
         let clock = ContinuousClock()
         let deadline = clock.now + timeout

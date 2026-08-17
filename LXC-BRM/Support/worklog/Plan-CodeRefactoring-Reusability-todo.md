@@ -119,7 +119,7 @@ The target is a direction, not permission to introduce layers without a consumer
 
 ### 04. Extract the App Shell and Repository Features
 
-- [ ] Reduce `ContentView.swift` to app-shell composition, sidebar selection, settings presentation, status bar placement, and dependency wiring.
+- [x] Reduce `ContentView.swift` to app-shell composition, sidebar selection, settings presentation, status bar placement, and dependency wiring.
 - [ ] Extract the repository sidebar composition and keep `RepositoryRow`, `RecentRepositoryRow`, and status-bar components reusable with injected stores.
 - [ ] Extract `RepositoryDetailView` into a feature coordinator/view model with a small, explicit dependency surface.
 - [ ] Extract the repository header, connection status, source actions, and repository settings into focused views.
@@ -139,14 +139,14 @@ The target is a direction, not permission to introduce layers without a consumer
 
 ### 06. Split Domain and Service Responsibilities
 
-- [ ] Split `BuildScript.swift` into focused files for script domain data, parameter definitions, command construction, validation, and path identity/location rules.
+- [x] Split `BuildScript.swift` into focused files for script domain data, parameter definitions, command construction, validation, and path identity/location rules.
 - [ ] Split `BuildScriptScanner` into local filesystem discovery, GitHub Contents API discovery, script metadata parsing, and result mapping.
 - [ ] Give local scanning and GitHub scanning a shared result contract while keeping remote scripts non-runnable.
 - [ ] Split `BuildRunner` into build lifecycle coordination, process transport/output buffering, timeout and process-tree control, and completion recording where the seams are proven useful.
 - [ ] Keep `BuildRunnerRegistry` responsible only for per-repository runner ownership and concurrency lookup.
 - [ ] Split `LogFileService` into log path resolution, formatting, storage/pruning, reading, and AppKit export presentation.
-- [ ] Move shared status symbols, colors, duration formatting, relative dates, and display labels into named presentation utilities instead of private view helpers.
-- [ ] Keep `BuildScriptFolderImport` and `DeepScriptSearch` reusable as pure decision/walk services with injected filesystem access where needed.
+- [x] Move shared status symbols, colors, duration formatting, relative dates, and display labels into named presentation utilities instead of private view helpers.
+- [x] Keep `BuildScriptFolderImport` and `DeepScriptSearch` reusable as pure decision/walk services with injected filesystem access where needed.
 
 ### 07. Refactor Preferences Without Breaking User Data
 
@@ -205,9 +205,9 @@ The refactor is complete only when all of the following are true:
 | Baseline Debug build | Complete |
 | Baseline tests | Complete: 14 passed |
 | Dependency boundaries | Pending |
-| Feature extraction | Logs + script row extracted; detail view pending |
+| Feature extraction | ContentView is now a 324-line shell; per-tab split pending |
 | Persistence and platform seams | Persistence done; platform gateways pending |
-| Test expansion | 20 passing (was 14) |
+| Test expansion | 21 passing (was 14) |
 | Final build, test, GUI, and release verification | Pending |
 
 _This is the refactoring execution ledger. Only mark an implementation line `[x]` after the complete boundary, behavior, and verification condition is satisfied._

@@ -44,11 +44,3 @@ struct RepositoryRow: View {
         .padding(.vertical, 4)
     }
 }
-
-extension Date {
-    var relativeDescription: String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: self, relativeTo: Date())
-    }
-}
