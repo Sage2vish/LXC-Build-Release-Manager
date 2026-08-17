@@ -11,14 +11,40 @@ struct MarkdownRenderedView: View {
     /// Folder of the document, used to resolve relative image and link paths.
     let baseURL: URL?
 
+    /// Scaling from the app's text-size preference.
+    @Environment(\.appTextScale) private var textScale
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 14 * textScale) {
             ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
                 view(for: block)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .textSelection(.enabled)
+        // Relative links in a document are relative to that document's folder, not to the app.
+        // Foundation hands us the raw destination, so resolve it here and refuse anything
+        // that is not a file or an http(s) URL.
+        .environment(\.openURL, OpenURLAction { url in
+            guard let resolved = resolveLink(url) else { return .discarded }
+            NSWorkspace.shared.open(resolved)
+            return .handled
+        })
+    }
+
+    /// Turns a link destination into something safe to open.
+    ///
+    /// A bare `docs/guide.md` arrives as a relative URL with no scheme; without this it simply
+    /// fails to open. Anything that is not file/http/https is refused rather than handed to the
+    /// system.
+    private func resolveLink(_ url: URL) -> URL? {
+        if let scheme = url.scheme?.lowercased() {
+            guard ["http", "https", "file"].contains(scheme) else { return nil }
+            return url
+        }
+        guard let baseURL else { return nil }
+        let candidate = baseURL.appendingPathComponent(url.relativePath).standardizedFileURL
+        return FileManager.default.fileExists(atPath: candidate.path) ? candidate : nil
     }
 
     @ViewBuilder
@@ -115,14 +141,17 @@ struct MarkdownRenderedView: View {
     }
 
     private func headingFont(_ level: Int) -> Font {
+        let base: CGFloat
+        let weight: Font.Weight
         switch level {
-        case 1: return .system(size: 28, weight: .bold)
-        case 2: return .system(size: 22, weight: .bold)
-        case 3: return .system(size: 18, weight: .semibold)
-        case 4: return .system(size: 16, weight: .semibold)
-        case 5: return .system(size: 14, weight: .semibold)
-        default: return .system(size: 13, weight: .semibold)
+        case 1: base = 28; weight = .bold
+        case 2: base = 22; weight = .bold
+        case 3: base = 18; weight = .semibold
+        case 4: base = 16; weight = .semibold
+        case 5: base = 14; weight = .semibold
+        default: base = 13; weight = .semibold
         }
+        return .system(size: base * textScale, weight: weight)
     }
 
     @ViewBuilder

@@ -24,17 +24,30 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 
 | Region | Plan | Progress |
 | --- | --- | --- |
-| Left sidebar — repositories, recents, open, preferences button | [Plan-LeftSidebar-todo.md](Plan-LeftSidebar-todo.md) | 13 / 27 |
-| Main panel — header, tabs, Build/Logs/History/Overview/Docs/Settings | [Plan-MainPanel-todo.md](Plan-MainPanel-todo.md) | 146 / 155 |
-| Detail View panel — the right inspector | [Plan-DetailViewPanel-todo.md](Plan-DetailViewPanel-todo.md) | 7 / 18 |
+| Left sidebar — repositories, recents, open, preferences button | [Plan-LeftSidebar-todo.md](Plan-LeftSidebar-todo.md) | 25 / 27 |
+| Main panel — three bands, six tabs | [Plan-MainPanel-todo.md](Plan-MainPanel-todo.md) *(index)* | see below |
+| ├ Header (top) | [Plan-MainPanel-Header-todo.md](Plan-MainPanel-Header-todo.md) | 6 / 13 |
+| ├ Toolbar (tab picker) | [Plan-MainPanel-Toolbar-todo.md](Plan-MainPanel-Toolbar-todo.md) | 5 / 11 |
+| └ Container (work area) | [Plan-MainPanel-Container-todo.md](Plan-MainPanel-Container-todo.md) | 4 / 7 |
+| Detail View panel — the right inspector | [Plan-DetailViewPanel-todo.md](Plan-DetailViewPanel-todo.md) | 12 / 18 |
 | Status bar — the bottom strip | [Plan-StatusBar-todo.md](Plan-StatusBar-todo.md) | 9 / 16 |
+
+## The six tabs, inside the container
+
+| Tab | Plan | Progress |
+| --- | --- | --- |
+| Build | [Plan-Tab-Build-todo.md](Plan-Tab-Build-todo.md) | 146 / 146 ✅ |
+| Logs | [Plan-Tab-Logs-todo.md](Plan-Tab-Logs-todo.md) | 3 / 5 |
+| History | [Plan-Tab-History-todo.md](Plan-Tab-History-todo.md) | 4 / 7 |
+| Overview | [Plan-Tab-Overview-todo.md](Plan-Tab-Overview-todo.md) | 4 / 7 |
+| Docs | [Plan-MarkdownExplorer-todo.md](Plan-MarkdownExplorer-todo.md) | 75 / 85 |
+| Settings *(per-repository)* | [Plan-Tab-Settings-todo.md](Plan-Tab-Settings-todo.md) | 3 / 6 |
 
 ## Features
 
 | Feature | Plan | Progress |
 | --- | --- | --- |
 | Preferences window — all seven tabs and their wiring | [Plan-PreferenceScreen-todo.md](Plan-PreferenceScreen-todo.md) | see file |
-| Markdown Docs tab — explorer, viewer, HTML, Preview/Source | [Plan-MarkdownExplorer-todo.md](Plan-MarkdownExplorer-todo.md) | 46 / 77 |
 | Update checking — GitHub Releases, stable and beta channels | [Plan-Updates-todo.md](Plan-Updates-todo.md) | 22 / 23 |
 | Localization — English and Hindi | [Plan-Localization-todo.md](Plan-Localization-todo.md) | 19 / 19 ✅ |
 | Window layout — resizing, View menu, panel visibility | [Plan-WindowLayout-todo.md](Plan-WindowLayout-todo.md) | 90 / 90 ✅ |
@@ -44,6 +57,7 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 | Area | Plan | Progress |
 | --- | --- | --- |
 | Code refactoring and reusability | [Plan-CodeRefactoring-Reusability-todo.md](Plan-CodeRefactoring-Reusability-todo.md) | 23 / 61 |
+| Xcode project & IDE — target membership, build settings, schemes | [Plan-XcodeProject-todo.md](Plan-XcodeProject-todo.md) | 3 / 13 |
 | Architecture diagrams and context visuals | [Plan-ContextArchitectureVisuals-todo.md](Plan-ContextArchitectureVisuals-todo.md) | 25 / 25 ✅ |
 | The original dated master checklist | [todo-2026-08-16.md](todo-2026-08-16.md) | 75 / 78 |
 
@@ -53,7 +67,11 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 | --- | --- |
 | A repository row, the recents list, the open or preferences **button** | Left sidebar |
 | Anything **inside** the Preferences window | Preferences screen |
-| The header, the tabs, or any tab's content | Main panel |
+| The repo name, badge, paths, or Reveal/Terminal/Copy | Main panel → Header |
+| The tab picker or its divider | Main panel → Toolbar |
+| The work area's surface, padding, or card style | Main panel → Container |
+| What a specific tab shows or does | That tab's own plan |
+| A file not compiling, target membership, build settings | Xcode project |
 | The right inspector's cards, width, or visibility | Detail View panel |
 | The bottom strip | Status bar |
 | Rendering or browsing markdown | Markdown explorer |
@@ -69,6 +87,7 @@ and the other plan links to it rather than restating it.
 | `BuildScreen-plan-todo.md` | [Plan-MainPanel-todo.md](Plan-MainPanel-todo.md) |
 | `BuildScreen-plan-todo_OLD.md` | [Plan-MainPanel-todo.md](Plan-MainPanel-todo.md) |
 | `Plan-Sidebar-todo.md` | [Plan-LeftSidebar-todo.md](Plan-LeftSidebar-todo.md) — renamed, because the app has a right sidebar too |
+| The Build sections formerly inside `Plan-MainPanel-todo.md` | [Plan-Tab-Build-todo.md](Plan-Tab-Build-todo.md) — Main Panel is now an index only |
 
 ## Conventions
 

@@ -44,6 +44,10 @@ struct MarkdownExplorerView: View {
             document
                 .frame(minWidth: 260)
         }
+        // Makes it discoverable that the two panes can be resized.
+        .onHover { isOverDivider in
+            if isOverDivider { NSCursor.resizeLeftRight.push() } else { NSCursor.pop() }
+        }
         .frame(minHeight: 420)
         .task(id: repository.id) { await rescan() }
         .onDisappear { scanTask?.cancel() }
@@ -143,8 +147,11 @@ struct MarkdownExplorerView: View {
                             blocks: documentBlocks,
                             baseURL: URL(fileURLWithPath: node.path).deletingLastPathComponent()
                         )
-                        .padding(20)
-                        .frame(maxWidth: 900, alignment: .leading)
+                        .padding(24)
+                        // No fixed 900pt column: the document flows to the pane. The cap is
+                        // generous and only exists so a full-screen window does not produce
+                        // unreadably long lines.
+                        .frame(maxWidth: 1400, alignment: .leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
@@ -169,9 +176,7 @@ struct MarkdownExplorerView: View {
                         .lineLimit(1)
                         .truncationMode(.middle)
                 }
-                Spacer()
-
-                // One toolbar: the mode picker sits with the actions, not on its own row.
+                // The picker sits next to the title it controls, not pushed to the far right.
                 Picker("", selection: $viewMode) {
                     ForEach(ViewMode.allCases) { mode in
                         Text(mode.rawValue).tag(mode)
@@ -190,6 +195,7 @@ struct MarkdownExplorerView: View {
                     if newValue == .preview { isEditing = false }
                 }
 
+                Spacer()
                 headerActions(node)
             }
         }
@@ -236,6 +242,14 @@ struct MarkdownExplorerView: View {
                 Label("Copy Path", systemImage: "doc.on.doc")
             }
             .accessibilityLabel("Copy document path")
+
+            Button {
+                // Hands the file to whatever the user has set for .md — their editor, not ours.
+                NSWorkspace.shared.open(URL(fileURLWithPath: node.path))
+            } label: {
+                Label("Open in Editor", systemImage: "arrow.up.forward.app")
+            }
+            .accessibilityLabel("Open document in the default editor")
         }
     }
 

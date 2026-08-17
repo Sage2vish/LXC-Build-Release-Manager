@@ -22,19 +22,30 @@ struct MarkdownSourceView: View {
                 .accessibilityLabel("Markdown source editor")
         } else {
             ScrollView([.vertical, .horizontal]) {
-                HStack(alignment: .top, spacing: 10) {
-                    // Line numbers make it possible to point at a rendering problem.
+                HStack(alignment: .top, spacing: 0) {
+                    // A real gutter: its own surface, right-aligned dimmer numbers, and a rule
+                    // separating it from the text — the way an editor shows it.
                     Text(lineNumbers)
                         .font(.system(.callout, design: .monospaced))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.tertiary)
                         .multilineTextAlignment(.trailing)
+                        .frame(minWidth: 44, alignment: .trailing)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 12)
+                        .background(Color(nsColor: .controlBackgroundColor).opacity(0.6))
                         .accessibilityHidden(true)
+
+                    Rectangle()
+                        .fill(Color(nsColor: .separatorColor))
+                        .frame(width: 1)
+
                     Text(text)
                         .font(.system(.callout, design: .monospaced))
                         .textSelection(.enabled)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 12)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(12)
             }
             .accessibilityLabel("Markdown source")
         }

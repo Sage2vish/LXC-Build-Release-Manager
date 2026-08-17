@@ -2,6 +2,9 @@ import Foundation
 import XCTest
 @testable import LXC_BRM
 
+/// TODO: Add UI integration and manual settings click-through tests (see worklog).
+/// TODO: Add resilience tests for permission errors and runtime access denials (simulate unreadable folders/files).
+
 /// Covers the non-functional targets from the master checklist: scan speed, behaviour with
 /// 5-10+ repositories, and graceful handling of missing, unreachable, and malformed inputs.
 @MainActor
@@ -114,6 +117,9 @@ final class PerformanceAndResilienceTests: XCTestCase {
     }
 
     // MARK: Resilience
+
+    // TODO: Add test simulating permissions error (e.g., deny read access to scripts folder).
+    // TODO: Consider UI-level validation of error presentation for missing/corrupt input (not just logic).
 
     func testScanReportsMissingBuildFolderEmptyScriptsAndUnreadablePaths() throws {
         // No /build at all.
@@ -589,3 +595,6 @@ final class UpdateAndLanguageTests: XCTestCase {
         XCTAssertTrue(Bundle.main.localizations.contains("hi"))
     }
 }
+
+// TODO: Review for any preferences wired in UI but not covered by tests; add test coverage as new preferences are implemented.
+// TODO: Add characterization or integration tests for RepositoryDetailView split (per refactoring plan).

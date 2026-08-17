@@ -417,7 +417,7 @@ struct RepositoryDetailView: View {
     }
 
     private func buildScriptsPanel(_ scripts: [BuildScript]) -> some View {
-        GroupBox {
+        Group {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .firstTextBaseline) {
                     VStack(alignment: .leading, spacing: 2) {
@@ -522,8 +522,8 @@ struct RepositoryDetailView: View {
                 .font(.caption2)
                 .foregroundStyle(.secondary)
             }
-            .padding(.vertical, 5)
         }
+        .sectionCard()
     }
 
     /// Hairline between table columns so they read across.
@@ -796,19 +796,7 @@ struct RepositoryDetailView: View {
         )
         // Same card treatment as Available Build Scripts, so the two read as siblings
         // instead of one card and one bare rectangle.
-        .padding(.vertical, 5)
-        .padding(.horizontal, 10)
-        .background(
-            LinearGradient(
-                colors: [Color.blue.opacity(0.05), Color.pink.opacity(0.045)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: RoundedRectangle(cornerRadius: 12)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12).stroke(.quaternary, lineWidth: 1)
-        )
+        .sectionCard()
     }
 
     private func exportLiveLog() {

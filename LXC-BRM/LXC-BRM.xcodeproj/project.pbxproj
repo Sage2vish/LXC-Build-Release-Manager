@@ -30,6 +30,7 @@
 		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
 		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
 		F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */; };
+		BDCB0E0C538C4EC2943A822F /* App/Views/SectionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFAC8A705C4215BFE88FC2 /* App/Views/SectionCard.swift */; };
 		C9169590718841339F33A00B /* App/Views/MarkdownSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB8E3851E9A840398C7745D8 /* App/Views/MarkdownSourceView.swift */; };
 		A693CC0C02F144FBB2F17670 /* App/Models/HTMLSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3B1E736D9534789BB5D5BE3 /* App/Models/HTMLSupport.swift */; };
 		546DFA9AE122443D8F4CB7A4 /* App/Views/MarkdownExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF36C3D4A16487EAB3B1F68 /* App/Views/MarkdownExplorerView.swift */; };
@@ -136,6 +137,7 @@
 		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
+		F3CFAC8A705C4215BFE88FC2 /* App/Views/SectionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/SectionCard.swift; sourceTree = "<group>"; };
 		EB8E3851E9A840398C7745D8 /* App/Views/MarkdownSourceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/MarkdownSourceView.swift; sourceTree = "<group>"; };
 		A3B1E736D9534789BB5D5BE3 /* App/Models/HTMLSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Models/HTMLSupport.swift; sourceTree = "<group>"; };
 		0EF36C3D4A16487EAB3B1F68 /* App/Views/MarkdownExplorerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/MarkdownExplorerView.swift; sourceTree = "<group>"; };
@@ -317,6 +319,7 @@
 			isa = PBXGroup;
 			children = (
 				F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */,
+				F3CFAC8A705C4215BFE88FC2 /* App/Views/SectionCard.swift */,
 				EB8E3851E9A840398C7745D8 /* App/Views/MarkdownSourceView.swift */,
 				A3B1E736D9534789BB5D5BE3 /* App/Models/HTMLSupport.swift */,
 				0EF36C3D4A16487EAB3B1F68 /* App/Views/MarkdownExplorerView.swift */,
@@ -614,6 +617,7 @@
 				F50575ED30318AE800601A4A /* App/Views/RepositoryRow.swift in Sources */,
 				861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */,
 				F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */,
+				BDCB0E0C538C4EC2943A822F /* App/Views/SectionCard.swift in Sources */,
 				C9169590718841339F33A00B /* App/Views/MarkdownSourceView.swift in Sources */,
 				A693CC0C02F144FBB2F17670 /* App/Models/HTMLSupport.swift in Sources */,
 				546DFA9AE122443D8F4CB7A4 /* App/Views/MarkdownExplorerView.swift in Sources */,

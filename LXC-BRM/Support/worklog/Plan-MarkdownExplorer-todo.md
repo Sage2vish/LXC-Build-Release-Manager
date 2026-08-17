@@ -193,6 +193,25 @@ writing to a file in the user's repository is destructive if it happens by accid
 - [x] Tests: Preview is the default; Source is verbatim; the dirty check; the changed-on-disk
       guard; and that a save round-trips exactly, including trailing newlines.
 
+### 09. Reading layout
+
+Feedback after using the tab: the document does not use the width it has, the Source gutter does
+not read like an editor, and the mode picker sits at the far right away from the content it
+controls.
+
+- [ ] Left-align the **Preview / Source** picker within the document header, next to the title,
+      rather than pushed right with the file actions.
+- [ ] Remove the fixed 900pt cap on the rendered document. Text currently stops mid-pane and
+      reads as a narrow column with dead space beside it; it should flow to the pane's width.
+- [ ] Keep a sane maximum measure so a very wide window does not produce unreadably long lines —
+      generous, not 900.
+- [ ] Give the Source gutter a real editor treatment: its own background, a separating rule, and
+      dimmer line numbers, so the numbers read as a gutter rather than as a first column of text.
+- [ ] Right-align the line numbers against the gutter edge, as editors do.
+- [ ] Make the explorer / document divider visibly draggable, so it is discoverable that the
+      panes can be resized.
+- [ ] Verify the reading measure at the minimum pane width and at full screen.
+
 ## Tracking
 
 | Section | Checked / Total | Status |
@@ -205,7 +224,8 @@ writing to a file in the user's repository is destructive if it happens by accid
 | 06 — Tests | 10 / 10 | Done |
 | 07 — Inline and block HTML | 14 / 14 | Done |
 | 08 — Preview / Source modes, with editing | 15 / 15 | Done |
-| **Total** | **75 / 78** | **Shipped — 3 open** |
+| 09 — Reading layout | 0 / 7 | Open |
+| **Total** | **75 / 85** | **In progress** |
 
 ## Verified in the running app
 

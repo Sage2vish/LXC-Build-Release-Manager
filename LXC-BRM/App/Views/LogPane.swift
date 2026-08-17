@@ -232,10 +232,6 @@ struct LogPane: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Build output log area")
-        .background(
-            Color.clear
-                .background(.thinMaterial)
-        )
     }
 
     @ViewBuilder
