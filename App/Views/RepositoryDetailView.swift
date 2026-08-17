@@ -209,6 +209,10 @@ struct RepositoryDetailView: View {
                     .padding(16)
                 }
             }
+            .overlay(alignment: .top) {
+                Divider()
+                    .opacity(preferencesStore.preferences.reduceTransparency ? 1 : 0.85)
+            }
             // Wide enough to host parameter controls and a wrapped command preview.
             // These minimums add straight into the window's own minimum width. Kept low
             // enough that opening the panel cannot pin the window — measured before this
