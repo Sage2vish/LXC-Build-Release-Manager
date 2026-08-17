@@ -9,6 +9,8 @@
   <sub>Discover the workflow. Run it visibly. Preserve the evidence. Ship with intent.</sub>
   <br>
   <br>
+  <a href="LXC-BRM/Support/worklog/BRM-Plan-todo.md"><strong>Delivery plan</strong></a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
   <a href="LXC-BRM/README.md">Product guide</a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
   <a href="LXC-BRM/Support/README.md">Support handbook</a>
@@ -16,6 +18,7 @@
   <a href="LXC-BRM/Support/build-release/USER_GUIDE.md">User guide</a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
   <a href="LXC-BRM/Support/context/architecture.md">Architecture</a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
   <a href="LXC-BRM/Support/context/diagrams/README.md">Visual diagrams</a>
 </div>
 
@@ -202,11 +205,11 @@ The `Support/` tree is not loose project paperwork. It is the product's memory a
 ```mermaid
 flowchart LR
     requirements["Requirements"] --> decisions["Decisions"]
-    decisions --> tracker["Master worklog"]
-    tracker --> plan["Feature plan"]
+    decisions --> tracker["BRM plan index"]
+    tracker --> plan["Area plan"]
     plan --> code["App code"]
     code --> verify["Build / test / GUI evidence"]
-    verify --> story["Dated worklog story"]
+    verify --> story["Quality &amp; verification ledger"]
 
     classDef context fill:#EEF4FF,stroke:#3155E7,color:#0B1020;
     classDef delivery fill:#FFF1EE,stroke:#F27D68,color:#0B1020;
@@ -222,7 +225,74 @@ flowchart LR
 | Context | Requirements, architecture, rules, decisions, and design references for humans and AI tools. | [Support/context](LXC-BRM/Support/context/README.md) |
 | Frameworks | System framework inventory and future package or adapter records. | [Support/frameworks](LXC-BRM/Support/frameworks/README.md) |
 | Shared | Reusable conventions and cross-feature ideas. | [Support/shared](LXC-BRM/Support/shared/README.md) |
-| Worklog | Master checklist, feature plans, release mapping, and dated execution notes. | [Support/worklog](LXC-BRM/Support/worklog/README.md) |
+| Worklog | The plan index, one plan per area, and the verification ledger. | [Support/worklog](LXC-BRM/Support/worklog/README.md) |
+
+## The delivery plan
+
+Everything being built, everything already shipped, and everything still open starts in one file:
+
+<div align="center">
+  <h3><a href="LXC-BRM/Support/worklog/BRM-Plan-todo.md">📋 BRM-Plan-todo.md — the master plan index</a></h3>
+  <sub>Open it, find your area in a table, follow the link, work there.</sub>
+</div>
+
+The index carries no tasks of its own. It links every plan, mirrors each plan's current count, maps
+each requirements section to the plan that owns it, and tells you where a new task belongs. Below is
+the same map, so you can jump straight in from here.
+
+### By window region
+
+```text
+┌─────────────┬──────────────────────────────┬──────────────┐
+│ Left        │  Main panel                  │ Detail View  │
+│ sidebar     │  (header + toolbar + tabs)   │ panel        │
+├─────────────┴──────────────────────────────┴──────────────┤
+│ Status bar                                                 │
+└────────────────────────────────────────────────────────────┘
+```
+
+| Region | Plan | Owns |
+| --- | --- | --- |
+| Whole window | [Plan-AppShellUI](LXC-BRM/Support/worklog/Plan-AppShellUI-todo.md) | Background, material and glass language, theme and accent |
+| Left sidebar | [Plan-LeftSidebar](LXC-BRM/Support/worklog/Plan-LeftSidebar-todo.md) | Repositories, recents, add/remove, the footer buttons |
+| Main panel | [Plan-MainPanel](LXC-BRM/Support/worklog/Plan-MainPanel-todo.md) | Index over the three bands and six tabs below |
+| Detail View panel | [Plan-DetailViewPanel](LXC-BRM/Support/worklog/Plan-DetailViewPanel-todo.md) | The right inspector: script, parameters, status, history, actions |
+| Status bar | [Plan-StatusBar](LXC-BRM/Support/worklog/Plan-StatusBar-todo.md) | Repository, branch, platform and auto-detect chips |
+
+### Inside the main panel
+
+| Band | Plan | Owns |
+| --- | --- | --- |
+| Header | [Plan-MainPanel-Header](LXC-BRM/Support/worklog/Plan-MainPanel-Header-todo.md) | Repository name, badge, path lines, Reveal / Terminal / Copy |
+| Toolbar | [Plan-MainPanel-Toolbar](LXC-BRM/Support/worklog/Plan-MainPanel-Toolbar-todo.md) | The six-tab picker and the rule beneath it |
+| Container | [Plan-MainPanel-Container](LXC-BRM/Support/worklog/Plan-MainPanel-Container-todo.md) | The work-area surface, padding, scrolling, card treatment |
+
+| Tab | Plan | Owns |
+| --- | --- | --- |
+| Build | [Plan-Tab-Build](LXC-BRM/Support/worklog/Plan-Tab-Build-todo.md) | Script discovery, parameters, execution, live output |
+| Logs | [Plan-Tab-Logs](LXC-BRM/Support/worklog/Plan-Tab-Logs-todo.md) | Saved logs, filters, search, export |
+| History | [Plan-Tab-History](LXC-BRM/Support/worklog/Plan-Tab-History-todo.md) | Every recorded run for the repository |
+| Overview | [Plan-Tab-Overview](LXC-BRM/Support/worklog/Plan-Tab-Overview-todo.md) | Repository summary and build statistics |
+| Docs | [Plan-MarkdownExplorer](LXC-BRM/Support/worklog/Plan-MarkdownExplorer-todo.md) | Markdown discovery, rendering, Preview/Source editing |
+| Settings | [Plan-Tab-Settings](LXC-BRM/Support/worklog/Plan-Tab-Settings-todo.md) | Per-repository settings, distinct from the Preferences window |
+
+### Features, engineering, and release
+
+| Area | Plan | Owns |
+| --- | --- | --- |
+| Preferences window | [Plan-PreferenceScreen](LXC-BRM/Support/worklog/Plan-PreferenceScreen-todo.md) | Seven tabs, every field, and the wiring audit behind them |
+| Update checking | [Plan-Updates](LXC-BRM/Support/worklog/Plan-Updates-todo.md) | GitHub Releases feed, version comparison, stable and beta |
+| Localization | [Plan-Localization](LXC-BRM/Support/worklog/Plan-Localization-todo.md) | English and Hindi, the string catalogue, language switching |
+| Window layout | [Plan-WindowLayout](LXC-BRM/Support/worklog/Plan-WindowLayout-todo.md) | Resizing, the View menu, panel visibility and persistence |
+| Code refactoring | [Plan-CodeRefactoring-Reusability](LXC-BRM/Support/worklog/Plan-CodeRefactoring-Reusability-todo.md) | Feature extraction, dependency seams, reuse |
+| Xcode project | [Plan-XcodeProject](LXC-BRM/Support/worklog/Plan-XcodeProject-todo.md) | Target membership, build settings, schemes, project hygiene |
+| Quality & verification | [Plan-QualityVerification](LXC-BRM/Support/worklog/Plan-QualityVerification-todo.md) | Non-functional targets, tests, GUI coverage, standing caveats |
+| Release & packaging | [Plan-ReleasePackaging](LXC-BRM/Support/worklog/Plan-ReleasePackaging-todo.md) | Release script, staging, the `.dmg`, tags, signing |
+| Context & diagrams | [Plan-ContextArchitectureVisuals](LXC-BRM/Support/worklog/Plan-ContextArchitectureVisuals-todo.md) | The SVG diagram set and its documentation wiring |
+
+The rules that keep this coherent — one plan per area, `[x]` only when verified, no dated tracker
+files — are in [the worklog README](LXC-BRM/Support/worklog/README.md) and
+[decision-2026-08-18](LXC-BRM/Support/context/decisions/decision-2026-08-18.md).
 
 ## Current release signal
 
@@ -235,7 +305,7 @@ flowchart LR
   </tr>
 </table>
 
-The remaining hardening work is kept honest in the [master worklog](LXC-BRM/Support/worklog/todo-2026-08-16.md), including performance measurement, stress testing, settings verification, and wider GUI coverage.
+The remaining hardening work is kept honest in [Plan-QualityVerification](LXC-BRM/Support/worklog/Plan-QualityVerification-todo.md) — measured performance numbers, resilience coverage, which parts of the app have actually been click-tested, and the caveats that are true of the product rather than bugs waiting to be fixed.
 
 ## Data locations
 
@@ -252,14 +322,16 @@ The remaining hardening work is kept honest in the [master worklog](LXC-BRM/Supp
 
 | If you want to... | Read... |
 | --- | --- |
+| **See the whole plan and pick up work** | **[BRM plan index](LXC-BRM/Support/worklog/BRM-Plan-todo.md)** |
 | Understand the app experience | [LXC-BRM/README.md](LXC-BRM/README.md) |
 | Operate the app | [User Guide](LXC-BRM/Support/build-release/USER_GUIDE.md) |
 | Package a release | [Build and Release](LXC-BRM/Support/build-release/README.md) |
 | Give an AI tool project context | [Support Handbook](LXC-BRM/Support/README.md) and [Context README](LXC-BRM/Support/context/README.md) |
 | Understand the architecture | [Architecture](LXC-BRM/Support/context/architecture.md) |
 | See the system visually | [Context diagrams](LXC-BRM/Support/context/diagrams/README.md) |
-| Follow what is actually complete | [Master worklog](LXC-BRM/Support/worklog/todo-2026-08-16.md) |
-| See the Build screen record | [BuildScreen plan](LXC-BRM/Support/worklog/BuildScreen-plan-todo.md) |
+| Follow what is actually complete | [Quality & verification](LXC-BRM/Support/worklog/Plan-QualityVerification-todo.md) |
+| See the Build workspace record | [Build tab plan](LXC-BRM/Support/worklog/Plan-Tab-Build-todo.md) |
+| Package or publish a release | [Release & packaging](LXC-BRM/Support/worklog/Plan-ReleasePackaging-todo.md) |
 | Browse visual references | [Concepts and Designs](LXC-BRM/Support/context/concepts-designs/README.md) |
 
 ## Contributing

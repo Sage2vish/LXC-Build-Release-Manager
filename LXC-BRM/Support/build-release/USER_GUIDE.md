@@ -50,4 +50,4 @@ Saved logs live on disk in the repo's own `/build/logs/` folder, named `build-YY
 
 ## Appearance
 
-The app follows your Mac's system light/dark mode automatically. The Preferences surface also exposes theme, console, repository, execution, notification, and layout settings. Any setting still marked open in the [master worklog](../worklog/todo-2026-08-16.md) remains subject to verification.
+The app follows your Mac's system light/dark mode automatically. The Preferences surface also exposes theme, console, repository, execution, notification, and layout settings. Any setting still marked open in the [Preferences plan](../worklog/Plan-PreferenceScreen-todo.md) remains subject to verification.

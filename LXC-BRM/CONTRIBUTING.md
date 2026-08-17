@@ -6,7 +6,7 @@ Thank you for helping improve LXC-BRM. This project values small, understandable
 
 1. Read the [Support Handbook](Support/README.md).
 2. Read the relevant [context rules](Support/context/rules-context.md), architecture notes, and decision records.
-3. Find the matching item in the [master worklog](Support/worklog/todo-2026-08-16.md), or add one before starting larger work.
+3. Open the [BRM plan index](Support/worklog/BRM-Plan-todo.md), use its **Where a new task goes** table to find the plan that owns the surface you are changing, and find or add the matching item there before starting larger work.
 
 ## Local verification
 
@@ -19,12 +19,13 @@ xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Deb
 
 Use the repository's SwiftFormat and SwiftLint configuration when those tools are available. Do not mark a GUI, performance, or packaging task complete from a compile result alone.
 
-## Documentation and worklog expectations
+## Documentation and plan expectations
 
 - Update the relevant Support README when folder ownership or commands change.
 - Update Context when requirements, architecture, or decisions change.
-- Update the master todo only when the matching work is complete at the level the checklist claims.
-- Add verification evidence to the dated worklog.
+- Tick a plan item only when the matching work is complete at the level the checklist claims, then update that plan's tracking table and its count in the [plan index](Support/worklog/BRM-Plan-todo.md).
+- Add verification evidence to the ledger in [Plan-QualityVerification-todo.md](Support/worklog/Plan-QualityVerification-todo.md).
+- Keep tracking in one place: one plan owns one area, and there are no dated todo or worklog files.
 - Keep generated `.app`, `.dmg`, logs, and local build data out of commits.
 
 ## Pull requests and issues

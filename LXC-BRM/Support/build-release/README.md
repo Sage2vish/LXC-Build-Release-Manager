@@ -52,7 +52,7 @@ This is a local inspection and staging flow. A production distribution still nee
 
 - The functional requirements are preserved in [`../context/requirements.md`](../context/requirements.md).
 - Recorded implementation decisions are preserved in [`../context/decisions/`](../context/decisions/).
-- The active checklist is [`../worklog/todo-2026-08-16.md`](../worklog/todo-2026-08-16.md).
+- Delivery tracking starts at [`../worklog/BRM-Plan-todo.md`](../worklog/BRM-Plan-todo.md); the release flow itself is owned by [`../worklog/Plan-ReleasePackaging-todo.md`](../worklog/Plan-ReleasePackaging-todo.md).
 - This folder does not own a competing feature todo file.
 
 If a requirement and a decision disagree, follow the decision and keep the difference visible in Context.

@@ -86,7 +86,8 @@ The three View-menu toggles must be readable and writable from **both** the `Sce
 - [x] Toggle each of the three View menu items off and back on; confirm the checkmarks track the real state.
 - [x] Quit and relaunch; confirm all three visibility states persisted. **All three now persist — the sidebar fix is described below.**
 - [x] Confirm the sidebar footer buttons are fully visible and clickable in every combination of the three toggles.
-- [x] Update `worklog-2026-08-16.md` with what actually shipped, then flip the tracking table below.
+- [x] Record what actually shipped — see **Sidebar Persistence** and **Verification Evidence**
+      below — then flip the tracking table.
 
 ---
 
@@ -106,7 +107,8 @@ The three View-menu toggles must be readable and writable from **both** the `Sce
 1. Any change to the Build, Logs, History, Overview, or Settings **tab content**.
 2. Any redesign of the status bar chips themselves — only its visibility changes.
 3. Any new Preferences **UI** rows for the three new flags (the menu is the control surface for v0.1.2).
-4. The open items still tracked in `BuildScreen-plan-todo.md` and `todo-2026-08-16.md`.
+4. The open items tracked in the tab and feature plans indexed by
+   [`BRM-Plan-todo.md`](BRM-Plan-todo.md).
 
 ---
 

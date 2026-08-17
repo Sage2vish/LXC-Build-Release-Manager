@@ -18,7 +18,8 @@ glance, without taking a click to find out.
 
 ## Already shipped
 
-Consolidated from `Plan-WindowLayout-todo.md`, `todo-2026-08-16.md`, and the worklog.
+Consolidated from [`Plan-WindowLayout-todo.md`](Plan-WindowLayout-todo.md) and the retired dated
+checklist and worklog.
 
 - [x] Status bar spans the full window width at the bottom.
 - [x] Colour-coded chips per field, with a muted disabled state for auto-detect.

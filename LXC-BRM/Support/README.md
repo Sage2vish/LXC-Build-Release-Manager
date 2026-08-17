@@ -56,7 +56,7 @@ The Build workspace is the product's center of gravity. It discovers shell scrip
 
 ![Build Console concept](context/concepts-designs/Build-Console-Screen-Concept-02a.png)
 
-The current Build screen record is [`worklog/BuildScreen-plan-todo.md`](worklog/BuildScreen-plan-todo.md). It is an execution record, not a marketing promise: completed items are marked only when the matching behavior exists in the codebase.
+The current Build workspace record is [`worklog/Plan-Tab-Build-todo.md`](worklog/Plan-Tab-Build-todo.md). It is an execution record, not a marketing promise: completed items are marked only when the matching behavior exists in the codebase.
 
 ### Release support
 
@@ -82,15 +82,21 @@ The Shared area is where portable conventions, reusable snippets, and cross-feat
 
 ### Worklog and workload mapping
 
-The Worklog area is the delivery ledger. The master dated todo tracks the release-wide phases, while feature plans capture the deeper checklist for a single screen or pass. Daily worklogs explain what actually changed and what was verified.
+The Worklog area is the delivery ledger, and it has one front door: **[`worklog/BRM-Plan-todo.md`](worklog/BRM-Plan-todo.md)**, the master plan index. It links every plan in linked tables — by window region, by tab, by feature, by engineering area — carries each plan's current count, and tells you where a new task belongs. It holds no tasks itself.
+
+Beneath it, one plan owns one area, named `Plan-<Area>-todo.md`. Each opens with a boundary statement so a change has exactly one home, and each records what shipped alongside what is still open.
 
 The mapping is deliberate:
 
 ```text
-requirements -> decisions -> master todo -> feature plan -> code -> verification -> worklog story
+requirements -> decisions -> BRM-Plan-todo.md (index) -> Plan-<Area>-todo.md -> code -> verification
 ```
 
-Start with [`worklog/README.md`](worklog/README.md), then use the [master todo](worklog/todo-2026-08-16.md) to find the active phase and the relevant feature plan.
+Verification evidence that spans plans — measurements, test runs, what has actually been clicked in the running app — is collected in [`worklog/Plan-QualityVerification-todo.md`](worklog/Plan-QualityVerification-todo.md).
+
+There are no dated `todo-YYYY-MM-DD.md` or `worklog-YYYY-MM-DD.md` files. That convention was retired on 2026-08-18 and their content moved into the owning plans; see [`context/decisions/decision-2026-08-18.md`](context/decisions/decision-2026-08-18.md), and the **Retired files** table in the index for exactly where each part went.
+
+Start with [`worklog/README.md`](worklog/README.md) for the rules, then go to the [master plan index](worklog/BRM-Plan-todo.md) to find the plan you need.
 
 ## Documentation map
 
@@ -124,14 +130,25 @@ Start with [`worklog/README.md`](worklog/README.md), then use the [master todo](
 | Frameworks | [`frameworks/README.md`](frameworks/README.md) | System framework matrix and future package/adapter notes. |
 | Shared | [`shared/README.md`](shared/README.md) | Reusable conventions and cross-feature ideas. |
 | Worklog | [`worklog/README.md`](worklog/README.md) | Tracking rules and file ownership. |
-| Master tracker | [`worklog/todo-2026-08-16.md`](worklog/todo-2026-08-16.md) | Current release checklist and phase status. |
-| Build screen | [`worklog/BuildScreen-plan-todo.md`](worklog/BuildScreen-plan-todo.md) | Build workspace execution record. |
-| Preferences | [`worklog/Plan-PreferenceScreen-todo.md`](worklog/Plan-PreferenceScreen-todo.md) | Preferences design and wiring plan. |
-| Window layout | [`worklog/Plan-WindowLayout-todo.md`](worklog/Plan-WindowLayout-todo.md) | Layout and View menu pass. |
-| Context architecture visuals | [`worklog/Plan-ContextArchitectureVisuals-todo.md`](worklog/Plan-ContextArchitectureVisuals-todo.md) | SVG diagrams and documentation wiring pass. |
-| Code refactoring and reusability | [`worklog/Plan-CodeRefactoring-Reusability-todo.md`](worklog/Plan-CodeRefactoring-Reusability-todo.md) | Code structure, dependency seams, feature extraction, and reuse pass. |
-| Daily narrative | [`worklog/worklog-2026-08-16.md`](worklog/worklog-2026-08-16.md) | What changed and how it was verified. |
-| Archived plan | [`worklog/BuildScreen-plan-todo_OLD.md`](worklog/BuildScreen-plan-todo_OLD.md) | Historical plan retained for traceability; not an active tracker. |
+
+### Delivery plans
+
+Every plan is reachable from the index; these are the ones a newcomer usually wants first.
+
+| Plan | Owns |
+| --- | --- |
+| **[`worklog/BRM-Plan-todo.md`](worklog/BRM-Plan-todo.md)** | **The master index — start here.** Links every plan, mirrors its count, maps requirements to owners. |
+| [`worklog/Plan-LeftSidebar-todo.md`](worklog/Plan-LeftSidebar-todo.md) | Repositories, recents, adding and removing, the footer buttons. |
+| [`worklog/Plan-MainPanel-todo.md`](worklog/Plan-MainPanel-todo.md) | The centre column — an index over its header, toolbar, container and six tabs. |
+| [`worklog/Plan-Tab-Build-todo.md`](worklog/Plan-Tab-Build-todo.md) | Script discovery, parameters, execution, and the live output terminal. |
+| [`worklog/Plan-DetailViewPanel-todo.md`](worklog/Plan-DetailViewPanel-todo.md) | The right inspector column. |
+| [`worklog/Plan-StatusBar-todo.md`](worklog/Plan-StatusBar-todo.md) | The bottom strip. |
+| [`worklog/Plan-PreferenceScreen-todo.md`](worklog/Plan-PreferenceScreen-todo.md) | The seven-tab Preferences window and the field-by-field wiring audit. |
+| [`worklog/Plan-WindowLayout-todo.md`](worklog/Plan-WindowLayout-todo.md) | Resizing, the View menu, and panel visibility. |
+| [`worklog/Plan-CodeRefactoring-Reusability-todo.md`](worklog/Plan-CodeRefactoring-Reusability-todo.md) | Code structure, dependency seams, feature extraction, and reuse. |
+| [`worklog/Plan-QualityVerification-todo.md`](worklog/Plan-QualityVerification-todo.md) | Non-functional targets, test-suite state, GUI coverage, standing caveats, evidence ledger. |
+| [`worklog/Plan-ReleasePackaging-todo.md`](worklog/Plan-ReleasePackaging-todo.md) | The release script, staging, the `.dmg`, tags, signing and distribution. |
+| [`worklog/Plan-ContextArchitectureVisuals-todo.md`](worklog/Plan-ContextArchitectureVisuals-todo.md) | The SVG diagram set and the documentation wiring around it. |
 
 ## How to use this folder
 
@@ -140,28 +157,29 @@ Start with [`worklog/README.md`](worklog/README.md), then use the [master todo](
 1. Read this handbook.
 2. Read [`context/rules-context.md`](context/rules-context.md) and [`context/architecture.md`](context/architecture.md).
 3. Read the relevant requirement and decision records.
-4. Find the task in [`worklog/todo-2026-08-16.md`](worklog/todo-2026-08-16.md) or add it there before implementation.
+4. Open [`worklog/BRM-Plan-todo.md`](worklog/BRM-Plan-todo.md), use its **Where a new task goes** table to find the owning plan, and add the task there before implementation.
 
 ### When finishing a task
 
-1. Update the matching feature plan or master todo only after the behavior exists.
+1. Update the owning plan only after the behavior exists.
 2. Mark a checklist item `[x]` only when it is implemented and verified at the level the item claims.
-3. Add a short explanation to the dated worklog.
-4. Update context when the architecture, rules, release path, or product decision changes.
+3. Record what shipped in that plan, and update its tracking table plus the count in the index.
+4. Add a row to the ledger in [`worklog/Plan-QualityVerification-todo.md`](worklog/Plan-QualityVerification-todo.md) when the verification level changed.
+5. Update context when the architecture, rules, release path, or product decision changes.
 
 ### When preparing a release
 
-1. Confirm the master todo and feature plan reflect the actual code.
+1. Confirm the affected plans reflect the actual code.
 2. Run the Debug build and tests.
-3. Run [`release.sh`](build-release/scripts/release.sh) for the local Release app and DMG.
+3. Run [`release.sh`](build-release/scripts/release.sh) for the local Release app and DMG, following [`worklog/Plan-ReleasePackaging-todo.md`](worklog/Plan-ReleasePackaging-todo.md).
 4. Inspect the generated artifact under `build-release/version/`.
-5. Record the result in the worklog and use a dated release tag when the release is intentionally captured.
+5. Record the result in the verification ledger and tag the tree when the release is intentionally captured.
 
 ## Honest boundaries
 
 - A GitHub URL can be scanned, but it cannot execute a build until it is available as a local checkout.
 - The local release script produces an unsigned artifact for inspection and staging; production signing and notarization are separate.
-- The master worklog remains authoritative for open performance, stress, settings, and GUI-hardening work.
+- The plans remain authoritative for open work; performance, stress, settings verification and GUI hardening are tracked in [`worklog/Plan-QualityVerification-todo.md`](worklog/Plan-QualityVerification-todo.md).
 - The original requirements include a Tauri/Rust/React proposal, but the recorded decision is native Swift/SwiftUI/AppKit. The decision log explains why.
 - Empty framework and shared folders are intentional extension points until a real reusable asset belongs there.
 
@@ -174,3 +192,4 @@ Start with [`worklog/README.md`](worklog/README.md), then use the [master todo](
 - [Context](context/README.md)
 - [Context diagrams](context/diagrams/README.md)
 - [Worklog](worklog/README.md)
+- [Master plan index](worklog/BRM-Plan-todo.md)

@@ -56,7 +56,7 @@ The concept above is the visual north star for the Build workspace: repositories
 5. Review the result in Logs, History, or Overview.
 6. Use the release flow when the build is ready to become a distributable artifact.
 
-GitHub sources can be inspected through the contents API, but only local checkouts can execute a script. This boundary is intentional and documented in the [Build screen plan](Support/worklog/BuildScreen-plan-todo.md).
+GitHub sources can be inspected through the contents API, but only local checkouts can execute a script. This boundary is intentional and documented in the [Build tab plan](Support/worklog/Plan-Tab-Build-todo.md).
 
 ## Quick start
 
@@ -113,13 +113,14 @@ The [Support handbook](Support/README.md) is the main map for the project. It ex
 | Package a release | [Build and release README](Support/build-release/README.md) |
 | Understand requirements | [Requirements](Support/context/requirements.md) |
 | Understand architecture | [Architecture](Support/context/architecture.md) |
-| Understand decisions | [Decision log](Support/context/decisions/decision-2026-08-16.md) |
-| Follow current work | [Master worklog](Support/worklog/todo-2026-08-16.md) |
-| Read the Build screen record | [Build screen plan](Support/worklog/BuildScreen-plan-todo.md) |
+| Understand decisions | [Decision log](Support/context/decisions/) |
+| Follow current work | [BRM plan index](Support/worklog/BRM-Plan-todo.md) |
+| Read the Build workspace record | [Build tab plan](Support/worklog/Plan-Tab-Build-todo.md) |
+| See what is verified, and how | [Quality & verification](Support/worklog/Plan-QualityVerification-todo.md) |
 
 ## Project status
 
-The native app builds and its Xcode test target passes locally. The remaining work is tracked explicitly in the master worklog, including performance measurement, broader stress testing, and final GUI hardening. The documentation does not mark those items complete merely because the project compiles.
+The native app builds and its Xcode test target passes locally. Every area of the product has a plan, and they are all indexed in [BRM-Plan-todo.md](Support/worklog/BRM-Plan-todo.md). The remaining hardening — settings verification and wider GUI click-through — is tracked in [Plan-QualityVerification-todo.md](Support/worklog/Plan-QualityVerification-todo.md). The documentation does not mark those items complete merely because the project compiles.
 
 ## Contributing
 
