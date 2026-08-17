@@ -125,7 +125,7 @@ The target is a direction, not permission to introduce layers without a consumer
 - [ ] Extract the repository header, connection status, source actions, and repository settings into focused views.
 - [ ] Extract the Build tab into script discovery, script table, parameter controls, command preview, and build-output components.
 - [ ] Extract the Inspector into selected-script detail, build status, build history, and quick-action components.
-- [ ] Extract History and Overview into reusable repository-scoped views driven by `BuildRecord` and `RepositoryStats`.
+- [x] Extract History and Overview into reusable repository-scoped views driven by `BuildRecord` and `RepositoryStats`.
 - [ ] Preserve repository switching behavior by keeping repository identity as the state-reset boundary.
 
 ### 05. Make Logs a Reusable Feature

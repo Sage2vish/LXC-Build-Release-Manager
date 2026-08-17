@@ -29,6 +29,8 @@
 		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
 		E50EEAAE7039B12A62B4F260 /* BuildRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A3DA0FF6648759940B42148 /* BuildRunner.swift */; };
 		F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */; };
+		F72BE43DFB94459A9184A8D2 /* App/Views/RepositoryOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F688A5AC1A2B40178A7C72FD /* App/Views/RepositoryOverviewView.swift */; };
+		39CE00E6F4CF48A0A7E35A17 /* App/Views/RepositoryHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150D246C10354CBCA409B7A7 /* App/Views/RepositoryHistoryView.swift */; };
 		7D48811E21C84684A81E3F27 /* App/Models/BuildScreenRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180CBE85700D41CCAA3FEF18 /* App/Models/BuildScreenRules.swift */; };
 		690F46128E344F69AEC9E870 /* App/Views/RepositoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1244FF58E6B406CBF6C437A /* App/Views/RepositoryDetailView.swift */; };
 		80CBEB839C5A4A5EB2125C68 /* App/Models/BuildPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28AAA8F0F60490DBC0C6686 /* App/Models/BuildPresentation.swift */; };
@@ -120,6 +122,8 @@
 		E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScriptScanner.swift; path = App/Services/BuildScriptScanner.swift; sourceTree = "<group>"; };
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
+		F688A5AC1A2B40178A7C72FD /* App/Views/RepositoryOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RepositoryOverviewView.swift; sourceTree = "<group>"; };
+		150D246C10354CBCA409B7A7 /* App/Views/RepositoryHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RepositoryHistoryView.swift; sourceTree = "<group>"; };
 		180CBE85700D41CCAA3FEF18 /* App/Models/BuildScreenRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Models/BuildScreenRules.swift; sourceTree = "<group>"; };
 		E1244FF58E6B406CBF6C437A /* App/Views/RepositoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RepositoryDetailView.swift; sourceTree = "<group>"; };
 		F28AAA8F0F60490DBC0C6686 /* App/Models/BuildPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Models/BuildPresentation.swift; sourceTree = "<group>"; };
@@ -286,6 +290,8 @@
 			isa = PBXGroup;
 			children = (
 				F50575EA30318AE700601A4A /* App/Views/AddRepositorySheet.swift */,
+				F688A5AC1A2B40178A7C72FD /* App/Views/RepositoryOverviewView.swift */,
+				150D246C10354CBCA409B7A7 /* App/Views/RepositoryHistoryView.swift */,
 				180CBE85700D41CCAA3FEF18 /* App/Models/BuildScreenRules.swift */,
 				E1244FF58E6B406CBF6C437A /* App/Views/RepositoryDetailView.swift */,
 				F28AAA8F0F60490DBC0C6686 /* App/Models/BuildPresentation.swift */,
@@ -567,6 +573,8 @@
 				F50575ED30318AE800601A4A /* App/Views/RepositoryRow.swift in Sources */,
 				861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */,
 				F50575EB30318AE700601A4A /* App/Views/AddRepositorySheet.swift in Sources */,
+				F72BE43DFB94459A9184A8D2 /* App/Views/RepositoryOverviewView.swift in Sources */,
+				39CE00E6F4CF48A0A7E35A17 /* App/Views/RepositoryHistoryView.swift in Sources */,
 				7D48811E21C84684A81E3F27 /* App/Models/BuildScreenRules.swift in Sources */,
 				690F46128E344F69AEC9E870 /* App/Views/RepositoryDetailView.swift in Sources */,
 				80CBEB839C5A4A5EB2125C68 /* App/Models/BuildPresentation.swift in Sources */,

@@ -221,7 +221,8 @@ struct RepositoryDetailView: View {
                 } else {
                     ForEach(records.prefix(5)) { record in
                         HStack {
-                            statusIcon(record.status)
+                            Image(systemName: BuildPresentation.symbolName(for: record.status))
+                                .foregroundStyle(BuildPresentation.color(for: record.status))
                             Text(record.scriptLabel).font(.caption)
                             Spacer()
                             Text(BuildPresentation.durationDescription(record.durationSeconds))
@@ -859,93 +860,16 @@ struct RepositoryDetailView: View {
     // MARK: History
 
     private var historyTab: some View {
-        GroupBox("Build History") {
-            if records.isEmpty {
-                Text("No builds run yet for this repository.")
-                    .foregroundStyle(.secondary)
-                    .padding(.vertical, 4)
-            } else {
-                VStack(alignment: .leading, spacing: 6) {
-                    ForEach(records) { record in
-                        Button {
-                            selectedLogRecordID = record.id
-                            selectedTab = .logs
-                        } label: {
-                            HStack {
-                                statusIcon(record.status)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(record.scriptLabel).font(.body.weight(.medium))
-                                    Text(record.startedAt.formatted(date: .abbreviated, time: .shortened))
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                                Text(BuildPresentation.durationDescription(record.durationSeconds))
-                                    .font(.caption.monospaced())
-                                    .foregroundStyle(.secondary)
-                            }
-                            .padding(8)
-                            .background(.quaternary.opacity(0.25), in: RoundedRectangle(cornerRadius: 6))
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-            }
-        }
-    }
-
-    private func statusIcon(_ status: BuildStatus) -> some View {
-        switch status {
-        case .success: return Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-        case .failed: return Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
-        case .cancelled: return Image(systemName: "slash.circle.fill").foregroundStyle(.orange)
-        case .running: return Image(systemName: "circle.dotted").foregroundStyle(.blue)
+        RepositoryHistoryView(records: records) { record in
+            selectedLogRecordID = record.id
+            selectedTab = .logs
         }
     }
 
     // MARK: Overview
 
     private var overviewTab: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            GroupBox("Repository") {
-                VStack(alignment: .leading, spacing: 6) {
-                    LabeledContent("Name", value: repository.name)
-                    LabeledContent("Path/URL", value: repository.source.displayPath)
-                    LabeledContent("Connection") {
-                        statusBadge
-                    }
-                    LabeledContent("Total Builds", value: "\(stats.totalBuilds)")
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 4)
-            }
-
-            HStack(spacing: 12) {
-                statCard(title: "Total Builds", value: "\(stats.totalBuilds)")
-                statCard(title: "Success Rate", value: stats.totalBuilds > 0 ? "\(Int(stats.successRate * 100))%" : "—")
-                statCard(title: "Avg Duration", value: stats.totalBuilds > 0 ? BuildPresentation.durationDescription(stats.averageDuration) : "—")
-            }
-
-            if let mostRecent = stats.mostRecent {
-                Text("Most recently run: \(mostRecent.scriptLabel) — \(mostRecent.startedAt.relativeDescription)")
-                    .font(.callout)
-            }
-            if let lastFailed = stats.lastFailed {
-                Text("Last failed build: \(lastFailed.scriptLabel) — \(lastFailed.startedAt.relativeDescription)")
-                    .font(.callout)
-                    .foregroundStyle(.red)
-            }
-        }
-    }
-
-    private func statCard(title: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title).font(.caption).foregroundStyle(.secondary)
-            Text(value).font(.title2.weight(.semibold))
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 8))
+        RepositoryOverviewView(repository: repository, stats: stats) { statusBadge }
     }
 
     // MARK: Settings
