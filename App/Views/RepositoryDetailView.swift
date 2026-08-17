@@ -174,7 +174,7 @@ struct RepositoryDetailView: View {
             }
         }
         .inspector(isPresented: showInspector) {
-            ZStack {
+            ZStack(alignment: .top) {
                 if preferencesStore.preferences.reduceTransparency {
                     Color(nsColor: .windowBackgroundColor)
                 } else {
@@ -209,6 +209,7 @@ struct RepositoryDetailView: View {
                     .padding(16)
                 }
             }
+            .background(Color(nsColor: .windowBackgroundColor))
             .overlay(alignment: .top) {
                 Divider()
                     .opacity(preferencesStore.preferences.reduceTransparency ? 1 : 0.85)
