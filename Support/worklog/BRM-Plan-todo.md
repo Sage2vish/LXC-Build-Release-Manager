@@ -21,7 +21,7 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**623 of 816 items done — 193 still pending (76%).**
+**623 of 817 items done — 194 still pending (76%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
@@ -29,8 +29,8 @@ work there. Do not add task detail to this file — it is an index and a map, no
 | Inside the main panel | 20 | 28 | In progress |
 | The six tabs, inside the container | 258 | 23 | In progress |
 | Features | 186 | 41 | In progress |
-| Engineering, quality, and release | 101 | 66 | In progress |
-| **All areas** | **623** | **193** | **In progress** |
+| Engineering, quality, and release | 101 | 67 | In progress |
+| **All areas** | **623** | **194** | **In progress** |
 
 ## The plans, by area
 
@@ -91,11 +91,11 @@ Work that has no visible surface of its own, but decides whether the visible one
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
 | [Plan-CodeRefactoring-Reusability-todo](Plan-CodeRefactoring-Reusability-todo.md) | Feature extraction, dependency seams, reuse — behaviour preserving | 31 | 38 | In progress |
-| [Plan-XcodeProject-todo](Plan-XcodeProject-todo.md) | Target membership, build settings, schemes, project-file hygiene | 12 | 12 | In progress |
+| [Plan-XcodeProject-todo](Plan-XcodeProject-todo.md) | Target membership, build settings, schemes, project-file hygiene | 12 | 13 | In progress |
 | [Plan-QualityVerification-todo](Plan-QualityVerification-todo.md) | Non-functional targets, tests, GUI coverage, the evidence ledger | 19 | 6 | In progress |
 | [Plan-ReleasePackaging-todo](Plan-ReleasePackaging-todo.md) | Release script, staging, the `.dmg`, tags, signing, publication | 14 | 10 | In progress |
 | [Plan-ContextArchitectureVisuals-todo](Plan-ContextArchitectureVisuals-todo.md) | The SVG diagram set and its documentation wiring | 25 | 0 | Done ✅ |
-| **Engineering, quality, and release — subtotal** | | **101** | **66** | **In progress** |
+| **Engineering, quality, and release — subtotal** | | **101** | **67** | **In progress** |
 
 <!-- plan-index:end -->
 

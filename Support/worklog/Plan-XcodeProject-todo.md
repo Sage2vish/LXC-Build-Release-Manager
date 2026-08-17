@@ -78,6 +78,8 @@ The project moved to the repository root and the `LXC-BRM` codename was retired.
 
 - [ ] Reconcile the Swift version: the project-level Release config says 5.0 while both target
       configs say 6.0. It works, but the mismatch is a trap.
+- [ ] Reconnect the Debug and Release configurations to explicit `.xcconfig` files so Xcode no
+      longer shows `None` for the base configuration and the project settings live in a real file.
 - [ ] Review warnings; the build is clean today, and it should stay that way deliberately.
 - [ ] Decide on code signing for Release, which is currently unconfigured.
 
