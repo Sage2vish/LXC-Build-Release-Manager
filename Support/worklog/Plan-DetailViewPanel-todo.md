@@ -63,6 +63,9 @@ even though nothing is explicitly locked.
 
 - [ ] Split the inspector into its own view; it still lives inside `RepositoryDetailView`.
       *(Carried from the refactoring plan, section 04.)*
+- [ ] Remove the inspector's own top-bar controls so the right panel becomes a plain glass slab
+      with only the card stack inside it; the refresh and sidebar toggles belong in the main
+      window chrome, not inside the panel.
 - [ ] The panel shows build-oriented cards on every tab, including Docs, where they are not
       relevant. Decide whether it should be tab-aware.
 

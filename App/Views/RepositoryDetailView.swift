@@ -155,24 +155,6 @@ struct RepositoryDetailView: View {
                 selectedTab = .history
             }
         }
-        .toolbar {
-            ToolbarItem {
-                Button {
-                    Task { await scan() }
-                } label: {
-                    Label("Rescan", systemImage: "arrow.clockwise")
-                }
-                .disabled(isScanning || runner.isRunning)
-                .keyboardShortcut("r", modifiers: [.command])
-            }
-            ToolbarItem {
-                Button {
-                    showInspector.wrappedValue.toggle()
-                } label: {
-                    Label("Toggle Detail View", systemImage: "sidebar.right")
-                }
-            }
-        }
         .inspector(isPresented: showInspector) {
             ZStack(alignment: .top) {
                 if preferencesStore.preferences.reduceTransparency {
