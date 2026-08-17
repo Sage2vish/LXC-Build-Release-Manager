@@ -317,8 +317,6 @@ struct ContentView: View {
                 ideal: preferencesStore.preferences.sidebarWidthPoints,
                 max: 420
             )
-            // Screenshot UI Parity: Sidebar - Use ultraThinMaterial background for lightweight translucency
-            .background(AppearanceSettings.sidebarMaterial(preferencesStore.preferences))
             // Stops AppKit persisting and replaying the split view's collapse state, which
             // otherwise fights the saved preference on the next launch.
             .background(SidebarRestorationDisabler())
@@ -360,7 +358,25 @@ struct ContentView: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 12)
-            .background(.bar)
+            .background {
+                if preferencesStore.preferences.reduceTransparency {
+                    Color(nsColor: .windowBackgroundColor)
+                } else {
+                    ZStack {
+                        Rectangle().fill(.bar)
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.18),
+                                Color.white.opacity(0.06),
+                                Color.black.opacity(0.03)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .blendMode(.softLight)
+                    }
+                }
+            }
         }
         .overlay {
             if store.repositories.isEmpty {
@@ -369,6 +385,25 @@ struct ContentView: View {
                     systemImage: "folder.badge.plus",
                     description: Text("Add a local folder or GitHub URL to get started.")
                 )
+            }
+        }
+        .background {
+            if preferencesStore.preferences.reduceTransparency {
+                Color(nsColor: .windowBackgroundColor)
+            } else {
+                ZStack {
+                    Rectangle().fill(AppearanceSettings.sidebarMaterial(preferencesStore.preferences))
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.28),
+                            Color.white.opacity(0.08),
+                            Color.black.opacity(0.03)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .blendMode(.softLight)
+                }
             }
         }
     }

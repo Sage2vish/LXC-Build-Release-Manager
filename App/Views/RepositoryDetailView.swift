@@ -90,7 +90,19 @@ struct RepositoryDetailView: View {
                 if preferencesStore.preferences.reduceTransparency {
                     Color(nsColor: .windowBackgroundColor)
                 } else {
-                    Rectangle().fill(.regularMaterial)
+                    ZStack {
+                        Rectangle().fill(.regularMaterial)
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.22),
+                                Color.white.opacity(0.06),
+                                Color.black.opacity(0.02)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .blendMode(.softLight)
+                    }
                 }
             }
 
@@ -166,7 +178,19 @@ struct RepositoryDetailView: View {
                 if preferencesStore.preferences.reduceTransparency {
                     Color(nsColor: .windowBackgroundColor)
                 } else {
-                    Rectangle().fill(.regularMaterial)
+                    ZStack {
+                        Rectangle().fill(.regularMaterial)
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.20),
+                                Color.white.opacity(0.05),
+                                Color.black.opacity(0.02)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .blendMode(.softLight)
+                    }
                 }
 
                 ScrollView {

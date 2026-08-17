@@ -25,7 +25,25 @@ struct StatusBar: View {
         .font(.caption)
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-        .background(.bar)
+        .background {
+            if preferences.reduceTransparency {
+                Color(nsColor: .windowBackgroundColor)
+            } else {
+                ZStack {
+                    Rectangle().fill(.bar)
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.18),
+                            Color.white.opacity(0.06),
+                            Color.black.opacity(0.03)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .blendMode(.softLight)
+                }
+            }
+        }
         .overlay(alignment: .top) { Divider() }
     }
 
