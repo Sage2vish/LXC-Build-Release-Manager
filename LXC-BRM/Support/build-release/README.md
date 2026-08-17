@@ -64,7 +64,7 @@ If a requirement and a decision disagree, follow the decision and keep the diffe
 - [ ] Inspect the Release app bundle.
 - [ ] Run `release.sh` and inspect the DMG in `version/`.
 - [ ] Confirm signing and notarization requirements before external distribution.
-- [ ] Record the result in the dated worklog and update the master tracker.
+- [ ] Record the result in the [verification ledger](../worklog/Plan-QualityVerification-todo.md) and tick the matching item in [`Plan-ReleasePackaging-todo.md`](../worklog/Plan-ReleasePackaging-todo.md).
 
 For the user-facing behavior of the app, continue to the [User Guide](USER_GUIDE.md). For the complete project map, return to the [Support Handbook](../README.md).
 

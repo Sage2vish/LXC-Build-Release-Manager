@@ -203,7 +203,8 @@ section 04 below, which is where the remaining work is tracked.
 - [ ] Remove dead code and obsolete private helpers only after references and tests are confirmed.
 - [ ] Update `Support/context/architecture.md` with the final dependency and feature boundaries.
 - [ ] Update the runtime SVG architecture map if the refactor changes the documented component boundaries.
-- [ ] Add the implementation story and verification evidence to the dated worklog.
+- [ ] Record the implementation story in this plan and the verification evidence in the ledger in
+      [`Plan-QualityVerification-todo.md`](Plan-QualityVerification-todo.md).
 - [ ] Review the final diff for unrelated changes before committing.
 
 ## Non-Goals
