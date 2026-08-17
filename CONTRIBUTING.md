@@ -1,6 +1,6 @@
-# Contributing to LXC-BRM
+# Contributing to LXC Build Release Manager
 
-Thank you for helping improve LXC-BRM. This project values small, understandable changes that keep the native macOS app and its Support handbook in sync.
+Thank you for helping improve LXC Build Release Manager. This project values small, understandable changes that keep the native macOS app and its Support handbook in sync.
 
 ## Before you change code
 
@@ -13,8 +13,8 @@ Thank you for helping improve LXC-BRM. This project values small, understandable
 Run from the repository root:
 
 ```sh
-xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug build
-xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug test
+xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Release-Manager -configuration Debug build
+xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Release-Manager -configuration Debug test
 ```
 
 Use the repository's SwiftFormat and SwiftLint configuration when those tools are available. Do not mark a GUI, performance, or packaging task complete from a compile result alone.

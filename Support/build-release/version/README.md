@@ -6,15 +6,15 @@ This folder is the local output boundary for release builds.
 
 ```text
 version/
-  LXC-BRM-YYYY-MM-DD.dmg
+  LXC-Build-Release-Manager-<version>.dmg
   staging/
-    LXC-BRM.app
+    LXC-Build-Release-Manager.app
 ```
 
 Run the packaging flow from the repository root:
 
 ```sh
-./LXC-BRM/Support/build-release/scripts/release.sh
+./Support/build-release/scripts/release.sh
 ```
 
 Generated `.app`, `.dmg`, and `staging/` files are ignored by Git. The tracked `README.md` and `.gitkeep` preserve the directory contract without committing machine-specific artifacts.

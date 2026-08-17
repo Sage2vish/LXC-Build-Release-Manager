@@ -5,7 +5,7 @@
 ![Platform](https://img.shields.io/badge/platform-macOS%2015%2B-28B487?style=for-the-badge&labelColor=0B1020)
 ![Scope](https://img.shields.io/badge/scope-reuse%20%7C%20testability%20%7C%20clarity-8E9EFF?style=for-the-badge&labelColor=0B1020)
 
-> A behavior-preserving refactor plan for making LXC-BRM easier to extend, test, and reuse without turning the native macOS app into an abstract framework exercise.
+> A behavior-preserving refactor plan for making LXC Build Release Manager easier to extend, test, and reuse without turning the native macOS app into an abstract framework exercise.
 
 ## Status
 
@@ -41,7 +41,7 @@ The assessment was made against the current implementation, Xcode project, tests
 | Domain logic is mixed into model files and views. | `BuildScript.swift` contains command validation/building; `ContentView.swift` contains status formatting, duration formatting, parameter bindings, and log parsing. | Move pure domain rules and display formatting into reusable, testable files. |
 | Preferences contain many string-backed choices and duplicate save-log flags. | `Models/Preferences.swift` has a broad 136-line value model; `PreferencesView.swift` is 469 lines with seven tabs and inline row helpers. | Audit the preference contract first, then introduce typed values/migrations and split tab views without silently changing behavior. |
 | Test coverage is valuable but concentrated. | `Tests/BuildWorkspaceTests.swift` covers scanning, command building, persistence fixtures, folder import, and runner behavior, but platform side effects are not injected. | Preserve the existing tests and add focused suites around extracted seams, failure reporting, and compatibility. |
-| The Xcode project uses explicit file references. | `LXC-BRM.xcodeproj/project.pbxproj` lists source files and resources manually. | Treat target membership and project-file updates as a required step for every extracted Swift file. |
+| The Xcode project uses explicit file references. | `LXC-Build-Release-Manager.xcodeproj/project.pbxproj` lists source files and resources manually. | Treat target membership and project-file updates as a required step for every extracted Swift file. |
 
 ## Current Dependency Shape
 
@@ -120,7 +120,7 @@ section 04 below, which is where the remaining work is tracked.
 - [x] Identify the main extraction boundary: `ContentView.swift` and its embedded feature views.
 - [x] Identify the main reuse boundary: persistence, filesystem, process, notification, and AppKit side effects.
 - [x] Confirm the package-free constraint and native SwiftUI/AppKit stack.
-- [x] Run the baseline Debug build before changing architecture: `xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug CODE_SIGNING_ALLOWED=NO build`.
+- [x] Run the baseline Debug build before changing architecture: `xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Release-Manager -configuration Debug CODE_SIGNING_ALLOWED=NO build`.
 - [x] Run the baseline test target and record the result before the first code refactor.
 - [x] Record the baseline build/test evidence. `BUILD SUCCEEDED` and `TEST SUCCEEDED` with 14
       tests and 0 failures; Xcode emitted environment-level AppIntents/service warnings during the

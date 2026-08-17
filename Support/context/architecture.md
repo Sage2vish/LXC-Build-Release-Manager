@@ -6,18 +6,18 @@ This document describes the current shape of both the native app and the Support
 
 The canonical visual set lives in [`diagrams/`](diagrams/). These SVGs make the boundaries legible before a contributor opens the Xcode project:
 
-![LXC-BRM system context](diagrams/system-context.svg)
+![LXC Build Release Manager system context](diagrams/system-context.svg)
 
-![LXC-BRM runtime architecture](diagrams/runtime-architecture.svg)
+![LXC Build Release Manager runtime architecture](diagrams/runtime-architecture.svg)
 
-![LXC-BRM release flow](diagrams/release-flow.svg)
+![LXC Build Release Manager release flow](diagrams/release-flow.svg)
 
 The key boundary is intentional: GitHub URLs can be inspected through the Contents API, but only a local repository path is passed to the build runner. Build history and preferences persist in Application Support, repository execution logs stay under `build/logs/`, and local release artifacts are staged under `version/`.
 
 ## Product architecture
 
 - The product is a native macOS application built with Swift 6, SwiftUI, AppKit, Foundation, and XCTest.
-- The Xcode project lives under `LXC-BRM/` and targets macOS 15 or later.
+- The Xcode project lives at the repository root and targets macOS 15 or later.
 - The app shell uses a `NavigationSplitView` with a repository sidebar, repository detail workspace, and optional right-side inspector.
 - The detail workspace owns Build, Logs, History, Overview, and Settings surfaces for the selected repository.
 - The app has no third-party package dependency; local files and Apple system frameworks are the baseline.
@@ -26,13 +26,13 @@ The key boundary is intentional: GitHub URLs can be inspected through the Conten
 
 | Responsibility | Main implementation area | Persistent result |
 | --- | --- | --- |
-| Repository input and recent list | `App/Services/RepositoryStore.swift` | `~/Library/Application Support/LXC-BRM/projects.json` |
+| Repository input and recent list | `App/Services/RepositoryStore.swift` | `~/Library/Application Support/LXC-Build-Release-Manager/projects.json` |
 | Script discovery and path safety | `App/Services/BuildScriptScanner.swift` and `DeepScriptSearch.swift` | In-memory scan result plus workspace selections |
 | Build execution | `App/Services/BuildRunner.swift` | Live output and a `BuildRecord` |
-| History and statistics | `App/Services/BuildHistoryStore.swift` | `~/Library/Application Support/LXC-BRM/build-history.json` |
+| History and statistics | `App/Services/BuildHistoryStore.swift` | `~/Library/Application Support/LXC-Build-Release-Manager/build-history.json` |
 | Logs | `App/Services/LogFileService.swift` | `<repository>/build/logs/*.log` |
-| Preferences and layout | `App/Services/PreferencesStore.swift` | `~/Library/Application Support/LXC-BRM/preferences.json` |
-| Build workspace selections | `App/Services/BuildWorkspaceStateStore.swift` | `~/Library/Application Support/LXC-BRM/build-workspace-state.json` |
+| Preferences and layout | `App/Services/PreferencesStore.swift` | `~/Library/Application Support/LXC-Build-Release-Manager/preferences.json` |
+| Build workspace selections | `App/Services/BuildWorkspaceStateStore.swift` | `~/Library/Application Support/LXC-Build-Release-Manager/build-workspace-state.json` |
 
 ## External and release boundaries
 
@@ -46,7 +46,7 @@ The key boundary is intentional: GitHub URLs can be inspected through the Conten
 
 ## Workspace architecture
 
-- `LXC-BRM/` is the Xcode-openable native app container.
+- The repository root is the Xcode-openable app container: `App/`, `Tests/`, the project, and `Support/` beside them.
 - `Support/` is the non-app project handbook and delivery workspace.
 - `Support/build-release/` owns scripts, release instructions, configuration examples, and version staging.
 - `Support/context/` owns requirements, architecture, rules, decisions, and design references.
@@ -58,7 +58,7 @@ The key boundary is intentional: GitHub URLs can be inspected through the Conten
 ## Documentation architecture
 
 - The repository root `README.md` is the top-level landing page, and it routes to the delivery plan.
-- `LXC-BRM/README.md` is the app product guide.
+- The root `README.md` is both the landing page and the product guide; there is no second app README.
 - `Support/README.md` is the Support handbook and full project map.
 - Each Support child README is an index for that folder, not a replacement for the plan index.
 - `Support/worklog/BRM-Plan-todo.md` is the master index for delivery. It links every

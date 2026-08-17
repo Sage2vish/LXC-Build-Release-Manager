@@ -98,7 +98,7 @@ The three View-menu toggles must be readable and writable from **both** the `Sce
 | `App/Models/Preferences.swift` | Three new layout flags in the Appearance block. |
 | `App/LXC_BRMApp.swift` | New `.commands` block with the three View menu items. |
 | `App/ContentView.swift` | Resizable column width, conditional status bar inset, `columnVisibility` binding, inspector flag lifted to the shared store. |
-| `LXC-BRM.xcodeproj/project.pbxproj` | `MARKETING_VERSION` → `0.1.2`. |
+| `LXC-Build-Release-Manager.xcodeproj/project.pbxproj` | `MARKETING_VERSION` → `0.1.2`. |
 
 ---
 

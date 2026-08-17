@@ -1,7 +1,10 @@
-# This workflow will build a Swift project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
+# Builds and tests the macOS app on every push and pull request to main.
+#
+# The project is at the repository root and ships a shared scheme, so both are named
+# explicitly rather than discovered — a glob that picks the wrong container is the
+# failure mode this replaces.
 
-name: Swift
+name: Build and test
 
 on:
   push:
@@ -9,47 +12,39 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  PROJECT: LXC-Build-Release-Manager.xcodeproj
+  SCHEME: LXC-Build-Release-Manager
+
 jobs:
-  build:
-
-    runs-on: macos-latest
-
-    defaults:
-      run:
-        working-directory: LXC-BRM
+  build-and-test:
+    name: Debug build and unit tests
+    runs-on: macos-15
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set Default Scheme
-      id: xcode_info
-      working-directory: LXC-BRM
-      run: |
-        if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then
-          filetype_parameter="workspace"
-          file_to_build="`ls -A | grep -i \\.xcworkspace\$`"
-          json_key="workspace"
-        else
-          filetype_parameter="project"
-          file_to_build="`ls -A | grep -i \\.xcodeproj\$`"
-          json_key="project"
-        fi
-        file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-        scheme=$(xcodebuild -list -json | tr -d "\n" | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['$json_key']['targets'][0]")
-        echo "filetype_parameter=$filetype_parameter" >> "$GITHUB_OUTPUT"
-        echo "file_to_build=$file_to_build" >> "$GITHUB_OUTPUT"
-        echo "scheme=$scheme" >> "$GITHUB_OUTPUT"
-        echo "Using scheme: $scheme, $filetype_parameter: $file_to_build"
-    - name: Build
-      working-directory: LXC-BRM
-      run: |
-        xcodebuild clean build \
-          -scheme "${{ steps.xcode_info.outputs.scheme }}" \
-          -"${{ steps.xcode_info.outputs.filetype_parameter }}" "${{ steps.xcode_info.outputs.file_to_build }}" \
-          | xcpretty && exit ${PIPESTATUS[0]}
-    - name: Run tests
-      working-directory: LXC-BRM
-      run: |
-        xcodebuild test \
-          -scheme "${{ steps.xcode_info.outputs.scheme }}" \
-          -"${{ steps.xcode_info.outputs.filetype_parameter }}" "${{ steps.xcode_info.outputs.file_to_build }}" \
-          | xcpretty && exit ${PIPESTATUS[0]}
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show build environment
+        run: |
+          xcodebuild -version
+          swift --version
+          xcodebuild -project "$PROJECT" -list
+
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Test
+        run: |
+          xcodebuild test \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO

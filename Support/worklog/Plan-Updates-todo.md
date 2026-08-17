@@ -76,7 +76,7 @@ and the rate-limit handling added in the preferences pass.
 ## Release flow
 
 `Support/build-release/scripts/release.sh` now names the artifact from the built app's
-`CFBundleShortVersionString` — `LXC-BRM-0.1.2.dmg`, tag `v0.1.2` — instead of a date, because the
+`CFBundleShortVersionString` — `LXC-Build-Release-Manager-0.1.2.dmg`, tag `v0.1.2` — instead of a date, because the
 updater compares release tags against that version. `--publish` creates the GitHub Release and
 attaches the `.dmg` via the GitHub CLI; `--prerelease` puts it on the Beta channel. Re-publishing
 an existing tag uploads and replaces the asset rather than failing.

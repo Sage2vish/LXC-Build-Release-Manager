@@ -1,6 +1,6 @@
 # Frameworks
 
-This folder is the curated framework and integration boundary for LXC-BRM. It is where we record reusable system-framework knowledge, adapters, package decisions, and compatibility notes before they become app code.
+This folder is the curated framework and integration boundary for LXC Build Release Manager. It is where we record reusable system-framework knowledge, adapters, package decisions, and compatibility notes before they become app code.
 
 ## Current framework matrix
 

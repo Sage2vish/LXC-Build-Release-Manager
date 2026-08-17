@@ -13,19 +13,19 @@ Consolidated from the retired `todo-2026-08-16.md` (Phase 7, Decision Overrides)
 ## The flow
 
 ```text
-LXC-BRM.xcodeproj
+LXC-Build-Release-Manager.xcodeproj
    └─ Release build (signing disabled)
-        └─ version/staging/LXC-BRM.app
-             └─ version/LXC-BRM-<version>.dmg
+        └─ version/staging/LXC-Build-Release-Manager.app
+             └─ version/LXC Build Release Manager-<version>.dmg
                   └─ optional: gh release create  →  GitHub Releases
 ```
 
 The entry point is `Support/build-release/scripts/release.sh`. Run it from the repository root:
 
 ```sh
-./LXC-BRM/Support/build-release/scripts/release.sh              # build + stage + dmg
-./LXC-BRM/Support/build-release/scripts/release.sh --publish     # also publish to GitHub Releases
-./LXC-BRM/Support/build-release/scripts/release.sh --publish --prerelease   # Beta channel
+./Support/build-release/scripts/release.sh              # build + stage + dmg
+./Support/build-release/scripts/release.sh --publish     # also publish to GitHub Releases
+./Support/build-release/scripts/release.sh --publish --prerelease   # Beta channel
 ```
 
 ## 01. Deliverables — shipped
@@ -41,7 +41,7 @@ The entry point is `Support/build-release/scripts/release.sh`. Run it from the r
 ## 02. Artifact naming and publication
 
 - [x] The `.dmg` is named from the built app's `CFBundleShortVersionString`
-      (`LXC-BRM-0.1.2.dmg`, tag `v0.1.2`) rather than from a date, because the updater compares
+      (`LXC-Build-Release-Manager-0.1.2.dmg`, tag `v0.1.2`) rather than from a date, because the updater compares
       release tags against that version.
 - [x] `--publish` creates the GitHub Release and attaches the `.dmg` through the GitHub CLI;
       re-publishing an existing tag replaces the asset instead of failing.
@@ -81,7 +81,7 @@ Carried from the decision log so the packaging rules stay visible next to the fl
 
 1. `projects.json` under `build-release/` is a configuration **template**. The running app's own
    recent-repositories, history, preferences and workspace state live in
-   `~/Library/Application Support/LXC-BRM/`, never in the repository.
+   `~/Library/Application Support/LXC-Build-Release-Manager/`, never in the repository.
 2. Repository logs stay repository-local under `<repository>/build/logs/`; they are part of the
    product contract, not app data.
 3. A PDF-versus-decision conflict is recorded in `context/decisions/` before it is built around.

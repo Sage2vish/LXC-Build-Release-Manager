@@ -1,16 +1,16 @@
 # Context
 
-Context is the reasoning layer for LXC-BRM. It gives contributors and AI tools the material needed to understand the product before changing code.
+Context is the reasoning layer for LXC Build Release Manager. It gives contributors and AI tools the material needed to understand the product before changing code.
 
 ## Visual context
 
 The architecture is also available as a self-contained SVG set for quick orientation and documentation previews. Start with the [Context Diagram Index](diagrams/README.md), then read the maps in order:
 
-![LXC-BRM system context](diagrams/system-context.svg)
+![LXC Build Release Manager system context](diagrams/system-context.svg)
 
-![LXC-BRM runtime architecture](diagrams/runtime-architecture.svg)
+![LXC Build Release Manager runtime architecture](diagrams/runtime-architecture.svg)
 
-![LXC-BRM release flow](diagrams/release-flow.svg)
+![LXC Build Release Manager release flow](diagrams/release-flow.svg)
 
 ## Read in this order
 

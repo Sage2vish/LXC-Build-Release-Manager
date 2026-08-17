@@ -25,25 +25,25 @@ This folder owns the operational path from the Xcode project to a local release 
 Run from the repository root, not from this folder:
 
 ```sh
-xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug build
-xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug test
+xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Release-Manager -configuration Debug build
+xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Release-Manager -configuration Debug test
 ```
 
-The same project can be opened in Xcode with the `LXC-BRM` scheme and `My Mac` destination.
+The same project can be opened in Xcode with the `LXC-Build-Release-Manager` scheme and `My Mac` destination.
 
 ## Local release flow
 
 The repeatable packaging command is:
 
 ```sh
-./LXC-BRM/Support/build-release/scripts/release.sh
+./Support/build-release/scripts/release.sh
 ```
 
 The script:
 
 1. Builds the `Release` configuration with `CODE_SIGNING_ALLOWED=NO` and `CODE_SIGNING_REQUIRED=NO`.
 2. Places the app in `Support/build-release/version/staging/`.
-3. Creates `Support/build-release/version/LXC-BRM-YYYY-MM-DD.dmg` with `hdiutil`.
+3. Creates `Support/build-release/version/LXC-Build-Release-Manager-<version>.dmg` with `hdiutil`.
 4. Replaces the same-day DMG if the command is run again.
 
 This is a local inspection and staging flow. A production distribution still needs a Developer ID signing identity, notarization, and release-specific validation before the DMG is shared outside the development machine.
@@ -84,7 +84,7 @@ The artifact is named from the built app's `CFBundleShortVersionString`, so bump
 `MARKETING_VERSION` in the Xcode project is what drives the release version:
 
 ```
-LXC-BRM-0.1.2.dmg      tag v0.1.2
+LXC-Build-Release-Manager-0.1.2.dmg      tag v0.1.2
 ```
 
 Publishing needs the [GitHub CLI](https://cli.github.com), authenticated with `gh auth login`.

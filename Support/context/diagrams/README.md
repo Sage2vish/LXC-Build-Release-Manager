@@ -16,19 +16,19 @@
 
 ## System Context
 
-![LXC-BRM system context](system-context.svg)
+![LXC Build Release Manager system context](system-context.svg)
 
 The system map establishes the most important product boundary: GitHub can provide repository and script metadata through discovery, while a local checkout is required before a script can execute. The app persists workspace state and build history under Application Support, writes build logs beside the repository, and stages local release artifacts under `version/`.
 
 ## Runtime Architecture
 
-![LXC-BRM runtime architecture](runtime-architecture.svg)
+![LXC Build Release Manager runtime architecture](runtime-architecture.svg)
 
-The runtime map follows the path from SwiftUI/AppKit presentation surfaces into focused services and then into storage or filesystem boundaries. The service names are implementation-oriented on purpose; use the code under `LXC-BRM/App/Services/` as the final authority when behavior changes.
+The runtime map follows the path from SwiftUI/AppKit presentation surfaces into focused services and then into storage or filesystem boundaries. The service names are implementation-oriented on purpose; use the code under ``App/Services/`` as the final authority when behavior changes.
 
 ## Release Flow
 
-![LXC-BRM release flow](release-flow.svg)
+![LXC Build Release Manager release flow](release-flow.svg)
 
 The release map describes the local-first path implemented by [`../build-release/scripts/release.sh`](../../build-release/scripts/release.sh): select a repository, discover scripts, validate locally, build a Release app, stage it, create a dated DMG, and only then consider an optional GitHub tag or release handoff.
 

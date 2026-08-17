@@ -1,6 +1,6 @@
 # Worklog
 
-The Worklog is the delivery ledger for LXC-BRM. It maps requirements and decisions to features,
+The Worklog is the delivery ledger for LXC Build Release Manager. It maps requirements and decisions to features,
 release work, and verification evidence — and it has exactly one front door.
 
 ## Start at the master index

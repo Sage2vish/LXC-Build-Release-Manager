@@ -1,7 +1,7 @@
 # LXC Build & Release Manager
 
 <div align="center">
-  <img src="LXC-BRM/Support/context/concepts-designs/lxc-brm-mark.svg" alt="LXC Build and Release Manager" width="760">
+  <img src="Support/context/concepts-designs/brand-mark.svg" alt="LXC Build and Release Manager" width="760">
   <br>
   <br>
   <strong>A release room for the scripts you already trust.</strong>
@@ -9,17 +9,15 @@
   <sub>Discover the workflow. Run it visibly. Preserve the evidence. Ship with intent.</sub>
   <br>
   <br>
-  <a href="LXC-BRM/Support/worklog/BRM-Plan-todo.md"><strong>Delivery plan</strong></a>
+  <a href="Support/worklog/BRM-Plan-todo.md"><strong>Delivery plan</strong></a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="LXC-BRM/README.md">Product guide</a>
+  <a href="Support/README.md">Support handbook</a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="LXC-BRM/Support/README.md">Support handbook</a>
+  <a href="Support/build-release/USER_GUIDE.md">User guide</a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="LXC-BRM/Support/build-release/USER_GUIDE.md">User guide</a>
+  <a href="Support/context/architecture.md">Architecture</a>
   &nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="LXC-BRM/Support/context/architecture.md">Architecture</a>
-  &nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="LXC-BRM/Support/context/diagrams/README.md">Visual diagrams</a>
+  <a href="Support/context/diagrams/README.md">Visual diagrams</a>
 </div>
 
 <br>
@@ -45,9 +43,9 @@
 
 ## The premise
 
-Every serious project has a build language of its own: a handful of shell scripts, a few release conventions, a log folder, and a lot of tribal memory. LXC-BRM turns that invisible language into a native macOS workspace without replacing the scripts or hiding the process behind a black box.
+Every serious project has a build language of its own: a handful of shell scripts, a few release conventions, a log folder, and a lot of tribal memory. LXC Build Release Manager turns that invisible language into a native macOS workspace without replacing the scripts or hiding the process behind a black box.
 
-Point LXC-BRM at a repository. It finds the build contract, presents the available commands, runs local work in the right context, streams the output, records the result, and keeps the project knowledge close enough to guide the next release.
+Point LXC Build Release Manager at a repository. It finds the build contract, presents the available commands, runs local work in the right context, streams the output, records the result, and keeps the project knowledge close enough to guide the next release.
 
 This is not another CI platform. It is the calm, inspectable room between a repository and the person responsible for shipping it.
 
@@ -69,6 +67,19 @@ flowchart LR
     class C,D action;
     class E,F,G evidence;
 ```
+
+In practice, that is six steps:
+
+1. Add a repository from the sidebar — a local folder, or a GitHub URL.
+2. The app checks the repository and discovers `/build/scripts`.
+3. Choose a script, set its parameters, and run it locally.
+4. Watch the live output, or stop it and keep the partial log.
+5. Review the result in Logs, History, or Overview.
+6. Use the release flow when the build is ready to become a distributable artifact.
+
+A GitHub source can be inspected through the Contents API, but only a local checkout can execute a
+script — a process needs a real working directory. That boundary is deliberate, and it is recorded
+in the [Build tab plan](Support/worklog/Plan-Tab-Build-todo.md).
 
 ## What ships
 
@@ -111,7 +122,7 @@ flowchart TB
 
     subgraph Files["Local evidence"]
         Repo["Repository folder"]
-        AppSupport["Application Support / LXC-BRM"]
+        AppSupport["Application Support / LXC-Build-Release-Manager"]
         Logs["Repository /build/logs"]
         Release["Support/build-release/version"]
     end
@@ -140,7 +151,7 @@ flowchart TB
     class Repo,AppSupport,Logs,Release,ReleaseScript file;
 ```
 
-The detailed responsibility map lives in [Support/context/architecture.md](LXC-BRM/Support/context/architecture.md). The source-controlled SVG maps live in [Support/context/diagrams](LXC-BRM/Support/context/diagrams/README.md).
+The detailed responsibility map lives in [Support/context/architecture.md](Support/context/architecture.md). The source-controlled SVG maps live in [Support/context/diagrams](Support/context/diagrams/README.md).
 
 ## Release pipeline
 
@@ -148,11 +159,11 @@ The release path is intentionally boring: verify first, package second, inspect 
 
 ```mermaid
 flowchart LR
-    source["LXC-BRM.xcodeproj"] --> debug["Debug build + tests"]
+    source["LXC-Build-Release-Manager.xcodeproj"] --> debug["Debug build + tests"]
     debug --> release["Release build"]
-    release --> app["LXC-BRM.app"]
+    release --> app["LXC-Build-Release-Manager.app"]
     app --> stage["version/staging"]
-    stage --> dmg["LXC-BRM-YYYY-MM-DD.dmg"]
+    stage --> dmg["LXC-Build-Release-Manager-<version>.dmg"]
 
     classDef verify fill:#EEF4FF,stroke:#3155E7,color:#0B1020;
     classDef package fill:#FFF1EE,stroke:#F27D68,color:#0B1020;
@@ -165,23 +176,23 @@ flowchart LR
 Run the local packaging flow from the repository root:
 
 ```sh
-./LXC-BRM/Support/build-release/scripts/release.sh
+./Support/build-release/scripts/release.sh
 ```
 
-The generated app and DMG are intentionally ignored by Git. The staging contract is documented in [version/README.md](LXC-BRM/Support/build-release/version/README.md). Production distribution still requires Developer ID signing and notarization.
+The generated app and DMG are intentionally ignored by Git. The staging contract is documented in [version/README.md](Support/build-release/version/README.md). Production distribution still requires Developer ID signing and notarization.
 
 ## Quick start
 
 ### Build and test from the terminal
 
 ```sh
-xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug build
-xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug test
+xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Release-Manager -configuration Debug build
+xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Release-Manager -configuration Debug test
 ```
 
 ### Run from Xcode
 
-Open `LXC-BRM/LXC-BRM.xcodeproj`, choose the `LXC-BRM` scheme and `My Mac`, then press `Cmd+R`.
+Open `LXC-Build-Release-Manager.xcodeproj`, choose the `LXC-Build-Release-Manager` scheme and `My Mac`, then press `Cmd+R`.
 
 ### Give the app a repository
 
@@ -221,18 +232,18 @@ flowchart LR
 
 | Area | What it owns | Open it |
 | --- | --- | --- |
-| Build and release | Commands, packaging, project mapping, logs guidance, and artifact staging. | [Support/build-release](LXC-BRM/Support/build-release/README.md) |
-| Context | Requirements, architecture, rules, decisions, and design references for humans and AI tools. | [Support/context](LXC-BRM/Support/context/README.md) |
-| Frameworks | System framework inventory and future package or adapter records. | [Support/frameworks](LXC-BRM/Support/frameworks/README.md) |
-| Shared | Reusable conventions and cross-feature ideas. | [Support/shared](LXC-BRM/Support/shared/README.md) |
-| Worklog | The plan index, one plan per area, and the verification ledger. | [Support/worklog](LXC-BRM/Support/worklog/README.md) |
+| Build and release | Commands, packaging, project mapping, logs guidance, and artifact staging. | [Support/build-release](Support/build-release/README.md) |
+| Context | Requirements, architecture, rules, decisions, and design references for humans and AI tools. | [Support/context](Support/context/README.md) |
+| Frameworks | System framework inventory and future package or adapter records. | [Support/frameworks](Support/frameworks/README.md) |
+| Shared | Reusable conventions and cross-feature ideas. | [Support/shared](Support/shared/README.md) |
+| Worklog | The plan index, one plan per area, and the verification ledger. | [Support/worklog](Support/worklog/README.md) |
 
 ## The delivery plan
 
 Everything being built, everything already shipped, and everything still open starts in one file:
 
 <div align="center">
-  <h3><a href="LXC-BRM/Support/worklog/BRM-Plan-todo.md">📋 BRM-Plan-todo.md — the master plan index</a></h3>
+  <h3><a href="Support/worklog/BRM-Plan-todo.md">📋 BRM-Plan-todo.md — the master plan index</a></h3>
   <sub>Open it, find your area in a table, follow the link, work there.</sub>
 </div>
 
@@ -253,46 +264,46 @@ the same map, so you can jump straight in from here.
 
 | Region | Plan | Owns |
 | --- | --- | --- |
-| Whole window | [Plan-AppShellUI](LXC-BRM/Support/worklog/Plan-AppShellUI-todo.md) | Background, material and glass language, theme and accent |
-| Left sidebar | [Plan-LeftSidebar](LXC-BRM/Support/worklog/Plan-LeftSidebar-todo.md) | Repositories, recents, add/remove, the footer buttons |
-| Main panel | [Plan-MainPanel](LXC-BRM/Support/worklog/Plan-MainPanel-todo.md) | Index over the three bands and six tabs below |
-| Detail View panel | [Plan-DetailViewPanel](LXC-BRM/Support/worklog/Plan-DetailViewPanel-todo.md) | The right inspector: script, parameters, status, history, actions |
-| Status bar | [Plan-StatusBar](LXC-BRM/Support/worklog/Plan-StatusBar-todo.md) | Repository, branch, platform and auto-detect chips |
+| Whole window | [Plan-AppShellUI](Support/worklog/Plan-AppShellUI-todo.md) | Background, material and glass language, theme and accent |
+| Left sidebar | [Plan-LeftSidebar](Support/worklog/Plan-LeftSidebar-todo.md) | Repositories, recents, add/remove, the footer buttons |
+| Main panel | [Plan-MainPanel](Support/worklog/Plan-MainPanel-todo.md) | Index over the three bands and six tabs below |
+| Detail View panel | [Plan-DetailViewPanel](Support/worklog/Plan-DetailViewPanel-todo.md) | The right inspector: script, parameters, status, history, actions |
+| Status bar | [Plan-StatusBar](Support/worklog/Plan-StatusBar-todo.md) | Repository, branch, platform and auto-detect chips |
 
 ### Inside the main panel
 
 | Band | Plan | Owns |
 | --- | --- | --- |
-| Header | [Plan-MainPanel-Header](LXC-BRM/Support/worklog/Plan-MainPanel-Header-todo.md) | Repository name, badge, path lines, Reveal / Terminal / Copy |
-| Toolbar | [Plan-MainPanel-Toolbar](LXC-BRM/Support/worklog/Plan-MainPanel-Toolbar-todo.md) | The six-tab picker and the rule beneath it |
-| Container | [Plan-MainPanel-Container](LXC-BRM/Support/worklog/Plan-MainPanel-Container-todo.md) | The work-area surface, padding, scrolling, card treatment |
+| Header | [Plan-MainPanel-Header](Support/worklog/Plan-MainPanel-Header-todo.md) | Repository name, badge, path lines, Reveal / Terminal / Copy |
+| Toolbar | [Plan-MainPanel-Toolbar](Support/worklog/Plan-MainPanel-Toolbar-todo.md) | The six-tab picker and the rule beneath it |
+| Container | [Plan-MainPanel-Container](Support/worklog/Plan-MainPanel-Container-todo.md) | The work-area surface, padding, scrolling, card treatment |
 
 | Tab | Plan | Owns |
 | --- | --- | --- |
-| Build | [Plan-Tab-Build](LXC-BRM/Support/worklog/Plan-Tab-Build-todo.md) | Script discovery, parameters, execution, live output |
-| Logs | [Plan-Tab-Logs](LXC-BRM/Support/worklog/Plan-Tab-Logs-todo.md) | Saved logs, filters, search, export |
-| History | [Plan-Tab-History](LXC-BRM/Support/worklog/Plan-Tab-History-todo.md) | Every recorded run for the repository |
-| Overview | [Plan-Tab-Overview](LXC-BRM/Support/worklog/Plan-Tab-Overview-todo.md) | Repository summary and build statistics |
-| Docs | [Plan-MarkdownExplorer](LXC-BRM/Support/worklog/Plan-MarkdownExplorer-todo.md) | Markdown discovery, rendering, Preview/Source editing |
-| Settings | [Plan-Tab-Settings](LXC-BRM/Support/worklog/Plan-Tab-Settings-todo.md) | Per-repository settings, distinct from the Preferences window |
+| Build | [Plan-Tab-Build](Support/worklog/Plan-Tab-Build-todo.md) | Script discovery, parameters, execution, live output |
+| Logs | [Plan-Tab-Logs](Support/worklog/Plan-Tab-Logs-todo.md) | Saved logs, filters, search, export |
+| History | [Plan-Tab-History](Support/worklog/Plan-Tab-History-todo.md) | Every recorded run for the repository |
+| Overview | [Plan-Tab-Overview](Support/worklog/Plan-Tab-Overview-todo.md) | Repository summary and build statistics |
+| Docs | [Plan-MarkdownExplorer](Support/worklog/Plan-MarkdownExplorer-todo.md) | Markdown discovery, rendering, Preview/Source editing |
+| Settings | [Plan-Tab-Settings](Support/worklog/Plan-Tab-Settings-todo.md) | Per-repository settings, distinct from the Preferences window |
 
 ### Features, engineering, and release
 
 | Area | Plan | Owns |
 | --- | --- | --- |
-| Preferences window | [Plan-PreferenceScreen](LXC-BRM/Support/worklog/Plan-PreferenceScreen-todo.md) | Seven tabs, every field, and the wiring audit behind them |
-| Update checking | [Plan-Updates](LXC-BRM/Support/worklog/Plan-Updates-todo.md) | GitHub Releases feed, version comparison, stable and beta |
-| Localization | [Plan-Localization](LXC-BRM/Support/worklog/Plan-Localization-todo.md) | English and Hindi, the string catalogue, language switching |
-| Window layout | [Plan-WindowLayout](LXC-BRM/Support/worklog/Plan-WindowLayout-todo.md) | Resizing, the View menu, panel visibility and persistence |
-| Code refactoring | [Plan-CodeRefactoring-Reusability](LXC-BRM/Support/worklog/Plan-CodeRefactoring-Reusability-todo.md) | Feature extraction, dependency seams, reuse |
-| Xcode project | [Plan-XcodeProject](LXC-BRM/Support/worklog/Plan-XcodeProject-todo.md) | Target membership, build settings, schemes, project hygiene |
-| Quality & verification | [Plan-QualityVerification](LXC-BRM/Support/worklog/Plan-QualityVerification-todo.md) | Non-functional targets, tests, GUI coverage, standing caveats |
-| Release & packaging | [Plan-ReleasePackaging](LXC-BRM/Support/worklog/Plan-ReleasePackaging-todo.md) | Release script, staging, the `.dmg`, tags, signing |
-| Context & diagrams | [Plan-ContextArchitectureVisuals](LXC-BRM/Support/worklog/Plan-ContextArchitectureVisuals-todo.md) | The SVG diagram set and its documentation wiring |
+| Preferences window | [Plan-PreferenceScreen](Support/worklog/Plan-PreferenceScreen-todo.md) | Seven tabs, every field, and the wiring audit behind them |
+| Update checking | [Plan-Updates](Support/worklog/Plan-Updates-todo.md) | GitHub Releases feed, version comparison, stable and beta |
+| Localization | [Plan-Localization](Support/worklog/Plan-Localization-todo.md) | English and Hindi, the string catalogue, language switching |
+| Window layout | [Plan-WindowLayout](Support/worklog/Plan-WindowLayout-todo.md) | Resizing, the View menu, panel visibility and persistence |
+| Code refactoring | [Plan-CodeRefactoring-Reusability](Support/worklog/Plan-CodeRefactoring-Reusability-todo.md) | Feature extraction, dependency seams, reuse |
+| Xcode project | [Plan-XcodeProject](Support/worklog/Plan-XcodeProject-todo.md) | Target membership, build settings, schemes, project hygiene |
+| Quality & verification | [Plan-QualityVerification](Support/worklog/Plan-QualityVerification-todo.md) | Non-functional targets, tests, GUI coverage, standing caveats |
+| Release & packaging | [Plan-ReleasePackaging](Support/worklog/Plan-ReleasePackaging-todo.md) | Release script, staging, the `.dmg`, tags, signing |
+| Context & diagrams | [Plan-ContextArchitectureVisuals](Support/worklog/Plan-ContextArchitectureVisuals-todo.md) | The SVG diagram set and its documentation wiring |
 
 The rules that keep this coherent — one plan per area, `[x]` only when verified, no dated tracker
-files — are in [the worklog README](LXC-BRM/Support/worklog/README.md) and
-[decision-2026-08-18](LXC-BRM/Support/context/decisions/decision-2026-08-18.md).
+files — are in [the worklog README](Support/worklog/README.md) and
+[decision-2026-08-18](Support/context/decisions/decision-2026-08-18.md).
 
 ## Current release signal
 
@@ -305,39 +316,38 @@ files — are in [the worklog README](LXC-BRM/Support/worklog/README.md) and
   </tr>
 </table>
 
-The remaining hardening work is kept honest in [Plan-QualityVerification](LXC-BRM/Support/worklog/Plan-QualityVerification-todo.md) — measured performance numbers, resilience coverage, which parts of the app have actually been click-tested, and the caveats that are true of the product rather than bugs waiting to be fixed.
+The remaining hardening work is kept honest in [Plan-QualityVerification](Support/worklog/Plan-QualityVerification-todo.md) — measured performance numbers, resilience coverage, which parts of the app have actually been click-tested, and the caveats that are true of the product rather than bugs waiting to be fixed.
 
 ## Data locations
 
 | Data | Location |
 | --- | --- |
-| Recent repositories | `~/Library/Application Support/LXC-BRM/projects.json` |
-| Build history | `~/Library/Application Support/LXC-BRM/build-history.json` |
-| Build workspace state | `~/Library/Application Support/LXC-BRM/build-workspace-state.json` |
-| Preferences | `~/Library/Application Support/LXC-BRM/preferences.json` |
+| Recent repositories | `~/Library/Application Support/LXC-Build-Release-Manager/projects.json` |
+| Build history | `~/Library/Application Support/LXC-Build-Release-Manager/build-history.json` |
+| Build workspace state | `~/Library/Application Support/LXC-Build-Release-Manager/build-workspace-state.json` |
+| Preferences | `~/Library/Application Support/LXC-Build-Release-Manager/preferences.json` |
 | Runtime logs | `<repository>/build/logs/` |
-| Release staging | `LXC-BRM/Support/build-release/version/` |
+| Release staging | `Support/build-release/version/` |
 
 ## Documentation navigation
 
 | If you want to... | Read... |
 | --- | --- |
-| **See the whole plan and pick up work** | **[BRM plan index](LXC-BRM/Support/worklog/BRM-Plan-todo.md)** |
-| Understand the app experience | [LXC-BRM/README.md](LXC-BRM/README.md) |
-| Operate the app | [User Guide](LXC-BRM/Support/build-release/USER_GUIDE.md) |
-| Package a release | [Build and Release](LXC-BRM/Support/build-release/README.md) |
-| Give an AI tool project context | [Support Handbook](LXC-BRM/Support/README.md) and [Context README](LXC-BRM/Support/context/README.md) |
-| Understand the architecture | [Architecture](LXC-BRM/Support/context/architecture.md) |
-| See the system visually | [Context diagrams](LXC-BRM/Support/context/diagrams/README.md) |
-| Follow what is actually complete | [Quality & verification](LXC-BRM/Support/worklog/Plan-QualityVerification-todo.md) |
-| See the Build workspace record | [Build tab plan](LXC-BRM/Support/worklog/Plan-Tab-Build-todo.md) |
-| Package or publish a release | [Release & packaging](LXC-BRM/Support/worklog/Plan-ReleasePackaging-todo.md) |
-| Browse visual references | [Concepts and Designs](LXC-BRM/Support/context/concepts-designs/README.md) |
+| **See the whole plan and pick up work** | **[BRM plan index](Support/worklog/BRM-Plan-todo.md)** |
+| Operate the app | [User Guide](Support/build-release/USER_GUIDE.md) |
+| Package a release | [Build and Release](Support/build-release/README.md) |
+| Give an AI tool project context | [Support Handbook](Support/README.md) and [Context README](Support/context/README.md) |
+| Understand the architecture | [Architecture](Support/context/architecture.md) |
+| See the system visually | [Context diagrams](Support/context/diagrams/README.md) |
+| Follow what is actually complete | [Quality & verification](Support/worklog/Plan-QualityVerification-todo.md) |
+| See the Build workspace record | [Build tab plan](Support/worklog/Plan-Tab-Build-todo.md) |
+| Package or publish a release | [Release & packaging](Support/worklog/Plan-ReleasePackaging-todo.md) |
+| Browse visual references | [Concepts and Designs](Support/context/concepts-designs/README.md) |
 
 ## Contributing
 
-Start with [CONTRIBUTING.md](LXC-BRM/CONTRIBUTING.md), read the [Support Handbook](LXC-BRM/Support/README.md), and keep code, context, and worklog status synchronized in the same change. Generated `.app`, `.dmg`, logs, and local build data stay out of commits.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md), read the [Support Handbook](Support/README.md), and keep code, context, and worklog status synchronized in the same change. Generated `.app`, `.dmg`, logs, and local build data stay out of commits.
 
 ## License
 
-LXC-BRM is released under the [MIT License](LXC-BRM/LICENSE).
+LXC Build Release Manager is released under the [MIT License](LICENSE).

@@ -1,6 +1,6 @@
 # Plan — Xcode project & IDE
 
-Everything about `LXC-BRM.xcodeproj` itself: target membership, build settings, schemes, and the
+Everything about `LXC-Build-Release-Manager.xcodeproj` itself: target membership, build settings, schemes, and the
 mechanics of keeping the project file correct as source files come and go.
 
 ## Why this needs a plan
@@ -19,7 +19,7 @@ Every file added during this work has needed that by hand, and a missed entry sh
 | Swift version | 6.0 (both target configs) | Project-level Release still says 5.0; the target overrides it |
 | Third-party packages | None | Deliberate; see the refactoring plan's non-goals |
 | Code signing | Disabled for Debug | `CODE_SIGNING_ALLOWED=NO` |
-| Targets | App + `LXC-BRMTests` | No UI-test target |
+| Targets | App + `LXC-Build-Release-ManagerTests` | No UI-test target |
 | Known regions | en, hi | |
 
 ## 01. File registration

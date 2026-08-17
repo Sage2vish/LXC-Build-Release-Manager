@@ -1,4 +1,4 @@
-# LXC-BRM Support Handbook
+# LXC Build Release Manager Support Handbook
 
 <p align="center">
   <strong>The project map behind the Build Manager.</strong><br>
@@ -16,7 +16,7 @@
 
 ## The project story
 
-LXC-BRM is a native macOS build and release manager for repositories that expose their build workflow as scripts. The product is organized around one simple loop:
+LXC Build Release Manager is a native macOS build and release manager for repositories that expose their build workflow as scripts. The product is organized around one simple loop:
 
 1. Discover what a repository can build.
 2. Run a local build with visible, timestamped output.
@@ -37,14 +37,14 @@ The Support tree makes that loop understandable and repeatable. It is intentiona
 
 | Signal | Current value |
 | --- | --- |
-| Product | LXC-BRM Build Manager |
+| Product | LXC Build Release Manager Build Manager |
 | Release line | `0.1.2` |
 | Tagged local release | `release-2026-08-16` |
 | Platform | macOS 15 or later |
 | Implementation | Swift 6, SwiftUI, AppKit, Foundation, XCTest |
 | Third-party packages | None; the app uses system frameworks only |
-| Release artifact | `build-release/version/LXC-BRM-YYYY-MM-DD.dmg` locally |
-| Verification command | `xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug test` |
+| Release artifact | `build-release/version/LXC-Build-Release-Manager-<version>.dmg` locally |
+| Verification command | `xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Release-Manager -configuration Debug test` |
 
 The tracked release contract is kept beside the generated output in [`build-release/version/README.md`](build-release/version/README.md). Generated `.app` and `.dmg` files are ignored by Git so local artifacts do not become source files.
 

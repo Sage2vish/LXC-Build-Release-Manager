@@ -240,7 +240,7 @@ box and a live document count.
 ## A real defect this pass caught
 
 The first run reported **50 documents** and opened `README 2.md` from inside
-`build/Debug/LXC-BRM.app/Contents/Resources/`. A built `.app` bundles a copy of every README as
+`build/Debug/LXC-Build-Release-Manager.app/Contents/Resources/`. A built `.app` bundles a copy of every README as
 a resource, and because the walk recurses directories by hand, `skipsPackageDescendants` never
 applied. **45 of those 50 entries were build artifacts.**
 

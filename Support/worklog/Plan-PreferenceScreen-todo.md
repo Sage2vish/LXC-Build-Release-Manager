@@ -165,7 +165,7 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 - Bottom bar: "Restore Defaults" on the left; "Cancel" / "Save" on the right, Save is the prominent action.
 - Draft/commit editing: edits apply to a local draft; only "Save" commits to the persisted store, "Cancel" discards.
 - Settings apply immediately after Save where possible (theme, font, etc.).
-- Persisted at `~/Library/Application Support/LXC-BRM/preferences.json` — keeping the existing `LXC-BRM` app-support folder name (the mockup's note said `BuildManager`; staying consistent with `RepositoryStore`/`BuildHistoryStore`, which already use `LXC-BRM`).
+- Persisted at `~/Library/Application Support/LXC-Build-Release-Manager/preferences.json` — keeping the existing `LXC-Build-Release-Manager` app-support folder name (the mockup's note said `BuildManager`; staying consistent with `RepositoryStore`/`BuildHistoryStore`, which already use `LXC-Build-Release-Manager`).
 
 ## Wiring status — the 2026-08-16 audit
 
@@ -198,7 +198,7 @@ three were then delivered by their own plans:
 [`Plan-Updates-todo.md`](Plan-Updates-todo.md) and
 [`Plan-Localization-todo.md`](Plan-Localization-todo.md).
 
-- [x] Preferences load and save to `~/Library/Application Support/LXC-BRM/preferences.json`.
+- [x] Preferences load and save to `~/Library/Application Support/LXC-Build-Release-Manager/preferences.json`.
 - [x] The window opens from the sidebar gear and at Cmd+, as a native `Settings` scene.
 - [x] Build and scan code read the live preferences object instead of ignoring it.
 - [x] Shared app state backs both the main window and the Settings scene.
@@ -225,7 +225,7 @@ Every field in every tab below now exists as an editable, `preferences.json`-per
 
 ### Data & persistence
 - [x] `Preferences` model covering every field above, Codable — `App/Models/Preferences.swift`
-- [x] `PreferencesStore` (ObservableObject; load/save JSON to `~/Library/Application Support/LXC-BRM/preferences.json`) — `App/Services/PreferencesStore.swift`
+- [x] `PreferencesStore` (ObservableObject; load/save JSON to `~/Library/Application Support/LXC-Build-Release-Manager/preferences.json`) — `App/Services/PreferencesStore.swift`
 - [x] Recommended-defaults constant — `Preferences.recommendedDefaults`, used by both initial load and "Restore Defaults"
 
 ### Window & navigation
@@ -317,7 +317,7 @@ Every field in every tab below now exists as an editable, `preferences.json`-per
 - P "Run Diagnostics Report…" button — new feature, collects system/app/config info into a shareable report
 - P "Run GitHub Diagnostics…" button — wire into `BuildScriptScanner.scanGitHub`'s connectivity path as a manual health check
 - P GitHub rate limit alerts dropdown — wire into the GitHub API response headers (`X-RateLimit-Remaining`) once the scanner reads them
-- P Open Build Manager data directory button — `NSWorkspace.shared.open` on `~/Library/Application Support/LXC-BRM/`
+- P Open Build Manager data directory button — `NSWorkspace.shared.open` on `~/Library/Application Support/LXC-Build-Release-Manager/`
 - P Open `projects.json` button — `NSWorkspace.shared.open` on the file (note: `projects.json` today is the static config template in the repo, not a live app file — see open question)
 - P Clear repository metadata cache button — no metadata cache exists yet to clear (current scans are always live, not cached)
 - P Clear build history button — wire into `BuildHistoryStore` (needs a real "clear" method; doesn't exist yet)
@@ -365,7 +365,7 @@ Every field in every tab below now exists as an editable, `preferences.json`-per
 5. **Another duplicate field**: "Logs directory (inside /build)" appears on both the Repositories tab (Screen 2) and the Logs & Console tab (Screen 4), same default `logs`. Same resolution as note 2 — one shared stored value, shown in both places.
 6. **Shell default mismatch**: Screen 3's mockup defaults "Default shell" to `/bin/zsh`; the app's `BuildRunner` currently hardcodes `/bin/bash`. Worth confirming which is the intended default before wiring this field — flagged rather than silently picked.
 7. **Theme override reverses an earlier decision.** Screen 5's Light/Dark/System picker means the app needs a manual appearance override — but the app was deliberately built earlier today to *always* follow the system appearance, per explicit instruction ("the dark or bright has to be the system default"), which removed a hardcoded dark background specifically to achieve that. This isn't a contradiction to silently resolve: implementing the theme picker is the right call (it's what's being asked for now, and "System" as the default still satisfies the earlier instruction), just flagging that it's a deliberate reversal of "no in-app override," not an oversight.
-8. Storage path: keeping `~/Library/Application Support/LXC-BRM/preferences.json` instead of the early mockup's `BuildManager/` folder name, for consistency with the app's existing stores.
+8. Storage path: keeping `~/Library/Application Support/LXC-Build-Release-Manager/preferences.json` instead of the early mockup's `BuildManager/` folder name, for consistency with the app's existing stores.
 9. This supersedes the placeholder `PreferencesView`/`Settings` scene built earlier today (2026-08-16); that code will be replaced, not kept alongside.
 10. **Third duplicate: "terminate process tree on Stop."** Appears near-verbatim on both Build Execution (Screen 3) and Advanced (Screen 7). Same resolution as notes 2 and 5 — one shared stored value, shown in both places, not two independently-tracked settings.
 11. **Two different "timeout" fields that are NOT duplicates.** Build Execution's "Build timeout" (Screen 3, default 60 min) is a per-build default; Advanced's "Custom build timeout (overrides per-build timeout)" (Screen 7, default 0/no limit) is described as a global ceiling. Kept as two distinct fields since the mockup is explicit about the override relationship — worth confirming that reading is right before implementing.

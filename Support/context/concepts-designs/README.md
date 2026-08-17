@@ -1,6 +1,6 @@
 # Concepts and Designs
 
-This folder contains the visual and source-reference material used to shape LXC-BRM. Images are design inputs, not automatic evidence that a screen or behavior has shipped. The implementation and verification status lives in the Worklog.
+This folder contains the visual and source-reference material used to shape LXC Build Release Manager. Images are design inputs, not automatic evidence that a screen or behavior has shipped. The implementation and verification status lives in the Worklog.
 
 ## Build and release surfaces
 

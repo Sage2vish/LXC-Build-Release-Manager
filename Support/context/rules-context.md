@@ -3,7 +3,7 @@
 ## Rules
 
 1. Keep the tool macOS-only.
-2. Keep the native app inside `LXC-BRM/`.
+2. Keep the app sources in `App/` and `Tests/` at the repository root, beside the Xcode project.
 3. Keep non-app workspace support content in the `Support/` tree.
 4. Use `build-release/version/` as the final release staging folder.
 5. Place the final `.dmg` in `version/`.

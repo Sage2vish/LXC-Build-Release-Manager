@@ -16,7 +16,7 @@ Concepts live in `Support/context/concepts-designs/`:
 | Asset | Use |
 | --- | --- |
 | `ui-back-main.png` | The window background. 1536×1024 soft pastel gradient. **Copied to `App/Resources/Assets/` so it ships with the app** — the concepts folder is reference material, not a build input. |
-| `lxc-brm-mark.svg` | Brand mark |
+| `brand-mark.svg` | Brand mark |
 | `Build-Console-Screen-*.png` | Main panel concepts |
 | `Logs-console-Screen-concept01a.png` | Logs concepts |
 | `Preference-Screen/` | The seven Preferences tabs — owned by [Plan-PreferenceScreen-todo.md](Plan-PreferenceScreen-todo.md) |

@@ -1,4 +1,4 @@
-# LXC-BRM Build Manager - User Guide
+# LXC Build Release Manager Build Manager - User Guide
 
 This guide covers the app's human-facing workflow. For packaging commands and release staging, see [Build and Release](README.md). For the full project map, see the [Support Handbook](../README.md).
 
@@ -21,7 +21,7 @@ Point the app at a repository (local folder or GitHub URL). It looks for a `/bui
 
 ## Running a Build
 
-Only local repositories can execute scripts. A GitHub URL can be scanned, but it has no local checkout against which LXC-BRM can safely run the configured shell.
+Only local repositories can execute scripts. A GitHub URL can be scanned, but it has no local checkout against which LXC Build Release Manager can safely run the configured shell.
 
 1. Go to the **Build** tab.
 2. Click **Run** next to a script. Output streams live below, each line timestamped.
@@ -46,7 +46,7 @@ Saved logs live on disk in the repo's own `/build/logs/` folder, named `build-YY
 
 - **Pin** a repo (pin icon in the sidebar row) to keep it at the top of the list.
 - **Remove** a repo (✕ icon in the sidebar row, or the Remove button in the repo's **Settings** tab) — this only clears it from the app's list, it never touches the folder on disk.
-- Repositories and their build history persist across app restarts (stored locally under `~/Library/Application Support/LXC-BRM/`).
+- Repositories and their build history persist across app restarts (stored locally under `~/Library/Application Support/LXC-Build-Release-Manager/`).
 
 ## Appearance
 

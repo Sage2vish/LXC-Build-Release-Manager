@@ -127,8 +127,8 @@ Dated evidence, kept so a claim can be traced back to the run that produced it.
 The canonical commands:
 
 ```sh
-xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug CODE_SIGNING_ALLOWED=NO build
-xcodebuild -project LXC-BRM/LXC-BRM.xcodeproj -scheme LXC-BRM -configuration Debug -destination 'platform=macOS,arch=arm64' CODE_SIGNING_ALLOWED=NO test
+xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Release-Manager -configuration Debug CODE_SIGNING_ALLOWED=NO build
+xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Release-Manager -configuration Debug -destination 'platform=macOS,arch=arm64' CODE_SIGNING_ALLOWED=NO test
 ```
 
 - [ ] Add a row here whenever a plan's verification level changes, so evidence never lives only
