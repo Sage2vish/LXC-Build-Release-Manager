@@ -23,7 +23,7 @@ Concepts live in `Support/context/concepts-designs/`:
 
 ## 01. Window background
 
-- [x] Ship `ui-back-main.png` as a bundled app resource, registered in the target exactly once.
+- [x] Ship `ui-back-main.png` as a bundled app resource, registered in the target exactly once. The bundle lookup now resolves it from `Assets/` or the bundle root, and the regression test passes.
 - [x] Render it behind the whole window, beneath all four regions.
 - [ ] Scale it to fill without distorting — the window's aspect ratio will not match 3:2.
 - [ ] Keep it subtle enough that body text stays comfortably readable on top of it.

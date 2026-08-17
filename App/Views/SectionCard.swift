@@ -48,12 +48,12 @@ struct AppBackground: View {
     let preferences: Preferences
     @Environment(\.colorScheme) private var colorScheme
 
-    private static let image: NSImage? = {
-        guard let url = Bundle.main.url(forResource: "ui-back-main", withExtension: "png") else {
-            return nil
-        }
-        return NSImage(contentsOf: url)
-    }()
+    static func imageURL(in bundle: Bundle = .main) -> URL? {
+        bundle.url(forResource: "ui-back-main", withExtension: "png", subdirectory: "Assets")
+        ?? bundle.url(forResource: "ui-back-main", withExtension: "png")
+    }
+
+    private static let image: NSImage? = imageURL().flatMap { NSImage(contentsOf: $0) }
 
     static func displayState(preferences: Preferences, colorScheme: ColorScheme) -> DisplayState {
         DisplayState(

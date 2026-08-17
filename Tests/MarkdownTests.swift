@@ -475,6 +475,11 @@ final class SidebarAndHTMLTests: XCTestCase {
         XCTAssertFalse(state.shouldShow)
     }
 
+    func testAppBackgroundImageIsBundledInTheAssetsSubdirectory() {
+        XCTAssertNotNil(AppBackground.imageURL())
+        XCTAssertEqual(AppBackground.imageURL()?.lastPathComponent, "ui-back-main.png")
+    }
+
     func testTagShapedPlaceholdersInDocsSurviveAsText() {
         // This project's own docs contain <repository>, <tabname>, <hex> as placeholders.
         for placeholder in ["<repository>", "<tabname>", "<hex>"] {
