@@ -58,15 +58,20 @@ struct AppBackground: View {
     static func displayState(preferences: Preferences, colorScheme: ColorScheme) -> DisplayState {
         DisplayState(
             shouldShow: !preferences.reduceTransparency,
-            imageOpacity: colorScheme == .dark ? 0.22 : 0.55,
-            overlayOpacity: colorScheme == .dark ? 0.38 : 0.0
+            backgroundOpacity: colorScheme == .dark ? 0.18 : 0.0,
+            imageOpacity: colorScheme == .dark ? 0.36 : 0.86,
+            overlayOpacity: colorScheme == .dark ? 0.26 : 0.0
         )
     }
 
     var body: some View {
         let displayState = Self.displayState(preferences: preferences, colorScheme: colorScheme)
         ZStack {
-            Color(nsColor: .windowBackgroundColor)
+            if displayState.shouldShow {
+                Color(nsColor: .windowBackgroundColor).opacity(displayState.backgroundOpacity)
+            } else {
+                Color(nsColor: .windowBackgroundColor)
+            }
             if displayState.shouldShow, let image = Self.image {
                 Image(nsImage: image)
                     .resizable()
@@ -83,6 +88,7 @@ struct AppBackground: View {
 
     struct DisplayState: Equatable {
         let shouldShow: Bool
+        let backgroundOpacity: Double
         let imageOpacity: Double
         let overlayOpacity: Double
     }
