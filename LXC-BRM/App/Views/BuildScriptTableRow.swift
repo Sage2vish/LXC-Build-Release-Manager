@@ -36,19 +36,23 @@ struct BuildScriptTableRow: View {
             }
             .frame(minWidth: 130, maxWidth: .infinity, alignment: .leading)
 
+            columnSeparator
             locationBadge
                 .frame(minWidth: 80, idealWidth: 122, maxWidth: 140, alignment: .leading)
 
+            columnSeparator
             Text(script.parameters.isEmpty ? "No parameters" : "\(script.parameters.count) parameter\(script.parameters.count == 1 ? "" : "s")")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(minWidth: 72, idealWidth: 108, maxWidth: 130, alignment: .leading)
 
+            columnSeparator
             Label(lastRunText, systemImage: isRunning ? "circle.dotted" : "clock")
                 .font(.caption)
                 .foregroundStyle(lastRunColor)
                 .frame(minWidth: 84, idealWidth: 126, maxWidth: 150, alignment: .leading)
 
+            columnSeparator
             if isRunning {
                 Button("Stop", role: .destructive, action: onStop)
                     .buttonStyle(.bordered)
@@ -97,6 +101,13 @@ struct BuildScriptTableRow: View {
             Button("Reveal in Finder", action: onReveal).disabled(script.isRemote)
             Button("Copy Script Path", action: onCopyPath)
         }
+    }
+
+    /// Matches the header's separators so the columns read across.
+    private var columnSeparator: some View {
+        Rectangle()
+            .fill(.quaternary.opacity(0.6))
+            .frame(width: 1, height: 22)
     }
 
     private var background: Color {

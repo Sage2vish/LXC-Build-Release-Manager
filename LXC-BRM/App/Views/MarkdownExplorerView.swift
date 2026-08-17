@@ -170,26 +170,27 @@ struct MarkdownExplorerView: View {
                         .truncationMode(.middle)
                 }
                 Spacer()
-                headerActions(node)
-            }
 
-            // Same segmented style as the tab picker above.
-            Picker("", selection: $viewMode) {
-                ForEach(ViewMode.allCases) { mode in
-                    Text(mode.rawValue).tag(mode)
+                // One toolbar: the mode picker sits with the actions, not on its own row.
+                Picker("", selection: $viewMode) {
+                    ForEach(ViewMode.allCases) { mode in
+                        Text(mode.rawValue).tag(mode)
+                    }
                 }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .frame(maxWidth: 220)
-            .accessibilityLabel("Document view mode")
-            .onChange(of: viewMode) { _, newValue in
-                // Editing only exists inside Source.
-                if newValue == .preview, !confirmDiscardIfNeeded() {
-                    viewMode = .source
-                    return
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .frame(width: 170)
+                .accessibilityLabel("Document view mode")
+                .onChange(of: viewMode) { _, newValue in
+                    // Editing only exists inside Source.
+                    if newValue == .preview, !confirmDiscardIfNeeded() {
+                        viewMode = .source
+                        return
+                    }
+                    if newValue == .preview { isEditing = false }
                 }
-                if newValue == .preview { isEditing = false }
+
+                headerActions(node)
             }
         }
         .padding(12)

@@ -82,6 +82,9 @@ struct RepositoryDetailView: View {
             .labelsHidden()
             .padding([.horizontal, .bottom])
 
+            // One rule, not a box: the tabs read as a header for whatever is below them.
+            Divider()
+
             // Docs manages its own split panes and scrolling, so it sits outside the shared
             // tab ScrollView; nesting them would break its sizing.
             if selectedTab == .docs {
@@ -480,15 +483,24 @@ struct RepositoryDetailView: View {
                 }
 
                 HStack(spacing: 12) {
-                    Text("Script").frame(minWidth: 140, maxWidth: .infinity, alignment: .leading)
+                    // The leading 20pt matches the row's status icon, so the header columns
+                    // line up with the row columns instead of drifting.
+                    Color.clear.frame(width: 20)
+                    Text("Script").frame(minWidth: 130, maxWidth: .infinity, alignment: .leading)
+                    columnSeparator
                     Text("Source").frame(minWidth: 80, idealWidth: 122, maxWidth: 140, alignment: .leading)
+                    columnSeparator
                     Text("Parameters").frame(minWidth: 72, idealWidth: 108, maxWidth: 130, alignment: .leading)
+                    columnSeparator
                     Text("Last run").frame(minWidth: 84, idealWidth: 126, maxWidth: 150, alignment: .leading)
+                    columnSeparator
                     Text("Actions").frame(minWidth: 78, idealWidth: 118, maxWidth: 140, alignment: .leading)
                 }
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 6))
 
                 ScrollView {
                     LazyVStack(spacing: 6) {
@@ -512,6 +524,13 @@ struct RepositoryDetailView: View {
             }
             .padding(.vertical, 5)
         }
+    }
+
+    /// Hairline between table columns so they read across.
+    private var columnSeparator: some View {
+        Rectangle()
+            .fill(.quaternary)
+            .frame(width: 1, height: 12)
     }
 
     private var buildScriptsFallbackActions: some View {
@@ -774,6 +793,21 @@ struct RepositoryDetailView: View {
             onStop: { runner.cancel(preferences: preferencesStore.preferences) },
             onClear: { confirmThenClearOutput() },
             isRunning: runner.isRunning
+        )
+        // Same card treatment as Available Build Scripts, so the two read as siblings
+        // instead of one card and one bare rectangle.
+        .padding(.vertical, 5)
+        .padding(.horizontal, 10)
+        .background(
+            LinearGradient(
+                colors: [Color.blue.opacity(0.05), Color.pink.opacity(0.045)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: RoundedRectangle(cornerRadius: 12)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12).stroke(.quaternary, lineWidth: 1)
         )
     }
 

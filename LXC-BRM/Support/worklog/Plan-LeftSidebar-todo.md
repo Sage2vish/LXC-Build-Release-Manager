@@ -42,19 +42,19 @@ longest thing in the panel, it truncates to uselessness, and it is the same pref
 
 The **name is identity and is always shown**. The **path is detail and should be optional**.
 
-- [ ] Add a persisted preference for whether the path shows under the repository name.
-- [ ] Default it to showing the path, so nothing changes for anyone until they ask.
-- [ ] Put the control in the "Repositories" section header as a symbol button, next to **+**.
-- [ ] Use a symbol that reads as show/hide detail, and flip it to reflect the current state.
-- [ ] The name must never be hideable — a row with no name is not identifiable.
-- [ ] Apply to both the Repositories rows and the Recent Repositories rows.
-- [ ] Keep the "last accessed" line independent of this toggle.
-- [ ] Rows must reflow cleanly at both the minimum and maximum sidebar width in both states.
-- [ ] Accessibility: the row keeps its full description including the path, even when the path
+- [x] Add a persisted preference for whether the path shows under the repository name.
+- [x] Default it to showing the path, so nothing changes for anyone until they ask.
+- [x] Put the control in the "Repositories" section header as a symbol button, next to **+**.
+- [x] Use a symbol that reads as show/hide detail, and flip it to reflect the current state.
+- [x] The name must never be hideable — a row with no name is not identifiable.
+- [x] Apply to both the Repositories rows and the Recent Repositories rows.
+- [x] Keep the "last accessed" line independent of this toggle.
+- [x] Rows must reflow cleanly at both the minimum and maximum sidebar width in both states.
+- [x] Accessibility: the row keeps its full description including the path, even when the path
       is visually hidden, so VoiceOver users are not deprived of it.
-- [ ] Tooltip on the toggle stating exactly what it does.
-- [ ] Mirror the setting in Preferences → Appearance so it is discoverable from there too.
-- [ ] Tests: the preference round-trips, defaults correctly, and an unknown stored value is safe.
+- [x] Tooltip on the toggle stating exactly what it does.
+- [x] Mirror the setting in Preferences → Appearance so it is discoverable from there too.
+- [x] Tests: the preference round-trips, defaults correctly, and an unknown stored value is safe.
 
 ## 02. Consolidation carried over
 
@@ -89,6 +89,6 @@ Anything about *what a preference does* goes there, not here.
 | --- | --- | --- |
 | Already shipped | 11 / 11 | Done |
 | Preferences boundary | 2 / 3 | Pointer to the Preferences plan |
-| 01 — Name and path visibility | 0 / 12 | Open |
+| 01 — Name and path visibility | 12 / 12 | Done |
 | 02 — Consolidation carried over | 0 / 1 | Open |
-| **Total** | **13 / 27** | **In progress** |
+| **Total** | **25 / 27** | **In progress** |

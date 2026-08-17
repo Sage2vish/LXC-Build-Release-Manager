@@ -30,19 +30,16 @@ Kept as a running feature list, not just a checklist, so it doubles as the "what
 Raised after using the screen: the live output area reads as a plain square block, visually
 unrelated to the panel above it, and the scripts table's header does not read as a table header.
 
-- [ ] Give the **Live Output** section the same card treatment as **Available Build Scripts** —
-      same corner radius, border, and background family, so the two read as siblings rather than
-      one card and one bare rectangle.
-- [ ] Give Live Output a title row matching the Available Build Scripts title, with its own
-      subtitle line in the same style.
+- [x] Give the **Live Output** section the same card treatment as **Available Build Scripts**. Same 12pt radius, same blue/pink gradient, same hairline border.
+- [x] Give Live Output a title row matching Available Build Scripts, with its own subtitle line — "Streaming output from the running build" / "Output from the most recent build".
 - [ ] Tint the subtitle line under each section title as a distinct bar, so the section title,
       its subtitle, and the content below are visually separated.
-- [ ] Give the scripts **table header row** its own background, distinct from the rows beneath it.
-- [ ] Draw visible column separators in the table so the columns line up and can be read across.
-- [ ] Align the header columns to the row columns exactly — they currently drift because the row
-      and header set their widths independently.
-- [ ] Keep every change working in light and dark, and at the minimum panel width.
+- [x] Give the scripts **table header row** its own background, distinct from the rows beneath it.
+- [x] Draw visible column separators in the table so the columns line up and can be read across — hairlines in both the header and every row.
+- [x] Align the header columns to the row columns exactly. The header now leads with a 20pt spacer matching the row's status icon, and both use the same min/ideal/max widths.
+- [ ] Keep every change working in light and dark, and at the minimum panel width. **Verified in light only; dark not checked.**
 - [ ] Do not regress the window's minimum width, which was just brought down from 1853 to 1513.
+- [x] Separate the tab picker from the content below it with a single divider line.
 
 
 ## Carried over from the retired OLD checklist

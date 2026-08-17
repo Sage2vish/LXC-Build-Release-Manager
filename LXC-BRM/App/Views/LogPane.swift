@@ -72,8 +72,13 @@ struct LogPane: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(title).font(.headline)
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(.headline)
+                    Text(isRunning ? "Streaming output from the running build" : "Output from the most recent build")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
                 Spacer()
                 Picker("", selection: $filter) {
                     ForEach(LogFilter.allCases) { item in Text(item.rawValue).tag(item) }

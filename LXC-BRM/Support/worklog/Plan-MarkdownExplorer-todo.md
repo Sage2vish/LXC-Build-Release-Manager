@@ -141,20 +141,20 @@ which currently renders as escaped source text.
 GitHub renders a **whitelist** of HTML and strips the rest. That is the model to copy: unknown or
 dangerous tags must never render, and nothing may execute or fetch.
 
-- [ ] Add a tag parser that reads a tag name, its attributes, and its inner content.
-- [ ] Define an explicit **allow list**: `img`, `br`, `hr`, `p`, `div`, `span`, `center`, `a`, `b`, `strong`, `i`, `em`, `code`, `kbd`, `sub`, `sup`, `del`, `s`, `mark`, `h1`–`h6`, `ul`, `ol`, `li`, `blockquote`, `table`, `thead`, `tbody`, `tr`, `td`, `th`, `details`, `summary`.
-- [ ] Define an explicit **deny list** that is never rendered and is shown escaped instead: `script`, `iframe`, `style`, `object`, `embed`, `link`, `meta`, `form`, `input`, `button`, `svg`, `video`, `audio`, `applet`, `base`.
-- [ ] Drop every `on*` event attribute, and reject `javascript:` and `data:` URLs, wherever they appear.
-- [ ] `<img>`: honour `src`, `alt`, `width`, `height`; resolve local paths relative to the document; never fetch a remote source.
-- [ ] `<br>`: render a real line break rather than swallowing it.
-- [ ] `<div align>` / `<center>`: align the content they wrap, including a centred image.
-- [ ] `<a href>`: render as a link, with the same scheme rules as Markdown links.
-- [ ] Inline tags inside a paragraph — `<strong>`, `<b>`, `<em>`, `<i>`, `<code>`, `<sub>`, `<sup>`, `<del>` — convert to their inline equivalents rather than showing as text.
-- [ ] `<table>`/`<tr>`/`<td>`/`<th>`: render through the existing table view.
-- [ ] `<details>`/`<summary>`: render as a disclosure group.
-- [ ] Unknown tags degrade to their inner text, so content is never lost.
-- [ ] Text that merely looks like a tag — `<repository>`, `<tabname>`, `<hex>` in this repo's docs — stays literal text, not a dropped element.
-- [ ] Tests: allow list renders, deny list stays escaped, `on*` and `javascript:` are stripped, unknown tags keep their text, and tag-shaped placeholders survive.
+- [x] Add a tag parser that reads a tag name, its attributes, and its inner content.
+- [x] Define an explicit **allow list**: `img`, `br`, `hr`, `p`, `div`, `span`, `center`, `a`, `b`, `strong`, `i`, `em`, `code`, `kbd`, `sub`, `sup`, `del`, `s`, `mark`, `h1`–`h6`, `ul`, `ol`, `li`, `blockquote`, `table`, `thead`, `tbody`, `tr`, `td`, `th`, `details`, `summary`.
+- [x] Define an explicit **deny list** that is never rendered and is shown escaped instead: `script`, `iframe`, `style`, `object`, `embed`, `link`, `meta`, `form`, `input`, `button`, `svg`, `video`, `audio`, `applet`, `base`.
+- [x] Drop every `on*` event attribute, and reject `javascript:` and `data:` URLs, wherever they appear.
+- [x] `<img>`: honour `src`, `alt`, `width`, `height`; resolve local paths relative to the document; never fetch a remote source.
+- [x] `<br>`: render a real line break rather than swallowing it.
+- [x] `<div align>` / `<center>`: align the content they wrap, including a centred image.
+- [x] `<a href>`: render as a link, with the same scheme rules as Markdown links.
+- [x] Inline tags inside a paragraph — `<strong>`, `<b>`, `<em>`, `<i>`, `<code>`, `<sub>`, `<sup>`, `<del>` — convert to their inline equivalents rather than showing as text.
+- [x] `<table>`/`<tr>`/`<td>`/`<th>`: render through the existing table view.
+- [x] `<details>`/`<summary>`: render as a disclosure group.
+- [x] Unknown tags degrade to their inner text, so content is never lost.
+- [x] Text that merely looks like a tag — `<repository>`, `<tabname>`, `<hex>` in this repo's docs — stays literal text, not a dropped element.
+- [x] Tests: allow list renders, deny list stays escaped, `on*` and `javascript:` are stripped, unknown tags keep their text, and tag-shaped placeholders survive.
 
 ### 08. Preview / Source modes, with editing
 
@@ -175,21 +175,22 @@ state where both are active.
 Source starts read-only; an explicit **Edit** turns it into an editor. That ordering matters:
 writing to a file in the user's repository is destructive if it happens by accident.
 
-- [ ] Segmented control in the document header, matching the tab picker's style.
-- [ ] **Preview** is the default and is selected when a document opens.
-- [ ] **Source** shows the file's exact bytes as text: monospaced, nothing rewritten.
-- [ ] Source is read-only until **Edit** is pressed; Preview has no edit affordance at all.
-- [ ] Edit swaps the header actions for **Save** and **Cancel**.
-- [ ] Save writes atomically, then re-parses so Preview reflects the new content immediately.
-- [ ] Cancel restores the file's content and leaves the file untouched.
-- [ ] Save is disabled until something actually changes, so it cannot rewrite a file needlessly.
-- [ ] Refuse to save when the file changed on disk after it was loaded, rather than clobbering
+- [x] Segmented control in the document header, matching the tab picker's style.
+- [x] **Preview** is the default and is selected when a document opens.
+- [x] **Source** shows the file's exact bytes as text: monospaced, nothing rewritten.
+- [x] Source is read-only until **Edit** is pressed; Preview has no edit affordance at all.
+- [x] Edit swaps the header actions for **Save** and **Cancel**.
+- [x] Save writes atomically, then re-parses so Preview reflects the new content immediately.
+- [x] Cancel restores the file's content and leaves the file untouched.
+- [x] Save is disabled until something actually changes, so it cannot rewrite a file needlessly.
+- [x] Refuse to save when the file changed on disk after it was loaded, rather than clobbering
       someone else's edit; offer to reload instead.
-- [ ] Warn before discarding unsaved edits — switching mode, switching file, or leaving the tab.
-- [ ] Source keeps text selectable and copyable in both read-only and editing states.
-- [ ] Line numbers in read-only Source, so a rendering problem can be pointed at a line.
-- [ ] Both modes and every action carry accessibility labels.
-- [ ] Tests: Preview is the default; Source is verbatim; the dirty check; the changed-on-disk
+- [x] Warn before discarding unsaved edits — switching mode, switching file, or leaving the tab.
+- [x] Source keeps text selectable and copyable in both read-only and editing states.
+- [x] Line numbers in read-only Source, so a rendering problem can be pointed at a line.
+- [x] Both modes and every action carry accessibility labels.
+- [x] Put the Preview / Source control **inline with** Reveal in Finder and Copy Path, on the same row. **Code change verified by build; not visually confirmed — tab clicks would not register in the automation harness.**
+- [x] Tests: Preview is the default; Source is verbatim; the dirty check; the changed-on-disk
       guard; and that a save round-trips exactly, including trailing newlines.
 
 ## Tracking
@@ -202,9 +203,9 @@ writing to a file in the user's repository is destructive if it happens by accid
 | 04 — Viewer | 8 / 9 | Done (text-size preference open) |
 | 05 — Explorer and tab | 7 / 8 | Done (open-in-editor open) |
 | 06 — Tests | 10 / 10 | Done |
-| 07 — Inline and block HTML | 0 / 14 | Open |
-| 08 — Preview / Source modes, with editing | 0 / 14 | Open |
-| **Total** | **46 / 77** | **In progress** |
+| 07 — Inline and block HTML | 14 / 14 | Done |
+| 08 — Preview / Source modes, with editing | 15 / 15 | Done |
+| **Total** | **75 / 78** | **Shipped — 3 open** |
 
 ## Verified in the running app
 
