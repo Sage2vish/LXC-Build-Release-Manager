@@ -59,9 +59,9 @@ Adversarial cases covered by tests rather than assumed, in `PerformanceAndResili
 - [x] Unit coverage exists for repository persistence, build-script scanning, and log parsing.
 - [x] Four suites in the target: `BuildWorkspaceTests`, `BuildScreenTests`, `MarkdownTests`,
       `PerformanceAndResilienceTests` — **80 test functions** on the current tree.
-- [ ] Record a fresh full-suite run. The last counts written down were 14 (refactor baseline),
-      21 (after the persistence pass), and 35 (after the preferences audit); the file count has
-      grown well past all three, so no recorded figure is current.
+- [x] Record a fresh full-suite run. **80 tests, 0 failures**, run on 2026-08-18 after the
+      workspace flatten and the codename rename. The earlier figures — 14 at the refactor
+      baseline, 21 after the persistence pass, 35 after the preferences audit — were all stale.
 - [ ] Add a UI-test target. It is the blocker on `performAccessibilityAudit()` and on any real
       automated click-through. *(Owned by [`Plan-XcodeProject-todo.md`](Plan-XcodeProject-todo.md)
       section 03 — tracked here because it gates this plan.)*
@@ -123,6 +123,12 @@ Dated evidence, kept so a claim can be traced back to the run that produced it.
 | 2026-08-16 | Preferences audit — all 73 stored fields checked for a real consumer | 54 read, 19 unread; see [`Plan-PreferenceScreen-todo.md`](Plan-PreferenceScreen-todo.md) |
 | 2026-08-16 | Launch time, three runs | 1.09s / 1.10s / 1.07s |
 | 2026-08-16 | Suite after the resilience pass | 35 tests, 0 failures |
+| 2026-08-18 | Debug build after the workspace flatten and rename | `BUILD SUCCEEDED` |
+| 2026-08-18 | Full suite after the rename — the module and every `@testable import` changed | `TEST SUCCEEDED`, **80 tests, 0 failures** |
+| 2026-08-18 | Clean Debug build after `Support/` became a synchronized group | `BUILD SUCCEEDED`; bundle holds only `hi.lproj` and the background asset, 9.2 MB |
+| 2026-08-18 | `release.sh` end to end | `LXC-Build-Release-Manager-0.1.2.dmg` staged under `version/` |
+| 2026-08-18 | The repository's own `build/scripts/build-debug.sh` and `run-tests.sh` | `BUILD SUCCEEDED`; 80 tests, 0 failures |
+| 2026-08-18 | Full suite after the diagnostics log filename change | 80 tests, 0 failures |
 
 The canonical commands:
 
@@ -146,7 +152,7 @@ xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Releas
 | --- | --- | --- |
 | 01 — Non-functional targets | 6 / 6 | Met and measured |
 | 02 — Resilience coverage | 6 / 6 | Covered by tests |
-| 03 — Test suite state | 2 / 4 | Fresh run and UI target open |
+| 03 — Test suite state | 3 / 4 | 80 tests green; UI-test target still open |
 | 04 — GUI click-through | 4 / 8 | Half the app is still compile-and-trace only |
 | 06 — Verification ledger | 0 / 1 | Ongoing |
-| **Total** | **18 / 25** | **In progress** |
+| **Total** | **19 / 25** | **In progress** |
