@@ -759,7 +759,7 @@ struct RepositoryDetailView: View {
                 )
             },
             onStop: { runner.cancel(preferences: preferencesStore.preferences) },
-            onClear: { runner.clearOutput() },
+            onClear: { confirmThenClearOutput() },
             isRunning: runner.isRunning
         )
     }
@@ -810,7 +810,7 @@ struct RepositoryDetailView: View {
                         )
                     },
                     onStop: { runner.cancel(preferences: preferencesStore.preferences) },
-                    onClear: { runner.clearOutput() },
+                    onClear: { confirmThenClearOutput() },
                     isRunning: runner.isRunning
                 )
             } else if let record = selectedRecord {
@@ -1112,6 +1112,24 @@ struct RepositoryDetailView: View {
         }
         pickerError = nil
         Task { await scan() }
+    }
+
+    /// Honours the "Confirm before clearing history or logs" preference, which was stored and
+    /// shown in Preferences but never consulted — Clear wiped the pane with no confirmation.
+    private func confirmThenClearOutput() {
+        guard preferencesStore.preferences.confirmBeforeClearing else {
+            runner.clearOutput()
+            return
+        }
+        let alert = NSAlert()
+        alert.messageText = "Clear Build Output?"
+        alert.informativeText = "This clears the visible output. Saved logs and build history are not affected."
+        alert.addButton(withTitle: "Clear")
+        alert.addButton(withTitle: "Cancel")
+        alert.alertStyle = .warning
+        if alert.runModal() == .alertFirstButtonReturn {
+            runner.clearOutput()
+        }
     }
 
     private func revealInFinder() {
