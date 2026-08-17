@@ -159,7 +159,7 @@ final class BuildRunner: ObservableObject {
         if preferences.preventSleepDuringBuild {
             sleepActivityToken = ProcessInfo.processInfo.beginActivity(
                 options: [.idleSystemSleepDisabled],
-                reason: "LXC-BRM build running: \(invocation.script.label)"
+                reason: "LXC Build Release Manager build running: \(invocation.script.label)"
             )
         }
 

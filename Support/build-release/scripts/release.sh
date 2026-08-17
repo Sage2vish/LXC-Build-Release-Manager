@@ -17,8 +17,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_RELEASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$BUILD_RELEASE_DIR/../.." && pwd)"
-DERIVED_DATA_DIR="$PROJECT_ROOT/.derivedData-lxc-brm"
-APP_NAME="LXC-BRM"
+DERIVED_DATA_DIR="$PROJECT_ROOT/.derivedData"
+APP_NAME="LXC-Build-Release-Manager"
 APP_PATH="$DERIVED_DATA_DIR/Build/Products/Release/$APP_NAME.app"
 STAGING_DIR="$BUILD_RELEASE_DIR/version/staging"
 
@@ -34,7 +34,7 @@ done
 
 echo "Building Release configuration for $APP_NAME"
 xcodebuild \
-  -project "$PROJECT_ROOT/LXC-BRM.xcodeproj" \
+  -project "$PROJECT_ROOT/LXC-Build-Release-Manager.xcodeproj" \
   -scheme "$APP_NAME" \
   -configuration Release \
   -derivedDataPath "$DERIVED_DATA_DIR" \

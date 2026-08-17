@@ -1,6 +1,6 @@
 import Foundation
 
-/// The single source of truth for where LXC-BRM keeps its data.
+/// The single source of truth for where LXC Build Release Manager keeps its data.
 ///
 /// Every store previously rebuilt this path itself, five times over. The file names are part of
 /// the product contract — existing installs must keep loading — so they are named here once and
@@ -9,7 +9,11 @@ import Foundation
 /// Build logs deliberately do **not** live here: they belong to the repository's own
 /// `build/logs/` folder, which is part of what the user ships.
 enum AppDataLocations {
-    static let folderName = "LXC-BRM"
+    static let folderName = "LXC-Build-Release-Manager"
+
+    /// The folder this app used before the `LXC-BRM` codename was dropped. Kept only so an
+    /// existing install can be carried over once; nothing new is ever written here.
+    static let legacyFolderName = "LXC-BRM"
 
     enum File: String, CaseIterable {
         case repositories = "projects.json"
@@ -20,11 +24,31 @@ enum AppDataLocations {
     }
 
     /// Application Support directory for the app, created on demand.
+    ///
+    /// If the app has run before under the old codename and has not been migrated yet, the whole
+    /// folder is moved across first, so repositories, history and preferences survive the rename.
     static func supportDirectory(fileManager: FileManager = .default) -> URL {
         let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         let folder = appSupport.appendingPathComponent(folderName, isDirectory: true)
+        migrateLegacyFolderIfNeeded(into: folder, appSupport: appSupport, fileManager: fileManager)
         try? fileManager.createDirectory(at: folder, withIntermediateDirectories: true)
         return folder
+    }
+
+    /// One-time move of `LXC-BRM/` to `LXC-Build-Release-Manager/`.
+    ///
+    /// Deliberately conservative: it only runs when the new folder does not exist yet, so a
+    /// migrated install can never have its current data overwritten by a stale legacy folder, and
+    /// a failed move leaves the original untouched rather than half-copied.
+    static func migrateLegacyFolderIfNeeded(
+        into folder: URL,
+        appSupport: URL,
+        fileManager: FileManager = .default
+    ) {
+        guard !fileManager.fileExists(atPath: folder.path) else { return }
+        let legacy = appSupport.appendingPathComponent(legacyFolderName, isDirectory: true)
+        guard fileManager.fileExists(atPath: legacy.path) else { return }
+        try? fileManager.moveItem(at: legacy, to: folder)
     }
 
     static func url(for file: File, fileManager: FileManager = .default) -> URL {

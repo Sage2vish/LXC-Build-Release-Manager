@@ -1,7 +1,62 @@
+# Xcode
+# The workspace itself is tracked (it is how the project is opened); only its
+# per-user state is ignored.
+DerivedData/
+/.derivedData/
+*.xcuserstate
+*.xcuserdata/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+*.xcworkspace/xcshareddata/swiftpm/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Build products
+/build/
+/Support/build-release/version/
+*.app
+*.dmg
+*.ipa
+*.xcarchive
+
+# Retired Electron/Vite prototype output
 node_modules
 dist
 dist-electron
-release
-.DS_Store
-xcuserdata/
-DerivedData/
+/release/
+
+# Logs and user data
+*.log
+*.swp
+*.swo
+*.tmp
+
+# SwiftPM
+/.build/
+Package.resolved
+
+# User-specific files
+*.personal.json
+*.user
+*.keychain
+
+# Misc
+*.orig
+*~
+
+# Context and worklog scratch space
+/Support/context/cache/
+/Support/worklog/tmp/
+
+# Code coverage artifacts from `xcodebuild test`
+*.profraw
+*.profdata

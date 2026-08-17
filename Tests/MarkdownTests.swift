@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import LXC_BRM
+@testable import LXC_Build_Release_Manager
 
 /// Covers the Markdown block parser and the document tree behind the Docs tab.
 final class MarkdownTests: XCTestCase {
@@ -8,7 +8,7 @@ final class MarkdownTests: XCTestCase {
 
     override func setUpWithError() throws {
         temporaryDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("LXC-BRM-Markdown-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("BRM-Markdown-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
     }
 
@@ -320,7 +320,7 @@ final class MarkdownTests: XCTestCase {
         // fences, task lists, and rules all in one document.
         let planPath = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()          // Tests
-            .deletingLastPathComponent()          // LXC-BRM
+            .deletingLastPathComponent()          // repository root
             .appendingPathComponent("Support/worklog/Plan-MarkdownExplorer-todo.md")
         guard let source = try? String(contentsOf: planPath, encoding: .utf8) else {
             throw XCTSkip("Plan file not present in this checkout")
@@ -467,7 +467,7 @@ final class SidebarAndHTMLTests: XCTestCase {
 
     func testSavingRefusesWhenTheFileChangedOnDisk() throws {
         let directory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("LXC-BRM-Save-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("BRM-Save-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
 

@@ -24,7 +24,7 @@
 		55BA48F23D7D589AEBE85E1D /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ABC2F1F39F8FB25110771D4 /* Preferences.swift */; };
 		5D97B5F6FBFEF4DFB4D2AFE8 /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C39837CDF536B7DA795EDC /* PreferencesStore.swift */; };
 		77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BE8CB1B631110E0A535F54 /* PreferencesView.swift */; };
-		861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */; };
+		861A231DE9ADF1D1BFFE4A46 /* BuildReleaseManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EA8B5AED40A71BE592322D /* BuildReleaseManagerApp.swift */; };
 		9DD375B6E51F32764D466AAF /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B97018D171778322754574B /* Repository.swift */; };
 		A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9911BF5D489D90AE02811CB3 /* LogFileService.swift */; };
 		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
@@ -69,7 +69,7 @@
 			containerPortal = D84DE3DCEEE3F1B08BD25C91 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = FD878CCC2F9C954410FD53F6;
-			remoteInfo = "LXC-BRM";
+			remoteInfo = "LXC-Build-Release-Manager";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -78,7 +78,7 @@
 		16F0A7F761D84D0548A244BA /* RepositoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RepositoryStore.swift; path = App/Services/RepositoryStore.swift; sourceTree = "<group>"; };
 		1A3DA0FF6648759940B42148 /* BuildRunner.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRunner.swift; path = App/Services/BuildRunner.swift; sourceTree = "<group>"; };
 		1B97018D171778322754574B /* Repository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Repository.swift; path = App/Models/Repository.swift; sourceTree = "<group>"; };
-		363495766860C99A9A8A3A95 /* LXC-BRM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LXC-BRM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		363495766860C99A9A8A3A95 /* LXC-Build-Release-Manager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LXC-Build-Release-Manager.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		376C275B291A8197FDA9F65B /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = App/AppDelegate.swift; sourceTree = "<group>"; };
 		51977CC4D41C9D8BB3B28C4D /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = App/ContentView.swift; sourceTree = "<group>"; };
 		6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildHistoryStore.swift; path = App/Services/BuildHistoryStore.swift; sourceTree = "<group>"; };
@@ -86,13 +86,13 @@
 		925160EB5C5E561373968382 /* BuildScript.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScript.swift; path = App/Models/BuildScript.swift; sourceTree = "<group>"; };
 		9911BF5D489D90AE02811CB3 /* LogFileService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogFileService.swift; path = App/Services/LogFileService.swift; sourceTree = "<group>"; };
 		9ABC2F1F39F8FB25110771D4 /* Preferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = App/Models/Preferences.swift; sourceTree = "<group>"; };
-		A11E00000000000000000002 /* LXC-BRMTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "LXC-BRMTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A11E00000000000000000002 /* LXC-Build-Release-ManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "LXC-Build-Release-ManagerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A11E00000000000000000003 /* BuildWorkspaceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BuildWorkspaceTests.swift; sourceTree = "<group>"; };
 		E93C7BCC7E8842C59006D61C /* BuildScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildScreenTests.swift; sourceTree = "<group>"; };
 		864772B8A6C947419E02BE37 /* MarkdownTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTests.swift; sourceTree = "<group>"; };
 		1E829445FEFF418CB662F3E9 /* PerformanceAndResilienceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceAndResilienceTests.swift; sourceTree = "<group>"; };
 		A11E0000000000000000000E /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
-		B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LXC_BRMApp.swift; path = App/LXC_BRMApp.swift; sourceTree = "<group>"; };
+		B0EA8B5AED40A71BE592322D /* BuildReleaseManagerApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildReleaseManagerApp.swift; path = App/BuildReleaseManagerApp.swift; sourceTree = "<group>"; };
 		C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildNotificationService.swift; path = App/Services/BuildNotificationService.swift; sourceTree = "<group>"; };
 		C3A1B2C3D4E5F60718293846 /* BuildWorkspaceStateStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildWorkspaceStateStore.swift; path = App/Services/BuildWorkspaceStateStore.swift; sourceTree = "<group>"; };
 		D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GitBranchReader.swift; path = App/Services/GitBranchReader.swift; sourceTree = "<group>"; };
@@ -134,9 +134,7 @@
 		F50575F43031ABBA00601A4A /* build-android.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-android.sh"; sourceTree = "<group>"; };
 		F50575F53031ABBA00601A4A /* build-ios.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-ios.sh"; sourceTree = "<group>"; };
 		F50575F63031ABBA00601A4A /* release.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = release.sh; sourceTree = "<group>"; };
-		F50575F83031ABBA00601A4A /* LXC-BRM.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = "LXC-BRM.app"; sourceTree = "<group>"; };
 		F50575FA3031ABBA00601A4A /* .gitkeep */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitkeep; sourceTree = "<group>"; };
-		F50575FB3031ABBA00601A4A /* LXC-BRM-2026-08-16.dmg */ = {isa = PBXFileReference; lastKnownFileType = file; path = "LXC-BRM-2026-08-16.dmg"; sourceTree = "<group>"; };
 		F50575FC3031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F50575FE3031ABBA00601A4A /* projects.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = projects.json; sourceTree = "<group>"; };
 		F50575FF3031ABBA00601A4A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -220,7 +218,7 @@
 			isa = PBXGroup;
 			children = (
 				F50577000000000000000001 /* Resources */,
-				B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */,
+				B0EA8B5AED40A71BE592322D /* BuildReleaseManagerApp.swift */,
 				51977CC4D41C9D8BB3B28C4D /* ContentView.swift */,
 				06BE8CB1B631110E0A535F54 /* PreferencesView.swift */,
 				376C275B291A8197FDA9F65B /* AppDelegate.swift */,
@@ -234,8 +232,8 @@
 		96D8A2840BD6F8C71B5C2396 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				363495766860C99A9A8A3A95 /* LXC-BRM.app */,
-				A11E00000000000000000002 /* LXC-BRMTests.xctest */,
+				363495766860C99A9A8A3A95 /* LXC-Build-Release-Manager.app */,
+				A11E00000000000000000002 /* LXC-Build-Release-ManagerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -335,7 +333,6 @@
 		F50575F93031ABBA00601A4A /* staging */ = {
 			isa = PBXGroup;
 			children = (
-				F50575F83031ABBA00601A4A /* LXC-BRM.app */,
 			);
 			path = staging;
 			sourceTree = "<group>";
@@ -345,7 +342,6 @@
 			children = (
 				F50575F93031ABBA00601A4A /* staging */,
 				F50575FA3031ABBA00601A4A /* .gitkeep */,
-				F50575FB3031ABBA00601A4A /* LXC-BRM-2026-08-16.dmg */,
 				F50575FC3031ABBA00601A4A /* README.md */,
 			);
 			path = version;
@@ -473,9 +469,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		FD878CCC2F9C954410FD53F6 /* LXC-BRM */ = {
+		FD878CCC2F9C954410FD53F6 /* LXC-Build-Release-Manager */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9C25D65151B55BBDD317A401 /* Build configuration list for PBXNativeTarget "LXC-BRM" */;
+			buildConfigurationList = 9C25D65151B55BBDD317A401 /* Build configuration list for PBXNativeTarget "LXC-Build-Release-Manager" */;
 			buildPhases = (
 				5FE5E89767B3F2EB4830A221 /* Sources */,
 				CD944C4AA75EA827E0A121DC /* Frameworks */,
@@ -485,14 +481,14 @@
 			);
 			dependencies = (
 			);
-			name = "LXC-BRM";
-			productName = "LXC-BRM";
-			productReference = 363495766860C99A9A8A3A95 /* LXC-BRM.app */;
+			name = "LXC-Build-Release-Manager";
+			productName = "LXC-Build-Release-Manager";
+			productReference = 363495766860C99A9A8A3A95 /* LXC-Build-Release-Manager.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A11E00000000000000000005 /* LXC-BRMTests */ = {
+		A11E00000000000000000005 /* LXC-Build-Release-ManagerTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A11E00000000000000000006 /* Build configuration list for PBXNativeTarget "LXC-BRMTests" */;
+			buildConfigurationList = A11E00000000000000000006 /* Build configuration list for PBXNativeTarget "LXC-Build-Release-ManagerTests" */;
 			buildPhases = (
 				A11E00000000000000000007 /* Sources */,
 				A11E00000000000000000008 /* Frameworks */,
@@ -502,9 +498,9 @@
 			dependencies = (
 				A11E0000000000000000000A /* PBXTargetDependency */,
 			);
-			name = "LXC-BRMTests";
-			productName = "LXC-BRMTests";
-			productReference = A11E00000000000000000002 /* LXC-BRMTests.xctest */;
+			name = "LXC-Build-Release-ManagerTests";
+			productName = "LXC-Build-Release-ManagerTests";
+			productReference = A11E00000000000000000002 /* LXC-Build-Release-ManagerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -517,7 +513,7 @@
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2660;
 			};
-			buildConfigurationList = E54C30A42C4CB92701C89DF2 /* Build configuration list for PBXProject "LXC-BRM" */;
+			buildConfigurationList = E54C30A42C4CB92701C89DF2 /* Build configuration list for PBXProject "LXC-Build-Release-Manager" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -531,8 +527,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FD878CCC2F9C954410FD53F6 /* LXC-BRM */,
-				A11E00000000000000000005 /* LXC-BRMTests */,
+				FD878CCC2F9C954410FD53F6 /* LXC-Build-Release-Manager */,
+				A11E00000000000000000005 /* LXC-Build-Release-ManagerTests */,
 			);
 		};
 /* End PBXProject section */
@@ -555,7 +551,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F50575ED30318AE800601A4A /* RepositoryRow.swift in Sources */,
-				861A231DE9ADF1D1BFFE4A46 /* LXC_BRMApp.swift in Sources */,
+				861A231DE9ADF1D1BFFE4A46 /* BuildReleaseManagerApp.swift in Sources */,
 				F50575EB30318AE700601A4A /* AddRepositorySheet.swift in Sources */,
 				BDCB0E0C538C4EC2943A822F /* SectionCard.swift in Sources */,
 				C9169590718841339F33A00B /* MarkdownSourceView.swift in Sources */,
@@ -619,7 +615,7 @@
 /* Begin PBXTargetDependency section */
 		A11E0000000000000000000A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = FD878CCC2F9C954410FD53F6 /* LXC-BRM */;
+			target = FD878CCC2F9C954410FD53F6 /* LXC-Build-Release-Manager */;
 			targetProxy = A11E00000000000000000009 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -633,11 +629,11 @@
 				CODE_SIGNING_REQUIRED = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.brm.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.buildreleasemanager.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LXC-BRM.app/Contents/MacOS/LXC-BRM";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LXC-Build-Release-Manager.app/Contents/MacOS/LXC-Build-Release-Manager";
 			};
 			name = Debug;
 		};
@@ -649,11 +645,11 @@
 				CODE_SIGNING_REQUIRED = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.brm.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.buildreleasemanager.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LXC-BRM.app/Contents/MacOS/LXC-BRM";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LXC-Build-Release-Manager.app/Contents/MacOS/LXC-Build-Release-Manager";
 			};
 			name = Release;
 		};
@@ -682,7 +678,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 0.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.brm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.buildreleasemanager;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
@@ -768,7 +764,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 0.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.brm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lexvoraconsulting.buildreleasemanager;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 6.0;
 			};
@@ -842,7 +838,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A11E00000000000000000006 /* Build configuration list for PBXNativeTarget "LXC-BRMTests" */ = {
+		A11E00000000000000000006 /* Build configuration list for PBXNativeTarget "LXC-Build-Release-ManagerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A11E0000000000000000000B /* Debug */,
@@ -851,7 +847,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9C25D65151B55BBDD317A401 /* Build configuration list for PBXNativeTarget "LXC-BRM" */ = {
+		9C25D65151B55BBDD317A401 /* Build configuration list for PBXNativeTarget "LXC-Build-Release-Manager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9CB84B14601A24F3E88D8065 /* Release */,
@@ -860,7 +856,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E54C30A42C4CB92701C89DF2 /* Build configuration list for PBXProject "LXC-BRM" */ = {
+		E54C30A42C4CB92701C89DF2 /* Build configuration list for PBXProject "LXC-Build-Release-Manager" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F5940AD7851AC007153443CB /* Debug */,

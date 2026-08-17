@@ -460,7 +460,7 @@ struct PreferencesView: View {
     private func openProjectsJSONTemplate() {
         let repoRoot = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent() // App/
-            .deletingLastPathComponent() // LXC-BRM/
+            .deletingLastPathComponent() // repository root
             .appendingPathComponent("Support/build-release/projects.json")
         NSWorkspace.shared.open(repoRoot)
     }

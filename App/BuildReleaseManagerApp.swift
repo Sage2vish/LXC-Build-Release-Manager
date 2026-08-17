@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct LXC_BRMApp: App {
+struct BuildReleaseManagerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var preferencesStore = PreferencesStore.shared
 

@@ -114,7 +114,7 @@ struct Preferences: Codable, Equatable {
     var detectExecutableFilesAutomatically = true
     var verboseDebugLogging = false
     var logInternalDiagnosticsToFile = true
-    var diagnosticsLogLocation = "~/Library/Logs/LXC-BRM/"
+    var diagnosticsLogLocation = "~/Library/Logs/LXC-Build-Release-Manager/"
     var gitHubRateLimitAlertThreshold = "Warn me at 20%"
 
     static let recommendedDefaults = Preferences()

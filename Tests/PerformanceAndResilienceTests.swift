@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import LXC_BRM
+@testable import LXC_Build_Release_Manager
 
 /// TODO: Add UI integration and manual settings click-through tests (see worklog).
 /// TODO: Add resilience tests for permission errors and runtime access denials (simulate unreadable folders/files).
@@ -13,7 +13,7 @@ final class PerformanceAndResilienceTests: XCTestCase {
 
     override func setUpWithError() throws {
         temporaryDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("LXC-BRM-Perf-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("BRM-Perf-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
     }
 
@@ -280,7 +280,7 @@ final class ScannerAndDiagnosticsPreferenceTests: XCTestCase {
 
     override func setUpWithError() throws {
         temporaryDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("LXC-BRM-Prefs-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("BRM-Prefs-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
     }
 
@@ -359,7 +359,7 @@ final class ScannerAndDiagnosticsPreferenceTests: XCTestCase {
 
     func testDiagnosticsLocationExpandsTilde() async {
         var prefs = Preferences()
-        prefs.diagnosticsLogLocation = "~/Library/Logs/LXC-BRM-test-\(UUID().uuidString)/"
+        prefs.diagnosticsLogLocation = "~/Library/Logs/BRM-test-\(UUID().uuidString)/"
         let url = DiagnosticsLog.logFileURL(preferences: prefs)
         XCTAssertNotNil(url)
         XCTAssertFalse(url?.path.contains("~") ?? true, "Tilde should be expanded")
@@ -482,8 +482,8 @@ final class UpdateAndLanguageTests: XCTestCase {
     func testUpdatePrefersTheAttachedDMGOverTheReleasePage() {
         let current = AppVersion("0.1.2")!
         let dmg = UpdateChecker.ReleaseEntry.Asset(
-            name: "LXC-BRM-0.1.3.dmg",
-            browserDownloadURL: "https://github.com/Sage2vish/LXC-Build-Release-Manager/releases/download/v0.1.3/LXC-BRM-0.1.3.dmg"
+            name: "LXC-Build-Release-Manager-0.1.3.dmg",
+            browserDownloadURL: "https://github.com/Sage2vish/LXC-Build-Release-Manager/releases/download/v0.1.3/LXC-Build-Release-Manager-0.1.3.dmg"
         )
         let notes = UpdateChecker.ReleaseEntry.Asset(
             name: "release-notes.txt",
@@ -498,7 +498,7 @@ final class UpdateAndLanguageTests: XCTestCase {
             return XCTFail("Expected an update")
         }
         // The installer wins over both the release page and the non-dmg asset.
-        XCTAssertEqual(update.downloadURL?.lastPathComponent, "LXC-BRM-0.1.3.dmg")
+        XCTAssertEqual(update.downloadURL?.lastPathComponent, "LXC-Build-Release-Manager-0.1.3.dmg")
         XCTAssertEqual(update.preferredURL, update.downloadURL)
 
         // With no .dmg attached, it falls back to the release page rather than offering nothing.

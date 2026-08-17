@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import LXC_BRM
+@testable import LXC_Build_Release_Manager
 
 @MainActor
 final class BuildWorkspaceTests: XCTestCase {
@@ -8,7 +8,7 @@ final class BuildWorkspaceTests: XCTestCase {
 
     override func setUpWithError() throws {
         temporaryDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("LXC-BRM-Tests-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("BRM-Tests-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
     }
 
@@ -305,8 +305,8 @@ final class BuildWorkspaceTests: XCTestCase {
         XCTAssertEqual(GitHubURLValidator.evaluate("   \n "), .cleared)
 
         XCTAssertEqual(
-            GitHubURLValidator.evaluate("  https://github.com/Sage2vish/LXC-BRM  "),
-            .valid("https://github.com/Sage2vish/LXC-BRM")
+            GitHubURLValidator.evaluate("  https://github.com/Sage2vish/LXC-Build-Release-Manager  "),
+            .valid("https://github.com/Sage2vish/LXC-Build-Release-Manager")
         )
 
         for rejected in [
@@ -494,7 +494,7 @@ final class BuildWorkspaceTests: XCTestCase {
             ]
         )
         XCTAssertTrue(
-            AppDataLocations.url(for: .repositories).path.hasSuffix("LXC-BRM/projects.json")
+            AppDataLocations.url(for: .repositories).path.hasSuffix("LXC-Build-Release-Manager/projects.json")
         )
     }
 

@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import LXC_BRM
+@testable import LXC_Build_Release_Manager
 
 /// Covers the Build screen end to end: the selection and run-eligibility rules, the parameter
 /// and command-preview path, and a real select -> launch -> stream -> stop -> history flow
@@ -11,7 +11,7 @@ final class BuildScreenTests: XCTestCase {
 
     override func setUpWithError() throws {
         temporaryDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("LXC-BRM-BuildScreen-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("BRM-BuildScreen-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
     }
 
