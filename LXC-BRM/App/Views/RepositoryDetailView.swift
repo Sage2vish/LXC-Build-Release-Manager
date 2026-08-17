@@ -82,19 +82,26 @@ struct RepositoryDetailView: View {
             .labelsHidden()
             .padding([.horizontal, .bottom])
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    switch selectedTab {
-                    case .build: buildTab
-                    case .logs: logsTab
-                    case .history: historyTab
-                    case .overview: overviewTab
-                    case .docs: docsTab
-                    case .settings: settingsTab
+            // Docs manages its own split panes and scrolling, so it sits outside the shared
+            // tab ScrollView; nesting them would break its sizing.
+            if selectedTab == .docs {
+                docsTab
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        switch selectedTab {
+                        case .build: buildTab
+                        case .logs: logsTab
+                        case .history: historyTab
+                        case .overview: overviewTab
+                        case .settings: settingsTab
+                        case .docs: EmptyView()
+                        }
                     }
+                    .padding(24)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(24)
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .background(.background)

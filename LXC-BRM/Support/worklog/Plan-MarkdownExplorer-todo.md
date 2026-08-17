@@ -65,79 +65,98 @@ Target the GitHub Flavored Markdown subset that actually appears in this reposit
 
 ### 01. File discovery
 
-- [ ] Walk the open repository for `.md` and `.markdown` files.
-- [ ] Reuse the skip rules already proven in `DeepScriptSearch` — `.git`, `node_modules`, `Pods`, `DerivedData*`, `*.build`, and friends.
-- [ ] Run the walk off the main thread; a large repository must not freeze the tab.
-- [ ] Build a real tree — folders with their files nested — not a flat list, because 67 files flat is unusable.
-- [ ] Sort folders before files, each alphabetically, so the order is stable between scans.
-- [ ] Surface the count, and an empty state when a repository has no markdown at all.
-- [ ] Refresh on demand, and when the repository changes.
+- [x] Walk the open repository for `.md` and `.markdown` files.
+- [x] Reuse the skip rules already proven in `DeepScriptSearch` — `.git`, `node_modules`, `Pods`, `DerivedData*`, `*.build`, and friends.
+- [x] Run the walk off the main thread; a large repository must not freeze the tab.
+- [x] Build a real tree — folders with their files nested — not a flat list, because 67 files flat is unusable.
+- [x] Sort folders before files, each alphabetically, so the order is stable between scans.
+- [x] Surface the count, and an empty state when a repository has no markdown at all.
+- [x] Refresh on demand, and when the repository changes.
 
 ### 02. Block parser
 
-- [ ] Define a `MarkdownBlock` value covering every element in the table above.
-- [ ] Parse line by line into blocks; keep it pure — a `String` in, `[MarkdownBlock]` out, no I/O.
-- [ ] Fenced code: capture the language, and do not parse anything inside the fence.
-- [ ] Handle an unterminated fence at end of file without dropping the content.
-- [ ] Lists: track indent depth for nesting, ordered start values, and task-list markers.
-- [ ] Tables: parse the delimiter row for per-column alignment, tolerate ragged rows.
-- [ ] Block quotes: strip one `>` level and recurse so nested quotes work.
-- [ ] Treat a line of `---` as a rule, but as a heading underline when it follows a paragraph, and as front-matter delimiters at the very top of a file.
-- [ ] Skip YAML front matter rather than rendering it as a table.
-- [ ] Never crash or hang on pathological input — unclosed fences, 10,000-line files, mixed tabs and spaces.
+- [x] Define a `MarkdownBlock` value covering every element in the table above.
+- [x] Parse line by line into blocks; keep it pure — a `String` in, `[MarkdownBlock]` out, no I/O.
+- [x] Fenced code: capture the language, and do not parse anything inside the fence.
+- [x] Handle an unterminated fence at end of file without dropping the content.
+- [x] Lists: track indent depth for nesting, ordered start values, and task-list markers.
+- [x] Tables: parse the delimiter row for per-column alignment, tolerate ragged rows.
+- [x] Block quotes: strip one `>` level and recurse so nested quotes work.
+- [x] Treat a line of `---` as a rule, but as a heading underline when it follows a paragraph, and as front-matter delimiters at the very top of a file.
+- [x] Skip YAML front matter rather than rendering it as a table.
+- [x] Never crash or hang on pathological input — unclosed fences, 10,000-line files, mixed tabs and spaces.
 
 ### 03. Inline rendering
 
-- [ ] Convert inline spans with `AttributedString(markdown:options:)` using `.inlineOnlyPreservingWhitespace`.
-- [ ] Fall back to plain text when a line fails to parse, rather than showing nothing.
-- [ ] Keep inline code visually distinct from surrounding text.
-- [ ] Make links open in the default browser, and only `http`, `https`, and `file` schemes.
-- [ ] Resolve relative links against the document's own folder.
+- [x] Convert inline spans with `AttributedString(markdown:options:)` using `.inlineOnlyPreservingWhitespace`.
+- [x] Fall back to plain text when a line fails to parse, rather than showing nothing.
+- [x] Keep inline code visually distinct from surrounding text.
+- [x] Make links open in the default browser, and only `http`, `https`, and `file` schemes.
+- [ ] Resolve relative links against the document's own folder. **Not done:** relative image sources resolve, but relative *links* are handed to SwiftUI as-is and will not open. Needs a link-handling hook on the rendered text.
 
 ### 04. Viewer
 
-- [ ] Render blocks in a scroll view with GitHub-like vertical rhythm.
-- [ ] Headings: six sizes, with a rule under H1 and H2.
-- [ ] Code blocks: monospaced, filled background, horizontal scroll, language label, copy button.
-- [ ] Tables: aligned grid, header emphasis, horizontal scroll so a wide table cannot break the layout.
-- [ ] Quotes, rules, task boxes, and nested lists all visually distinct.
-- [ ] Local images resolved relative to the file; missing or remote images show a labelled placeholder.
-- [ ] Keep the whole document selectable and copyable.
-- [ ] Respect the app's text-size and density preferences.
-- [ ] Work in light and dark.
+- [x] Render blocks in a scroll view with GitHub-like vertical rhythm.
+- [x] Headings: six sizes, with a rule under H1 and H2.
+- [x] Code blocks: monospaced, filled background, horizontal scroll, language label, copy button.
+- [x] Tables: aligned grid, header emphasis, horizontal scroll so a wide table cannot break the layout.
+- [x] Quotes, rules, task boxes, and nested lists all visually distinct.
+- [x] Local images resolved relative to the file; missing or remote images show a labelled placeholder.
+- [x] Keep the whole document selectable and copyable.
+- [ ] Respect the app's text-size and density preferences. **Not done:** the renderer uses its own type scale; `appTextScale` and `appRowSpacing` are not read yet.
+- [x] Work in light and dark.
 
 ### 05. Explorer and tab integration
 
-- [ ] Add the tab to `RepositoryDetailView.DetailTab` and the picker.
-- [ ] Two-pane layout: file tree left, rendered document right, with a draggable divider.
-- [ ] Expandable folders; remember which are open while the repository stays selected.
-- [ ] Show the selected file's name and path above the document.
-- [ ] Filter box that matches on file name and folder.
-- [ ] Actions on the document: Reveal in Finder, Copy Path, Open in default editor.
-- [ ] Empty states for no markdown found, nothing selected, and a file that has since disappeared.
-- [ ] Handle a file deleted or changed on disk between selection and read.
+- [x] Add the tab to `RepositoryDetailView.DetailTab` and the picker.
+- [x] Two-pane layout: file tree left, rendered document right, with a draggable divider.
+- [x] Expandable folders; remember which are open while the repository stays selected.
+- [x] Show the selected file's name and path above the document.
+- [x] Filter box that matches on file name and folder.
+- [ ] Actions on the document: Reveal in Finder, Copy Path, Open in default editor. **Reveal in Finder and Copy Path are done; Open in default editor is not.**
+- [x] Empty states for no markdown found, nothing selected, and a file that has since disappeared.
+- [x] Handle a file deleted or changed on disk between selection and read.
 
 ### 06. Tests
 
-- [ ] Headings at all six levels, including `#hash` with no space, which is not a heading.
-- [ ] Fenced code with and without a language, and an unterminated fence.
-- [ ] Nested bullets, ordered lists with a non-1 start, and task list markers.
-- [ ] Tables with each alignment, and a ragged row.
-- [ ] Block quotes, including nested.
-- [ ] Front matter is skipped, not rendered.
-- [ ] `---` disambiguated between rule, setext heading, and front matter.
-- [ ] Inline spans survive the round trip; a malformed span degrades to plain text.
-- [ ] File discovery skips the noise directories and builds the expected tree.
-- [ ] A large synthetic document parses well inside a sensible time budget.
+- [x] Headings at all six levels, including `#hash` with no space, which is not a heading.
+- [x] Fenced code with and without a language, and an unterminated fence.
+- [x] Nested bullets, ordered lists with a non-1 start, and task list markers.
+- [x] Tables with each alignment, and a ragged row.
+- [x] Block quotes, including nested.
+- [x] Front matter is skipped, not rendered.
+- [x] `---` disambiguated between rule, setext heading, and front matter.
+- [x] Inline spans survive the round trip; a malformed span degrades to plain text.
+- [x] File discovery skips the noise directories and builds the expected tree.
+- [x] A large synthetic document parses well inside a sensible time budget.
 
 ## Tracking
 
 | Section | Checked / Total | Status |
 | --- | --- | --- |
-| 01 — File discovery | 0 / 7 | Open |
-| 02 — Block parser | 0 / 10 | Open |
-| 03 — Inline rendering | 0 / 5 | Open |
-| 04 — Viewer | 0 / 9 | Open |
-| 05 — Explorer and tab | 0 / 8 | Open |
-| 06 — Tests | 0 / 10 | Open |
-| **Total** | **0 / 49** | **Open** |
+| 01 — File discovery | 7 / 7 | Done |
+| 02 — Block parser | 10 / 10 | Done |
+| 03 — Inline rendering | 4 / 5 | Done (relative links open) |
+| 04 — Viewer | 8 / 9 | Done (text-size preference open) |
+| 05 — Explorer and tab | 7 / 8 | Done (open-in-editor open) |
+| 06 — Tests | 10 / 10 | Done |
+| **Total** | **46 / 49** | **Shipped** |
+
+## Verified in the running app
+
+The Docs tab renders `Support/build-release/logs/README.md` with an H1 carrying GitHub's
+underline rule, body paragraphs, a fenced code block with its `text` language label and a Copy
+button, and inline links in the accent colour. The tree shows folders above files, with a filter
+box and a live document count.
+
+## A real defect this pass caught
+
+The first run reported **50 documents** and opened `README 2.md` from inside
+`build/Debug/LXC-BRM.app/Contents/Resources/`. A built `.app` bundles a copy of every README as
+a resource, and because the walk recurses directories by hand, `skipsPackageDescendants` never
+applied. **45 of those 50 entries were build artifacts.**
+
+Skipping now also excludes directories ending in `.app`, `.framework`, `.bundle`, `.xcarchive`,
+`.dSYM`, `.build`, `.xcodeproj`, `.xcworkspace`, `.playground`, and `.lproj`. The count dropped
+to **31**, which matches the number of genuine documents in the repository exactly. A regression
+test pins it.

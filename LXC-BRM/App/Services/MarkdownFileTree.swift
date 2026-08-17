@@ -34,12 +34,22 @@ enum MarkdownFileTree {
         "Intermediates.noindex"
     ]
 
+    /// Directory suffixes that make a folder a package or a build product rather than something
+    /// a person keeps documentation in.
+    ///
+    /// This matters more than it looks: a built `.app` carries copies of every README bundled as
+    /// a resource, and this repository's own build output contributed 45 of 50 "documents"
+    /// before these were excluded. Recursing manually means `skipsPackageDescendants` does not
+    /// save us, so the names are matched here.
+    private static let skippedSuffixes = [
+        ".app", ".framework", ".bundle", ".xcarchive", ".dSYM",
+        ".build", ".xcodeproj", ".xcworkspace", ".playground", ".lproj"
+    ]
+
     static func shouldSkip(directoryName name: String) -> Bool {
         if skippedDirectories.contains(name) { return true }
         if name.hasPrefix("DerivedData") { return true }
-        if name.hasSuffix(".build") { return true }
-        if name.hasSuffix(".xcodeproj") || name.hasSuffix(".xcworkspace") { return true }
-        return false
+        return skippedSuffixes.contains { name.hasSuffix($0) }
     }
 
     static func isMarkdown(_ url: URL) -> Bool {

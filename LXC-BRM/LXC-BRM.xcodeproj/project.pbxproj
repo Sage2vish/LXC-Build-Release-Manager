@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A11E00000000000000000001 /* BuildWorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E00000000000000000003 /* BuildWorkspaceTests.swift */; };
 		EBC685F8EBD04492A7C840D2 /* BuildScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E93C7BCC7E8842C59006D61C /* BuildScreenTests.swift */; };
+		383FF98A250944AA9F359AB9 /* MarkdownTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864772B8A6C947419E02BE37 /* MarkdownTests.swift */; };
 		3520DF2A9B9B46DA82646E77 /* PerformanceAndResilienceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E829445FEFF418CB662F3E9 /* PerformanceAndResilienceTests.swift */; };
 		A11E0000000000000000000F /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11E0000000000000000000E /* XCTest.framework */; };
 		2069CF7280E3EFC8FE58FDDF /* BuildScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925160EB5C5E561373968382 /* BuildScript.swift */; };
@@ -122,6 +123,7 @@
 		A11E00000000000000000002 /* LXC-BRMTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "LXC-BRMTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A11E00000000000000000003 /* BuildWorkspaceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BuildWorkspaceTests.swift; sourceTree = "<group>"; };
 		E93C7BCC7E8842C59006D61C /* BuildScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildScreenTests.swift; sourceTree = "<group>"; };
+		864772B8A6C947419E02BE37 /* MarkdownTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTests.swift; sourceTree = "<group>"; };
 		1E829445FEFF418CB662F3E9 /* PerformanceAndResilienceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerformanceAndResilienceTests.swift; sourceTree = "<group>"; };
 		A11E0000000000000000000E /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
 		B0EA8B5AED40A71BE592322D /* LXC_BRMApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LXC_BRMApp.swift; path = App/LXC_BRMApp.swift; sourceTree = "<group>"; };
@@ -301,6 +303,7 @@
 			children = (
 				A11E00000000000000000003 /* BuildWorkspaceTests.swift */,
 				E93C7BCC7E8842C59006D61C /* BuildScreenTests.swift */,
+				864772B8A6C947419E02BE37 /* MarkdownTests.swift */,
 				1E829445FEFF418CB662F3E9 /* PerformanceAndResilienceTests.swift */,
 			);
 			path = Tests;
@@ -654,6 +657,7 @@
 			files = (
 				A11E00000000000000000001 /* BuildWorkspaceTests.swift in Sources */,
 				EBC685F8EBD04492A7C840D2 /* BuildScreenTests.swift in Sources */,
+				383FF98A250944AA9F359AB9 /* MarkdownTests.swift in Sources */,
 				3520DF2A9B9B46DA82646E77 /* PerformanceAndResilienceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
