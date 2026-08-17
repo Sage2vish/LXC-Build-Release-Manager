@@ -360,6 +360,20 @@ struct RepositoryDetailView: View {
                     .font(.system(size: 24, weight: .semibold))
                 statusBadge
                 Spacer()
+                Button { Task { await scan() } } label: {
+                    Label("Refresh Scripts", systemImage: "arrow.clockwise")
+                }
+                .accessibilityLabel("Refresh build scripts")
+                .disabled(isScanning || runner.isRunning)
+                Button {
+                    showInspector.wrappedValue.toggle()
+                } label: {
+                    Label(
+                        showInspector.wrappedValue ? "Hide Right Panel" : "Show Right Panel",
+                        systemImage: "sidebar.trailing"
+                    )
+                }
+                .accessibilityLabel(showInspector.wrappedValue ? "Hide right panel" : "Show right panel")
                 Button { revealInFinder() } label: {
                     Label("Reveal in Finder", systemImage: "folder")
                 }
