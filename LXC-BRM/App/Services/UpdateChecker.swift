@@ -70,8 +70,15 @@ struct AppVersion: Comparable, Equatable, CustomStringConvertible {
 struct AvailableUpdate: Equatable {
     let version: AppVersion
     let name: String
+    /// The release page, always present.
     let releaseURL: URL?
+    /// Direct link to the `.dmg` attached to the release, when there is one. Preferred over the
+    /// release page so "download" hands the user the actual installer.
+    let downloadURL: URL?
     let isPrerelease: Bool
+
+    /// What the UI should open: the installer if published, otherwise the release page.
+    var preferredURL: URL? { downloadURL ?? releaseURL }
 }
 
 /// Checks GitHub Releases for a newer build.
@@ -110,6 +117,22 @@ enum UpdateChecker {
         let htmlURL: String?
         let prerelease: Bool
         let draft: Bool
+        var assets: [Asset] = []
+
+        struct Asset: Decodable, Equatable {
+            let name: String
+            let browserDownloadURL: String
+
+            enum CodingKeys: String, CodingKey {
+                case name
+                case browserDownloadURL = "browser_download_url"
+            }
+        }
+
+        /// The `.dmg` attached to this release, if the release script published one.
+        var dmgAsset: Asset? {
+            assets.first { $0.name.lowercased().hasSuffix(".dmg") }
+        }
 
         enum CodingKeys: String, CodingKey {
             case tagName = "tag_name"
@@ -117,6 +140,7 @@ enum UpdateChecker {
             case htmlURL = "html_url"
             case prerelease
             case draft
+            case assets
         }
     }
 
@@ -150,6 +174,7 @@ enum UpdateChecker {
                 version: best.0,
                 name: best.1.name?.isEmpty == false ? best.1.name! : best.1.tagName,
                 releaseURL: best.1.htmlURL.flatMap(URL.init(string:)),
+                downloadURL: best.1.dmgAsset.flatMap { URL(string: $0.browserDownloadURL) },
                 isPrerelease: best.1.prerelease
             ),
             current: current

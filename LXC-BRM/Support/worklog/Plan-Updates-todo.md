@@ -73,6 +73,21 @@ and the rate-limit handling added in the preferences pass.
 | 04 — Tests | 4 / 5 | Done (network failure path untested) |
 | **Total** | **22 / 23** | **Shipped** |
 
+## Release flow
+
+`Support/build-release/scripts/release.sh` now names the artifact from the built app's
+`CFBundleShortVersionString` — `LXC-BRM-0.1.2.dmg`, tag `v0.1.2` — instead of a date, because the
+updater compares release tags against that version. `--publish` creates the GitHub Release and
+attaches the `.dmg` via the GitHub CLI; `--prerelease` puts it on the Beta channel. Re-publishing
+an existing tag uploads and replaces the asset rather than failing.
+
+The `.dmg` stays out of git. `/Support/build-release/version/` and `*.dmg` are ignored, and
+`version/` is the local staging area — binaries belong in Releases, not in history.
+
+**Nothing is published yet.** The releases feed is empty and the only tag,
+`release-2026-08-16`, is not a version, so it is ignored rather than misread as newer. The
+checker correctly reports "up to date" until a release exists.
+
 ## Note
 
 Equality was a real bug caught by the tests: Swift's synthesized `Equatable` compared

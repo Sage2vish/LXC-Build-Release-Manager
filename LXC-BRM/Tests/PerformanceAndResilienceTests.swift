@@ -396,13 +396,19 @@ final class GitHubRateLimitTests: XCTestCase {
 /// Covers update checking and language selection — the last two preferences that had nothing
 /// behind them.
 final class UpdateAndLanguageTests: XCTestCase {
-    private func release(_ tag: String, prerelease: Bool = false, draft: Bool = false) -> UpdateChecker.ReleaseEntry {
+    private func release(
+        _ tag: String,
+        prerelease: Bool = false,
+        draft: Bool = false,
+        assets: [UpdateChecker.ReleaseEntry.Asset] = []
+    ) -> UpdateChecker.ReleaseEntry {
         UpdateChecker.ReleaseEntry(
             tagName: tag,
             name: "Release \(tag)",
             htmlURL: "https://github.com/Sage2vish/LXC-Build-Release-Manager/releases/tag/\(tag)",
             prerelease: prerelease,
-            draft: draft
+            draft: draft,
+            assets: assets
         )
     }
 
@@ -450,6 +456,7 @@ final class UpdateAndLanguageTests: XCTestCase {
                     version: AppVersion("0.1.3")!,
                     name: "Release 0.1.3",
                     releaseURL: URL(string: "https://github.com/Sage2vish/LXC-Build-Release-Manager/releases/tag/0.1.3"),
+                    downloadURL: nil,
                     isPrerelease: false
                 ),
                 current: current
@@ -464,6 +471,40 @@ final class UpdateAndLanguageTests: XCTestCase {
         }
         XCTAssertEqual(betaUpdate.version, AppVersion("0.2.0-beta.1")!)
         XCTAssertTrue(betaUpdate.isPrerelease)
+    }
+
+    func testUpdatePrefersTheAttachedDMGOverTheReleasePage() {
+        let current = AppVersion("0.1.2")!
+        let dmg = UpdateChecker.ReleaseEntry.Asset(
+            name: "LXC-BRM-0.1.3.dmg",
+            browserDownloadURL: "https://github.com/Sage2vish/LXC-Build-Release-Manager/releases/download/v0.1.3/LXC-BRM-0.1.3.dmg"
+        )
+        let notes = UpdateChecker.ReleaseEntry.Asset(
+            name: "release-notes.txt",
+            browserDownloadURL: "https://example.com/notes.txt"
+        )
+
+        guard case .updateAvailable(let update, _) = UpdateChecker.evaluate(
+            releases: [release("0.1.3", assets: [notes, dmg])],
+            channel: .stable,
+            current: current
+        ) else {
+            return XCTFail("Expected an update")
+        }
+        // The installer wins over both the release page and the non-dmg asset.
+        XCTAssertEqual(update.downloadURL?.lastPathComponent, "LXC-BRM-0.1.3.dmg")
+        XCTAssertEqual(update.preferredURL, update.downloadURL)
+
+        // With no .dmg attached, it falls back to the release page rather than offering nothing.
+        guard case .updateAvailable(let noAsset, _) = UpdateChecker.evaluate(
+            releases: [release("0.1.3")],
+            channel: .stable,
+            current: current
+        ) else {
+            return XCTFail("Expected an update")
+        }
+        XCTAssertNil(noAsset.downloadURL)
+        XCTAssertEqual(noAsset.preferredURL, noAsset.releaseURL)
     }
 
     func testEqualOrOlderReleasesReportUpToDate() {

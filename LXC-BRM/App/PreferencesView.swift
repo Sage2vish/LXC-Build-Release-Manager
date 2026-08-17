@@ -121,7 +121,7 @@ struct PreferencesView: View {
             updateStatus = "Up to date — running \(current)."
         case .updateAvailable(let update, let current):
             updateStatus = "Update available: \(update.version) (running \(current))."
-            availableUpdateURL = update.releaseURL
+            availableUpdateURL = update.preferredURL
         case .failed(let reason):
             updateStatus = reason
         }
@@ -182,7 +182,7 @@ struct PreferencesView: View {
                 .disabled(isCheckingForUpdates)
             }
             if let url = availableUpdateURL {
-                Link("Open the release page", destination: url)
+                Link("Download the update", destination: url)
                     .font(.callout)
                     .padding(.leading, 4)
             }

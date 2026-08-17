@@ -1,6 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
+# Builds the Release configuration, stages a .dmg, and optionally publishes it as a GitHub
+# Release asset.
+#
+# The .dmg is deliberately NOT committed to git — `version/` and `*.dmg` are ignored. Binaries
+# belong in GitHub Releases, which is also where the in-app update checker looks. Committing
+# them would grow the repository permanently for no benefit.
+#
+#   ./release.sh                      build and stage the .dmg locally
+#   ./release.sh --publish            also publish it as a GitHub Release
+#   ./release.sh --publish --prerelease   publish it to the Beta channel
+#
+# Publishing needs the GitHub CLI, authenticated: https://cli.github.com
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_RELEASE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$BUILD_RELEASE_DIR/../.." && pwd)"
@@ -8,8 +21,16 @@ DERIVED_DATA_DIR="$PROJECT_ROOT/.derivedData-lxc-brm"
 APP_NAME="LXC-BRM"
 APP_PATH="$DERIVED_DATA_DIR/Build/Products/Release/$APP_NAME.app"
 STAGING_DIR="$BUILD_RELEASE_DIR/version/staging"
-DMG_NAME="$APP_NAME-$(date +%Y-%m-%d).dmg"
-DMG_PATH="$BUILD_RELEASE_DIR/version/$DMG_NAME"
+
+PUBLISH=false
+PRERELEASE=false
+for arg in "$@"; do
+  case "$arg" in
+    --publish) PUBLISH=true ;;
+    --prerelease) PRERELEASE=true ;;
+    *) echo "Unknown option: $arg" >&2; exit 2 ;;
+  esac
+done
 
 echo "Building Release configuration for $APP_NAME"
 xcodebuild \
@@ -26,6 +47,18 @@ if [ ! -d "$APP_PATH" ]; then
   exit 1
 fi
 
+# Take the version from the built app rather than a date. The in-app update checker compares
+# release tags against CFBundleShortVersionString, so the artifact has to carry that version.
+VERSION="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP_PATH/Contents/Info.plist")"
+if [ -z "$VERSION" ]; then
+  echo "Could not read CFBundleShortVersionString from the built app" >&2
+  exit 1
+fi
+
+DMG_NAME="$APP_NAME-$VERSION.dmg"
+DMG_PATH="$BUILD_RELEASE_DIR/version/$DMG_NAME"
+TAG="v$VERSION"
+
 rm -rf "$STAGING_DIR"
 mkdir -p "$STAGING_DIR"
 cp -R "$APP_PATH" "$STAGING_DIR/"
@@ -39,4 +72,46 @@ hdiutil create \
   -format UDZO \
   "$DMG_PATH"
 
-echo "Release artifact staged at $DMG_PATH"
+echo "Release artifact staged at $DMG_PATH (version $VERSION)"
+
+if [ "$PUBLISH" != true ]; then
+  echo
+  echo "Not published. To publish this build so the in-app updater can see it:"
+  echo "  $0 --publish"
+  exit 0
+fi
+
+if ! command -v gh >/dev/null 2>&1; then
+  echo "GitHub CLI (gh) is required to publish. Install it from https://cli.github.com" >&2
+  exit 1
+fi
+
+if ! gh auth status >/dev/null 2>&1; then
+  echo "GitHub CLI is not authenticated. Run: gh auth login" >&2
+  exit 1
+fi
+
+if gh release view "$TAG" >/dev/null 2>&1; then
+  echo "Release $TAG already exists; uploading the asset to it (replacing any existing copy)."
+  gh release upload "$TAG" "$DMG_PATH" --clobber
+else
+  echo "Creating GitHub Release $TAG"
+  PRERELEASE_FLAG=""
+  if [ "$PRERELEASE" = true ]; then
+    PRERELEASE_FLAG="--prerelease"
+  fi
+  # shellcheck disable=SC2086
+  gh release create "$TAG" "$DMG_PATH" \
+    --title "$VERSION" \
+    --notes "Release $VERSION of $APP_NAME." \
+    $PRERELEASE_FLAG
+fi
+
+echo
+echo "Published $TAG. The in-app update checker reads this feed:"
+echo "  https://api.github.com/repos/Sage2vish/LXC-Build-Release-Manager/releases"
+if [ "$PRERELEASE" = true ]; then
+  echo "Marked as a prerelease, so only the Beta channel will offer it."
+else
+  echo "Published as a stable release, so both channels will offer it."
+fi

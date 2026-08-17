@@ -67,3 +67,44 @@ If a requirement and a decision disagree, follow the decision and keep the diffe
 - [ ] Record the result in the dated worklog and update the master tracker.
 
 For the user-facing behavior of the app, continue to the [User Guide](USER_GUIDE.md). For the complete project map, return to the [Support Handbook](../README.md).
+
+## Releasing, and how the in-app updater finds a build
+
+The `.dmg` is **not** committed. `/Support/build-release/version/` and `*.dmg` are both ignored,
+which is the standard arrangement: binaries belong in GitHub Releases, not in git history. The
+`version/` folder is the local staging area for the artifact you are about to publish.
+
+```bash
+Support/build-release/scripts/release.sh                     # build + stage the .dmg locally
+Support/build-release/scripts/release.sh --publish           # also publish it to the Stable channel
+Support/build-release/scripts/release.sh --publish --prerelease   # publish it to the Beta channel
+```
+
+The artifact is named from the built app's `CFBundleShortVersionString`, so bumping
+`MARKETING_VERSION` in the Xcode project is what drives the release version:
+
+```
+LXC-BRM-0.1.2.dmg      tag v0.1.2
+```
+
+Publishing needs the [GitHub CLI](https://cli.github.com), authenticated with `gh auth login`.
+Re-running `--publish` for a tag that already exists uploads the asset to that release and
+replaces any previous copy rather than failing.
+
+### What the app reads
+
+The in-app update checker (Preferences → General) reads:
+
+```
+https://api.github.com/repos/Sage2vish/LXC-Build-Release-Manager/releases
+```
+
+- **Stable** offers the newest release that is not a prerelease. **Beta** also offers prereleases.
+  Drafts are never offered on either channel.
+- The tag is compared against the running `CFBundleShortVersionString`, so tags must be versions
+  (`v0.1.2` or `0.1.2`). A tag that is not a version — `release-2026-08-16`, for example — is
+  ignored rather than treated as newer.
+- When a `.dmg` is attached, the app links straight to it; otherwise it links to the release page.
+
+Until a Release is published, the checker correctly reports "up to date", because there is
+nothing in the feed to compare against.
