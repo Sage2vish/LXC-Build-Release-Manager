@@ -21,7 +21,7 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**611 of 777 items done — 166 still pending (79%).**
+**616 of 785 items done — 169 still pending (78%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
@@ -29,8 +29,8 @@ work there. Do not add task detail to this file — it is an index and a map, no
 | Inside the main panel | 20 | 12 | In progress |
 | The six tabs, inside the container | 256 | 24 | In progress |
 | Features | 186 | 37 | In progress |
-| Engineering, quality, and release | 95 | 63 | In progress |
-| **All areas** | **611** | **166** | **In progress** |
+| Engineering, quality, and release | 100 | 66 | In progress |
+| **All areas** | **616** | **169** | **In progress** |
 
 ## The plans, by area
 
@@ -93,9 +93,18 @@ Work that has no visible surface of its own, but decides whether the visible one
 | [Plan-CodeRefactoring-Reusability-todo](Plan-CodeRefactoring-Reusability-todo.md) | Feature extraction, dependency seams, reuse — behaviour preserving | 31 | 38 | In progress |
 | [Plan-XcodeProject-todo](Plan-XcodeProject-todo.md) | Target membership, build settings, schemes, project-file hygiene | 12 | 11 | In progress |
 | [Plan-QualityVerification-todo](Plan-QualityVerification-todo.md) | Non-functional targets, tests, GUI coverage, the evidence ledger | 18 | 7 | In progress |
-| [Plan-ReleasePackaging-todo](Plan-ReleasePackaging-todo.md) | Release script, staging, the `.dmg`, tags, signing, publication | 9 | 7 | In progress |
+| [Plan-ReleasePackaging-todo](Plan-ReleasePackaging-todo.md) | Release script, staging, the `.dmg`, tags, signing, publication | 14 | 10 | In progress |
 | [Plan-ContextArchitectureVisuals-todo](Plan-ContextArchitectureVisuals-todo.md) | The SVG diagram set and its documentation wiring | 25 | 0 | Done ✅ |
-| **Engineering, quality, and release — subtotal** | | **95** | **63** | **In progress** |
+| **Engineering, quality, and release — subtotal** | | **100** | **66** | **In progress** |
+
+### Research
+
+Thinking that has not earned a checklist yet. Nothing here is scheduled or counted; when an idea is agreed it becomes a plan above and leaves a pointer behind.
+
+| Note | Stage |
+| --- | --- |
+| [Research-AI-ML](Research-AI-ML.md) | exploring — no commitment, no tasks, nothing promised in the product. |
+| [Research-StateAndLogging](Research-StateAndLogging.md) | exploring — your idea, captured. No plan, no tasks, nothing scheduled. |
 
 <!-- plan-index:end -->
 

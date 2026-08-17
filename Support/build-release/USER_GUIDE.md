@@ -1,10 +1,49 @@
-# LXC Build Release Manager Build Manager - User Guide
+# LXC Build Release Manager — User Guide
 
 This guide covers the app's human-facing workflow. For packaging commands and release staging, see [Build and Release](README.md). For the full project map, see the [Support Handbook](../README.md).
 
 ## What it does
 
 Point the app at a repository (local folder or GitHub URL). It looks for a `/build` folder, lists the `.sh` scripts it finds in `/build/scripts/`, and lets you run local scripts with live output and saved history.
+
+## The repository contract
+
+A project only needs this much structure to be fully usable:
+
+```text
+your-repository/
+  build/
+    scripts/
+      build-debug.sh
+      run-tests.sh
+      release-stage.sh
+    logs/           # created for you on the first run
+```
+
+Every `.sh` file in `build/scripts/` becomes a runnable command, labelled from its filename
+(`build-debug.sh` → "build-debug"). Scripts run with the **repository root** as the working
+directory, so paths inside them can stay relative. Each run writes
+`build/logs/build-YYYY-MM-DD-HH-MM-SS.log`.
+
+Nothing about the scripts themselves is special: they are the commands the team already runs by
+hand. The app makes them visible, runnable, and recorded — it does not replace them.
+
+## This repository is its own example
+
+LXC Build Release Manager follows the contract it asks of everyone else, which is the fastest way
+to see it working: **add this repository to the app** and its own commands appear in the Build tab.
+
+| Script | What running it does |
+| --- | --- |
+| `build-debug.sh` | Debug build of the app itself |
+| `run-tests.sh` | The full unit-test suite, summarised to pass/fail lines |
+| `release-stage.sh` | Release build, staged `.app`, and a version-named `.dmg` under `Support/build-release/version/` — nothing is published |
+| `release-publish.sh` | The same, then a GitHub Release carrying the `.dmg` — the feed the in-app updater reads. Needs the GitHub CLI, authenticated. Pass `--prerelease` for the Beta channel |
+| `update-plan-index.sh` | Recounts every delivery plan and rewrites the generated tables in the plan index |
+
+So the release of this app can be driven from this app: pick `release-stage.sh`, watch the build
+stream, and the artifact appears staged and ready to inspect. The same scripts are what CI and the
+terminal run, so there is one release path rather than three that drift apart.
 
 ## Quick Start
 

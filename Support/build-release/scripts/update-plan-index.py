@@ -98,6 +98,7 @@ AREAS: list[tuple[str, str, list[tuple[str, str]]]] = [
 
 DONE = re.compile(r"^\s*(?:- \[x\]|- [XV] )", re.IGNORECASE)
 PENDING = re.compile(r"^\s*(?:- \[ \]|- [DP] )")
+STAGE = re.compile(r"^\*\*Stage:\*\*\s*(.+?)\s*$", re.M)
 
 
 def count(path: Path) -> tuple[int, int]:
@@ -152,6 +153,19 @@ def render() -> str:
         area_totals.append((title, area_done, area_pending))
         grand_done += area_done
         grand_pending += area_pending
+
+    # Research files are discovered rather than listed: they appear and disappear as thinking
+    # starts and gets promoted, and they carry no checklist, so they are never counted.
+    research = sorted(WORKLOG.glob("Research-*.md"))
+    if research:
+        body += ["### Research", "",
+                 "Thinking that has not earned a checklist yet. Nothing here is scheduled or counted; "
+                 "when an idea is agreed it becomes a plan above and leaves a pointer behind.", "",
+                 "| Note | Stage |", "| --- | --- |"]
+        for path in research:
+            stage = STAGE.search(path.read_text(encoding="utf-8"))
+            body.append(f"| [{path.stem}]({path.name}) | {stage.group(1) if stage else '—'} |")
+        body.append("")
 
     grand_total = grand_done + grand_pending
     percent = round(grand_done / grand_total * 100) if grand_total else 0

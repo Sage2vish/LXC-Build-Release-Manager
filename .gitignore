@@ -20,8 +20,13 @@ Icon
 .Spotlight-V100
 .Trashes
 
-# Build products
-/build/
+# Build products.
+# `build/scripts/` is deliberately tracked: this repository follows its own product contract, so
+# the app can open it and run these commands. Everything else under build/ is generated —
+# `build/logs/` is where the app writes a log per run.
+/build/*
+!/build/scripts/
+/build/logs/
 /Support/build-release/version/
 *.app
 *.dmg

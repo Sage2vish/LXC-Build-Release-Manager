@@ -14,12 +14,21 @@
 9. Do not create dated `todo-YYYY-MM-DD.md` or `worklog-YYYY-MM-DD.md` files. The narrative of what
    shipped belongs in the plan that owns the work; cross-cutting evidence belongs in
    `worklog/Plan-QualityVerification-todo.md`.
-10. Keep the context folder updated whenever the architecture, rules, or decisions change.
-11. Keep the README files as index pages that link the important files, and route them to
+10. Keep unproven ideas in `worklog/Research-<Area>.md`, with no checkboxes and a stated stage, so
+    nothing unagreed is ever counted as work in progress. An idea becomes a plan only when it is
+    agreed, and the research note then points at the plan.
+11. Regenerate the plan index with
+    `python3 Support/build-release/scripts/update-plan-index.py` rather than editing the counts
+    by hand; CI runs the same script with `--check`.
+12. Keep this repository runnable by the product itself: `build/scripts/` holds the real build,
+    test and release commands, and they wrap the canonical implementations rather than forking
+    them.
+13. Keep the context folder updated whenever the architecture, rules, or decisions change.
+14. Keep the README files as index pages that link the important files, and route them to
     `worklog/BRM-Plan-todo.md` when they point at current work.
-12. Do not keep separate todo files in shared, frameworks, build-release, or context.
-13. Treat PDF requirements as inputs, but follow recorded decisions when they conflict.
-14. Keep every deviation from the PDF visible in the context and decision files.
+15. Do not keep separate todo files in shared, frameworks, build-release, or context.
+16. Treat PDF requirements as inputs, but follow recorded decisions when they conflict.
+17. Keep every deviation from the PDF visible in the context and decision files.
 
 ## Source Of Truth
 
@@ -27,5 +36,6 @@
 - Architecture lives in `architecture.md`.
 - Decisions live in `decisions/`, dated, and a later decision names the one it supersedes.
 - Delivery tracking starts at `../worklog/BRM-Plan-todo.md` and continues in the plan it links to.
+- Unproven ideas live in `../worklog/Research-*.md` until they are agreed and promoted to a plan.
 - Verification evidence lives in `../worklog/Plan-QualityVerification-todo.md`.
 - PDF requirements are reference input; decisions are the implementation authority.

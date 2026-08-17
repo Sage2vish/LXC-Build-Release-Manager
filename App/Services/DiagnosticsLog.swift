@@ -59,7 +59,7 @@ enum DiagnosticsLog {
         guard (try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)) != nil else {
             return nil
         }
-        return directory.appendingPathComponent("lxc-brm-diagnostics.log")
+        return directory.appendingPathComponent("diagnostics.log")
     }
 }
 

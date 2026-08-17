@@ -63,7 +63,31 @@ The entry point is `Support/build-release/scripts/release.sh`. Run it from the r
 - [ ] State plainly in the release notes that an unsigned build will be quarantined by Gatekeeper,
       until signing exists.
 
-## 04. Release checklist maintenance
+## 04. The product releases itself
+
+The app asks every project for `build/scripts/*.sh`. This repository now honours that contract, so
+the app can open its own repository and run its own build, test and release commands. One release
+path, exercised by the product it releases — and the first honest GUI test subject the project has
+had.
+
+- [x] Add `build/scripts/` to this repository, tracked in git while the rest of `build/` stays
+      ignored.
+- [x] `build-debug.sh` and `run-tests.sh` wrap the canonical `xcodebuild` invocations.
+- [x] `release-stage.sh` and `release-publish.sh` wrap
+      [`Support/build-release/scripts/release.sh`](../build-release/scripts/release.sh), so there
+      is one implementation and the script folder is a menu, not a fork of it.
+- [x] `update-plan-index.sh` exposes the plan-index generator the same way.
+- [x] Verified from the terminal: `build-debug.sh` → `BUILD SUCCEEDED`, `run-tests.sh` → 80 tests,
+      0 failures.
+- [ ] Run all five through the **app's Build tab** rather than the terminal, and record the result
+      as GUI coverage in
+      [`Plan-QualityVerification-todo.md`](Plan-QualityVerification-todo.md) section 04.
+- [ ] Confirm the app writes `build/logs/build-*.log` into this repository and that git ignores
+      them, so dogfooding never dirties the working tree.
+- [ ] Decide whether `release-publish.sh` should stay in the menu at all: a one-click publish is
+      convenient and irreversible in equal measure, and the Build tab has no confirmation step.
+
+## 05. Release checklist maintenance
 
 - [ ] Expand the release checklist as the packaging flow matures, rather than letting the script
       become the only description of it.
