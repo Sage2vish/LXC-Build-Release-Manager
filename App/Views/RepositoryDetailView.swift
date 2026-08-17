@@ -126,7 +126,6 @@ struct RepositoryDetailView: View {
                 }
             }
         }
-        .background(.background)
         .sheet(isPresented: $isAutoFindingScripts) {
             if let rootPath = repository.localPath {
                 AutoFindScriptsSheet(
