@@ -51,6 +51,14 @@ struct ContentView: View {
             }
         }
         .preferredColorScheme(preferredColorScheme)
+        // Appearance preferences were stored and shown but never read; these apply them.
+        .tint(AppearanceSettings.accentColor(preferencesStore.preferences))
+        .environment(\.appTextScale, AppearanceSettings.textScale(preferencesStore.preferences))
+        .environment(\.appRowSpacing, AppearanceSettings.rowSpacing(preferencesStore.preferences))
+        .animation(
+            AppearanceSettings.animation(preferencesStore.preferences),
+            value: preferencesStore.preferences.showRepositorySidebar
+        )
         .sheet(isPresented: $isAddingRepository) {
             AddRepositorySheet(store: store, isPresented: $isAddingRepository)
         }
@@ -267,7 +275,7 @@ struct ContentView: View {
                 max: 420
             )
             // Screenshot UI Parity: Sidebar - Use ultraThinMaterial background for lightweight translucency
-            .background(.ultraThinMaterial)
+            .background(AppearanceSettings.sidebarMaterial(preferencesStore.preferences))
             // Stops AppKit persisting and replaying the split view's collapse state, which
             // otherwise fights the saved preference on the next launch.
             .background(SidebarRestorationDisabler())

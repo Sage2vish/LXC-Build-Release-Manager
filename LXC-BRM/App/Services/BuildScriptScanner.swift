@@ -6,6 +6,15 @@ struct BuildScanOptions {
     var scanSubdirectories = false
     var allowScriptsOutsideBuildScripts = false
     var gitHubToken = ""
+    /// When off, only files ending in `.sh` are offered; executable files without the
+    /// extension are ignored. Backs the "Detect executable files automatically" preference.
+    var detectExecutableFiles = true
+    /// When off, a repository is only scanned at the exact configured build folder rather than
+    /// having its root probed for one. Backs "Default repository root detection".
+    var detectRepositoryRoot = true
+    /// Percentage of remaining GitHub quota at which to warn. Backs
+    /// "GitHub rate limit alerts". Zero disables the warning.
+    var gitHubRateLimitWarnPercent = 20
 
     static let `default` = BuildScanOptions()
 
@@ -14,13 +23,19 @@ struct BuildScanOptions {
         scriptsSubdirectory: String = "scripts",
         scanSubdirectories: Bool = false,
         allowScriptsOutsideBuildScripts: Bool = false,
-        gitHubToken: String = ""
+        gitHubToken: String = "",
+        detectExecutableFiles: Bool = true,
+        detectRepositoryRoot: Bool = true,
+        gitHubRateLimitWarnPercent: Int = 20
     ) {
         self.buildFolderName = buildFolderName.isEmpty ? "build" : buildFolderName
         self.scriptsSubdirectory = scriptsSubdirectory.isEmpty ? "scripts" : scriptsSubdirectory
         self.scanSubdirectories = scanSubdirectories
         self.allowScriptsOutsideBuildScripts = allowScriptsOutsideBuildScripts
         self.gitHubToken = gitHubToken
+        self.detectExecutableFiles = detectExecutableFiles
+        self.detectRepositoryRoot = detectRepositoryRoot
+        self.gitHubRateLimitWarnPercent = gitHubRateLimitWarnPercent
     }
 
     init(preferences: Preferences) {
@@ -29,7 +44,10 @@ struct BuildScanOptions {
             scriptsSubdirectory: preferences.scriptsSubdirectory,
             scanSubdirectories: preferences.scanSubdirectoriesForBuild,
             allowScriptsOutsideBuildScripts: preferences.allowScriptsOutsideBuildScripts,
-            gitHubToken: preferences.gitHubToken
+            gitHubToken: preferences.gitHubToken,
+            detectExecutableFiles: preferences.detectExecutableFilesAutomatically,
+            detectRepositoryRoot: preferences.defaultRepositoryRootDetection,
+            gitHubRateLimitWarnPercent: GitHubRateLimit.warnPercent(preferences.gitHubRateLimitAlertThreshold)
         )
     }
 }
@@ -114,7 +132,9 @@ enum BuildScriptScanner {
         let rootResult = scanLocalRoot(path: path, repositoryPath: path, options: options)
         let discoveredResult: BuildScanResult
 
-        if case .missingBuildFolder = rootResult, options.scanSubdirectories {
+        // Root detection off means: use the configured build folder or nothing. Probing
+        // subdirectories for a build folder is part of that detection.
+        if case .missingBuildFolder = rootResult, options.scanSubdirectories, options.detectRepositoryRoot {
             discoveredResult = scanFirstNestedBuildFolder(path: path, repositoryPath: path, options: options) ?? rootResult
         } else {
             discoveredResult = rootResult
@@ -149,7 +169,7 @@ enum BuildScriptScanner {
         }
 
         let scriptsPath = "\(options.buildFolderName)/\(options.scriptsSubdirectory)"
-        let scriptsResult = await fetchContents(owner: owner, repo: repo, path: scriptsPath, token: options.gitHubToken)
+        let scriptsResult = await fetchContents(owner: owner, repo: repo, path: scriptsPath, token: options.gitHubToken, rateLimitWarnPercent: options.gitHubRateLimitWarnPercent)
         switch scriptsResult {
         case .found(let entries):
             let shellFiles = entries
@@ -170,7 +190,7 @@ enum BuildScriptScanner {
             })
 
         case .notFound:
-            let buildResult = await fetchContents(owner: owner, repo: repo, path: options.buildFolderName, token: options.gitHubToken)
+            let buildResult = await fetchContents(owner: owner, repo: repo, path: options.buildFolderName, token: options.gitHubToken, rateLimitWarnPercent: options.gitHubRateLimitWarnPercent)
             switch buildResult {
             case .found:
                 return .emptyScripts
@@ -205,7 +225,7 @@ enum BuildScriptScanner {
         }
 
         let scripts = entries
-            .filter(isRunnableScript)
+            .filter { isRunnableScript($0, detectExecutableFiles: options.detectExecutableFiles) }
             .map { localScript(at: $0, repositoryPath: repositoryPath, options: options) }
             .sorted { $0.label.localizedStandardCompare($1.label) == .orderedAscending }
         return scripts.isEmpty ? .emptyScripts : .success(scripts: scripts)
@@ -227,8 +247,10 @@ enum BuildScriptScanner {
         return nil
     }
 
-    private static func isRunnableScript(_ url: URL) -> Bool {
-        url.pathExtension == "sh" || FileManager.default.isExecutableFile(atPath: url.path)
+    static func isRunnableScript(_ url: URL, detectExecutableFiles: Bool = true) -> Bool {
+        if url.pathExtension == "sh" { return true }
+        guard detectExecutableFiles else { return false }
+        return FileManager.default.isExecutableFile(atPath: url.path)
     }
 
     private static func localScript(
@@ -317,7 +339,7 @@ enum BuildScriptScanner {
         case error(String)
     }
 
-    private static func fetchContents(owner: String, repo: String, path: String, token: String) async -> ContentsFetch {
+    private static func fetchContents(owner: String, repo: String, path: String, token: String, rateLimitWarnPercent: Int = 0) async -> ContentsFetch {
         guard let url = URL(string: "https://api.github.com/repos/\(owner)/\(repo)/contents/\(path)") else {
             return .error("Invalid GitHub API URL")
         }
@@ -333,6 +355,12 @@ enum BuildScriptScanner {
                 return .error("No response from GitHub")
             }
             if http.statusCode == 404 { return .notFound }
+            // Surface rate limiting explicitly: a bare "status 403" gives the user nothing to
+            // act on, and the remaining-quota warning is what `gitHubRateLimitAlertThreshold`
+            // is for.
+            if let warning = GitHubRateLimit.message(for: http, warnPercent: rateLimitWarnPercent) {
+                return .error(warning)
+            }
             guard http.statusCode == 200 else {
                 return .error("GitHub API returned status \(http.statusCode)")
             }

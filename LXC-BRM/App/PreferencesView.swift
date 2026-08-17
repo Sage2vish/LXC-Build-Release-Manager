@@ -117,22 +117,25 @@ struct PreferencesView: View {
             stepperRow("Maximum recent repositories", "Number of repositories to keep in the Recent list.", $draft.maxRecentRepositories, range: 1...50)
             toggleRow("Confirm before quitting while a build is running", "Prevent accidental quit when a build process is active.", $draft.confirmBeforeQuittingDuringBuild)
             toggleRow("Confirm before clearing history or logs", "Ask for confirmation before clearing history or deleting logs.", $draft.confirmBeforeClearing)
-            toggleRow("Check for updates automatically", "Periodically check for updates in the background.", $draft.checkForUpdatesAutomatically)
-            pickerRow("Update channel", "Choose how you want to receive updates.") {
+            toggleRow("Check for updates automatically", "Not active yet — the app has no updater, so this preference is stored but does nothing.", $draft.checkForUpdatesAutomatically)
+                .disabled(true)
+            pickerRow("Update channel", "Not active yet — there is no update feed behind this.") {
                 Picker("", selection: $draft.updateChannel) {
                     Text("Stable (Recommended)").tag("Stable (Recommended)")
                     Text("Beta").tag("Beta")
                 }
                 .labelsHidden()
                 .frame(width: 200)
+                .disabled(true)
             }
-            pickerRow("Language", "Restart required to apply language changes.") {
+            pickerRow("Language", "Not active yet — the app is not localized, so only System Default applies.") {
                 Picker("", selection: $draft.language) {
                     Text("System Default").tag("System Default")
                     Text("English").tag("English")
                 }
                 .labelsHidden()
                 .frame(width: 160)
+                .disabled(true)
             }
         }
     }

@@ -45,11 +45,18 @@ final class BuildRunner: ObservableObject {
     ) -> Bool {
         do {
             let invocation = try BuildCommandBuilder.invocation(for: script, values: parameters)
+            DiagnosticsLog.write(
+                .debug,
+                "Starting \(script.fileName) in \(repository.name): \(invocation.commandPreview)",
+                preferences: preferences
+            )
             return start(invocation: invocation, repository: repository, historyStore: historyStore, preferences: preferences)
         } catch let error as BuildWorkspaceError {
+            DiagnosticsLog.write(.error, "Validation failed for \(script.fileName): \(error.errorDescription ?? "unknown")", preferences: preferences)
             lastError = error
             return false
         } catch {
+            DiagnosticsLog.write(.error, "Could not build an invocation for \(script.fileName): \(error.localizedDescription)", preferences: preferences)
             lastError = .validation(error.localizedDescription)
             return false
         }
@@ -185,6 +192,7 @@ final class BuildRunner: ObservableObject {
     }
 
     func cancel(preferences: Preferences, reason: String = "Stopped by user") {
+        DiagnosticsLog.write(.info, "Stop requested: \(reason)", preferences: preferences)
         guard let process, isRunning else { return }
         wasCancelled = true
         cancellationReason = reason
