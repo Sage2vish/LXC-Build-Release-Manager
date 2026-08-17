@@ -46,3 +46,7 @@ Package.resolved
 # Ignore context and worklog cache
 /Support/context/cache/
 /Support/worklog/tmp/
+
+# Code coverage artifacts from `xcodebuild test`
+*.profraw
+*.profdata

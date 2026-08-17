@@ -14,11 +14,11 @@ struct ContentView: View {
     /// view reports back can change it.
     ///
     /// AppKit replays the window's saved split state during launch and pushes it through this
-    /// binding. That write is indistinguishable from a real click, and it does not arrive at a
+    /// binding. That write is indistinguishable from a real click and does not arrive at a
     /// predictable time — a delay-based guard fixed it only about half the time. Ignoring writes
     /// entirely makes the saved preference authoritative, so a sidebar hidden at quit stays
-    /// hidden. SwiftUI's own sidebar toggle is removed in `sidebar` and replaced with a button
-    /// that writes the preference, so the visible control still works.
+    /// hidden. SwiftUI's own sidebar toggle is removed below and replaced with a button that
+    /// writes the preference, so the visible control still works.
     private var columnVisibility: Binding<NavigationSplitViewVisibility> {
         Binding(
             get: { preferencesStore.preferences.showRepositorySidebar ? .all : .detailOnly },
@@ -61,30 +61,9 @@ struct ContentView: View {
         }
     }
 
-    /// SwiftUI's `NavigationSplitView` is backed by an `NSSplitViewController` whose split view
-    /// autosaves its collapse state. Clearing the autosave name stops AppKit persisting and
-    /// replaying that state, leaving the preference as the only record of what the user wanted.
-    private struct SidebarRestorationDisabler: NSViewRepresentable {
-        func makeNSView(context: Context) -> NSView { NSView(frame: .zero) }
-
-        func updateNSView(_ nsView: NSView, context: Context) {
-            DispatchQueue.main.async {
-                var view: NSView? = nsView
-                while let current = view {
-                    if let splitView = current as? NSSplitView {
-                        splitView.autosaveName = nil
-                        return
-                    }
-                    view = current.superview
-                }
-            }
-        }
-    }
-
     private var splitView: some View {
         NavigationSplitView(columnVisibility: columnVisibility) {
             sidebar
-                .background(SidebarRestorationDisabler())
         } detail: {
             if let repository = store.selectedRepository {
                 RepositoryDetailView(
@@ -122,6 +101,26 @@ struct ContentView: View {
         }
     }
 
+    /// SwiftUI's `NavigationSplitView` is backed by an `NSSplitViewController` whose split view
+    /// autosaves its collapse state. Clearing the autosave name stops AppKit persisting and
+    /// replaying that state, leaving the preference as the only record of what the user wanted.
+    private struct SidebarRestorationDisabler: NSViewRepresentable {
+        func makeNSView(context: Context) -> NSView { NSView(frame: .zero) }
+
+        func updateNSView(_ nsView: NSView, context: Context) {
+            DispatchQueue.main.async {
+                var view: NSView? = nsView
+                while let current = view {
+                    if let splitView = current as? NSSplitView {
+                        splitView.autosaveName = nil
+                        return
+                    }
+                    view = current.superview
+                }
+            }
+        }
+    }
+
     private var sortedRepositories: [Repository] {
         store.repositories.sorted { lhs, rhs in
             if lhs.isPinned != rhs.isPinned { return lhs.isPinned && !rhs.isPinned }
@@ -134,57 +133,150 @@ struct ContentView: View {
         return Array(store.repositories.sorted { $0.lastAccessed > $1.lastAccessed }.prefix(cap))
     }
 
-    private var sidebar: some View {
-        List(
-            selection: Binding(
-                get: { store.selectedRepositoryID },
-                set: { newValue in
-                    if let id = newValue, let repository = store.repositories.first(where: { $0.id == id }) {
-                        store.select(repository)
-                    }
+    /// Extracted from the `sidebar` body: inline, the row plus its context menu and
+    /// accessibility modifiers made the surrounding `List` too large for the type checker.
+    private func repositorySidebarRow(_ repository: Repository) -> some View {
+        RepositoryRow(repository: repository, store: store)
+            .tag(repository.id)
+            .contextMenu { // Screenshot UI Parity: Sidebar - Context menu actions for repository row
+                Button("Reveal in Finder") {
+                    guard repository.source.isLocal else { return }
+                    NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: repository.source.displayPath)])
                 }
-            )
-        ) {
-            Section {
-                ForEach(sortedRepositories) { repository in
-                    RepositoryRow(repository: repository, store: store)
-                        .tag(repository.id)
+                .disabled(!repository.source.isLocal)
+
+                Button("Open in Terminal") {
+                    guard repository.source.isLocal else { return }
+                    let process = Process()
+                    process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+                    process.arguments = ["-a", "Terminal", repository.source.displayPath]
+                    try? process.run()
                 }
-            } header: {
-                HStack {
-                    Text("Repositories")
-                    Spacer()
-                    Button {
-                        isAddingRepository = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                    .buttonStyle(.borderless)
-                    .help("Add Repository")
+                .disabled(!repository.source.isLocal)
+
+                Button("Copy Path") {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(repository.source.displayPath, forType: .string)
                 }
             }
+            .accessibilityLabel("\(repository.name), \(repository.source.displayPath)")
+            .accessibilityHint("Select repository \(repository.name)")
+    }
 
-            if !recentRepositories.isEmpty {
-                Section("Recent Repositories") {
-                    ForEach(recentRepositories) { repository in
-                        RecentRepositoryRow(repository: repository, store: store)
-                    }
-                }
+    /// Extracted for the same reason as `repositorySidebarRow`.
+    private func recentRepositorySidebarRow(_ repository: Repository) -> some View {
+        // Selection is tracked by the store, not on the model.
+        let isSelected = store.selectedRepositoryID == repository.id
+        return HStack(spacing: 8) {
+            Image(systemName: "clock.arrow.circlepath")
+                .foregroundStyle(.secondary)
+            Text(repository.name)
+                .lineLimit(1)
+                .truncationMode(.tail)
+            Spacer()
+            if repository.isPinned {
+                Image(systemName: "pin.fill")
+                    .foregroundStyle(.yellow)
+                    .accessibilityLabel("Pinned")
+            }
+            if isSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.tint)
+                    .accessibilityLabel("Selected")
             }
         }
-        .navigationTitle("Build Manager")
-        // SwiftUI's built-in toggle writes through the visibility binding, which we ignore, so
-        // it would look broken. The replacement lives on the split view itself, where it stays
-        // reachable after the sidebar is hidden.
-        .toolbar(removing: .sidebarToggle)
-        // The single-value form pins the column and removes the drag handle.
-        // min/ideal/max keeps the saved width as the starting point while letting the user drag.
-        .navigationSplitViewColumnWidth(
-            min: 180,
-            ideal: preferencesStore.preferences.sidebarWidthPoints,
-            max: 420
-        )
-        .safeAreaInset(edge: .bottom) {
+        .contentShape(Rectangle())
+        .onTapGesture { store.select(repository) }
+        .contextMenu { // Screenshot UI Parity: Sidebar - Context menu for recent repository row
+            Button("Reveal in Finder") {
+                guard repository.source.isLocal else { return }
+                NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: repository.source.displayPath)])
+            }
+            .disabled(!repository.source.isLocal)
+
+            Button("Open in Terminal") {
+                guard repository.source.isLocal else { return }
+                let process = Process()
+                process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+                process.arguments = ["-a", "Terminal", repository.source.displayPath]
+                try? process.run()
+            }
+            .disabled(!repository.source.isLocal)
+
+            Button("Copy Path") {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(repository.source.displayPath, forType: .string)
+            }
+        }
+        .accessibilityLabel("\(repository.name), \(repository.source.displayPath), recent repository")
+        .accessibilityHint("Select recent repository \(repository.name)")
+    }
+
+    private var sidebar: some View {
+        VStack(spacing: 0) {
+            List(
+                selection: Binding(
+                    get: { store.selectedRepositoryID },
+                    set: { newValue in
+                        if let id = newValue, let repository = store.repositories.first(where: { $0.id == id }) {
+                            store.select(repository)
+                        }
+                    }
+                )
+            ) {
+                // Screenshot UI Parity: Sidebar - Repositories header with minimalistic styling
+                Section {
+                    ForEach(sortedRepositories) { repository in
+                        repositorySidebarRow(repository)
+                    }
+                } header: {
+                    // Screenshot UI Parity: Sidebar - Clean section header for Repositories
+                    Text("Repositories")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                        .textCase(nil)
+                        .padding(.leading, 4)
+                        .padding(.vertical, 4)
+                        .accessibilityAddTraits(.isHeader)
+                }
+
+                // Screenshot UI Parity: Sidebar - Recent Repositories section with header and icons for each
+                if !recentRepositories.isEmpty {
+                    Section {
+                        ForEach(recentRepositories) { repository in
+                            recentRepositorySidebarRow(repository)
+                        }
+                    } header: {
+                        Text("Recent repositories")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                            .textCase(nil)
+                            .padding(.leading, 4)
+                            .padding(.vertical, 4)
+                            .accessibilityAddTraits(.isHeader)
+                    }
+                }
+            }
+            .listStyle(.sidebar)
+            .navigationTitle("Build Manager")
+            // The single-value form pins the column and removes the drag handle.
+            // min/ideal/max keeps the saved width as the starting point while letting the user drag.
+            .navigationSplitViewColumnWidth(
+                min: 180,
+                ideal: preferencesStore.preferences.sidebarWidthPoints,
+                max: 420
+            )
+            // Screenshot UI Parity: Sidebar - Use ultraThinMaterial background for lightweight translucency
+            .background(.ultraThinMaterial)
+            // Stops AppKit persisting and replaying the split view's collapse state, which
+            // otherwise fights the saved preference on the next launch.
+            .background(SidebarRestorationDisabler())
+            // SwiftUI's built-in toggle writes through the visibility binding, which we ignore,
+            // so it would look broken. The replacement lives on the split view, where it stays
+            // reachable once the sidebar is hidden.
+            .toolbar(removing: .sidebarToggle)
+
+            // Screenshot UI Parity: Sidebar - Footer with separated buttons and pastel styling
             VStack(spacing: 8) {
                 Divider()
                 Button {
@@ -196,8 +288,11 @@ struct ContentView: View {
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: 34)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                .help("Add a local repository folder")
+                .accessibilityLabel("Open Repository")
+                .accessibilityHint("Choose a local folder to add as a repository")
 
                 Button {
                     openSettings()
@@ -208,6 +303,9 @@ struct ContentView: View {
                 }
                 .buttonStyle(.borderless)
                 .foregroundStyle(.secondary)
+                .help("Open application preferences")
+                .accessibilityLabel("Preferences")
+                .accessibilityHint("Open application preferences")
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 12)
