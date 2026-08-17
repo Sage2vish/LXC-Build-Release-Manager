@@ -8,6 +8,22 @@
 Script discovery, the scripts table, parameters, the resolved command, build execution, and the
 live output terminal. This is the app's primary working surface.
 
+## 00. Vertical split — scripts over output
+
+The Build tab currently stacks the scripts table and Live Output inside one scrolling column, so
+the output pane is a fixed block with dead space beneath it when there is little to show, and it
+never reaches the status bar.
+
+- [ ] Split the tab vertically: the scripts table above, Live Output below.
+- [ ] Make the divider draggable, so the balance between them is the user's choice.
+- [ ] Start at roughly half and half, and let Live Output fill down to the status bar.
+- [ ] Live Output must occupy its full share whether it holds no lines or thousands — no dead
+      space below it, and no fixed height.
+- [ ] Keep the scripts table scrollable within its own share when there are many scripts.
+- [ ] Keep the existing Maximize Log Pane behaviour working alongside the split.
+- [ ] Preserve the split position while the repository stays selected.
+- [ ] Verify at the minimum panel height that neither pane collapses to unusable.
+
 ## 1. Discovery and data model
 
 - [x] Inspect the Build screen screenshot and functional requirements PDF one more time against the current codebase so the implementation matches the intended center workspace hierarchy.

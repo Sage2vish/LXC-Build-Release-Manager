@@ -24,6 +24,7 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 
 | Region | Plan | Progress |
 | --- | --- | --- |
+| **Whole window** — background, glass language, theme | [Plan-AppShellUI-todo.md](Plan-AppShellUI-todo.md) | 0 / 15 |
 | Left sidebar — repositories, recents, open, preferences button | [Plan-LeftSidebar-todo.md](Plan-LeftSidebar-todo.md) | 25 / 27 |
 | Main panel — three bands, six tabs | [Plan-MainPanel-todo.md](Plan-MainPanel-todo.md) *(index)* | see below |
 | ├ Header (top) | [Plan-MainPanel-Header-todo.md](Plan-MainPanel-Header-todo.md) | 6 / 13 |
@@ -75,6 +76,7 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 | The right inspector's cards, width, or visibility | Detail View panel |
 | The bottom strip | Status bar |
 | Rendering or browsing markdown | Markdown explorer |
+| The window background, glass/material language, or theme across regions | App shell UI |
 | Moving code without changing behaviour | Code refactoring |
 
 If a task genuinely spans two regions, it belongs to the one that owns the **visible surface**,

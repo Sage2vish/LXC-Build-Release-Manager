@@ -211,6 +211,9 @@ controls.
 - [ ] Make the explorer / document divider visibly draggable, so it is discoverable that the
       panes can be resized.
 - [ ] Verify the reading measure at the minimum pane width and at full screen.
+- [ ] Round the file tree's corners and give it the same surface and border as the rest of the
+      panel. It currently sits as a hard-edged rectangle against the pane, which reads as
+      unfinished next to the rounded cards everywhere else.
 
 ## Tracking
 
@@ -224,8 +227,8 @@ controls.
 | 06 — Tests | 10 / 10 | Done |
 | 07 — Inline and block HTML | 14 / 14 | Done |
 | 08 — Preview / Source modes, with editing | 15 / 15 | Done |
-| 09 — Reading layout | 0 / 7 | Open |
-| **Total** | **75 / 85** | **In progress** |
+| 09 — Reading layout | 0 / 8 | Open |
+| **Total** | **75 / 86** | **In progress** |
 
 ## Verified in the running app
 

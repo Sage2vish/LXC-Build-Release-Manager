@@ -105,6 +105,14 @@ struct MarkdownExplorerView: View {
                     .accessibilityLabel(node.isDirectory ? "Folder \(node.name)" : "Document \(node.relativePath)")
                 }
                 .listStyle(.sidebar)
+                .scrollContentBackground(.hidden)
+                // Matches the rounded cards used elsewhere, instead of a hard-edged rectangle.
+                .background(Color.sectionSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.sectionBorder, lineWidth: 1)
+                )
             }
         }
         .padding(12)

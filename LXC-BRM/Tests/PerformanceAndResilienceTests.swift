@@ -40,7 +40,7 @@ final class PerformanceAndResilienceTests: XCTestCase {
 
     // MARK: Performance targets
 
-    func testRepositoryScanStaysWellUnderTheFiveSecondTarget() throws {
+    func testRepositoryScanStaysWellUnderTheFiveSecondTarget() async throws {
         let root = try makeRepository(named: "Big", scripts: 60)
 
         let clock = ContinuousClock()
@@ -57,7 +57,7 @@ final class PerformanceAndResilienceTests: XCTestCase {
         XCTAssertLessThan(elapsed, .seconds(5), "Scan target is under 5 seconds; took \(elapsed)")
     }
 
-    func testTenRepositoriesScanAndPersistWithoutDegrading() throws {
+    func testTenRepositoriesScanAndPersistWithoutDegrading() async throws {
         var roots: [URL] = []
         for index in 0..<10 {
             roots.append(try makeRepository(named: "Repo-\(index)", scripts: 12))
@@ -91,7 +91,7 @@ final class PerformanceAndResilienceTests: XCTestCase {
         XCTAssertEqual(Set(restored.map(\.name)).count, 10)
     }
 
-    func testWorkspaceStateStaysCorrectAcrossManyRepositories() {
+    func testWorkspaceStateStaysCorrectAcrossManyRepositories() async {
         let store = BuildWorkspaceStateStore(
             storeURL: temporaryDirectory.appendingPathComponent("workspace.json")
         )
@@ -121,7 +121,7 @@ final class PerformanceAndResilienceTests: XCTestCase {
     // TODO: Add test simulating permissions error (e.g., deny read access to scripts folder).
     // TODO: Consider UI-level validation of error presentation for missing/corrupt input (not just logic).
 
-    func testScanReportsMissingBuildFolderEmptyScriptsAndUnreadablePaths() throws {
+    func testScanReportsMissingBuildFolderEmptyScriptsAndUnreadablePaths() async throws {
         // No /build at all.
         let bare = temporaryDirectory.appendingPathComponent("Bare", isDirectory: true)
         try FileManager.default.createDirectory(at: bare, withIntermediateDirectories: true)
@@ -138,7 +138,7 @@ final class PerformanceAndResilienceTests: XCTestCase {
         )
     }
 
-    func testDeletedRepositoryFolderDegradesToMissingRatherThanCrashing() throws {
+    func testDeletedRepositoryFolderDegradesToMissingRatherThanCrashing() async throws {
         let root = try makeRepository(named: "Vanishing", scripts: 3)
         guard case .success = BuildScriptScanner.scanLocal(path: root.path) else {
             return XCTFail("Expected the initial scan to succeed")
@@ -149,7 +149,7 @@ final class PerformanceAndResilienceTests: XCTestCase {
         XCTAssertEqual(BuildScriptScanner.scanLocal(path: root.path), .missingBuildFolder)
     }
 
-    func testCorruptStoreFilesFallBackToDefaultsInsteadOfLosingTheApp() throws {
+    func testCorruptStoreFilesFallBackToDefaultsInsteadOfLosingTheApp() async throws {
         // Preferences: a malformed file must still yield usable defaults.
         let preferencesURL = temporaryDirectory.appendingPathComponent("preferences.json")
         try "{ this is not json".write(to: preferencesURL, atomically: true, encoding: .utf8)
@@ -290,7 +290,7 @@ final class ScannerAndDiagnosticsPreferenceTests: XCTestCase {
         }
     }
 
-    func testDetectExecutableFilesControlsWhetherExtensionlessScriptsAreOffered() throws {
+    func testDetectExecutableFilesControlsWhetherExtensionlessScriptsAreOffered() async throws {
         let scripts = temporaryDirectory.appendingPathComponent("build/scripts", isDirectory: true)
         try FileManager.default.createDirectory(at: scripts, withIntermediateDirectories: true)
 
@@ -316,7 +316,7 @@ final class ScannerAndDiagnosticsPreferenceTests: XCTestCase {
         XCTAssertEqual(found.map(\.fileName), ["with-extension.sh"])
     }
 
-    func testDiagnosticsRespectVerboseAndFileLoggingPreferences() throws {
+    func testDiagnosticsRespectVerboseAndFileLoggingPreferences() async throws {
         var prefs = Preferences()
         prefs.diagnosticsLogLocation = temporaryDirectory.path
 
@@ -357,7 +357,7 @@ final class ScannerAndDiagnosticsPreferenceTests: XCTestCase {
         XCTAssertNil(DiagnosticsLog.logFileURL(preferences: prefs))
     }
 
-    func testDiagnosticsLocationExpandsTilde() {
+    func testDiagnosticsLocationExpandsTilde() async {
         var prefs = Preferences()
         prefs.diagnosticsLogLocation = "~/Library/Logs/LXC-BRM-test-\(UUID().uuidString)/"
         let url = DiagnosticsLog.logFileURL(preferences: prefs)
@@ -598,3 +598,4 @@ final class UpdateAndLanguageTests: XCTestCase {
 
 // TODO: Review for any preferences wired in UI but not covered by tests; add test coverage as new preferences are implemented.
 // TODO: Add characterization or integration tests for RepositoryDetailView split (per refactoring plan).
+

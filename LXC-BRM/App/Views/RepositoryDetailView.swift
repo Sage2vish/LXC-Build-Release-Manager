@@ -87,14 +87,21 @@ struct RepositoryDetailView: View {
 
             // Docs manages its own split panes and scrolling, so it sits outside the shared
             // tab ScrollView; nesting them would break its sizing.
+            // Docs and Build both manage their own panes and height, so they sit outside the
+            // shared tab ScrollView; nesting them would stop them filling the window.
             if selectedTab == .docs {
                 docsTab
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if selectedTab == .build {
+                buildTab
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         switch selectedTab {
-                        case .build: buildTab
+                        case .build: EmptyView()
                         case .logs: logsTab
                         case .history: historyTab
                         case .overview: overviewTab
@@ -389,10 +396,19 @@ struct RepositoryDetailView: View {
     private var buildTab: some View {
         switch scanResult {
         case .success(let scripts):
-            // Parameters and the resolved command now live in the Detail View Window
-            // (right panel). The centre column is the scripts table over the live output.
-            buildScriptsPanel(scripts)
-            buildOutputPanel
+            // Parameters and the resolved command live in the Detail View Window (right panel).
+            // The centre is a draggable vertical split: scripts above, output below, so the
+            // output fills down to the status bar instead of sitting as a fixed block with dead
+            // space beneath it.
+            VSplitView {
+                buildScriptsPanel(scripts)
+                    .frame(minHeight: 180)
+                    .padding(.bottom, 6)
+                buildOutputPanel
+                    .frame(minHeight: 180)
+                    .padding(.top, 6)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .missingBuildFolder:
             VStack(alignment: .leading, spacing: 16) {
                 ContentUnavailableView("No /build Folder Found", systemImage: "folder.badge.questionmark", description: Text("This repository doesn't have a /build folder at its root."))
@@ -510,7 +526,7 @@ struct RepositoryDetailView: View {
                     }
                     .padding(.vertical, 2)
                 }
-                .frame(minHeight: 130, maxHeight: 300)
+                .frame(maxHeight: .infinity)
                 .accessibilityLabel("Available build scripts")
 
                 HStack(spacing: 14) {

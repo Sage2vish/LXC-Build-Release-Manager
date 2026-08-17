@@ -41,6 +41,7 @@
 		5CF2D8BE79444AF6A77AA7A1 /* App/Services/AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F2EA63DB8D411B8E3A239A /* App/Services/AppLanguage.swift */; };
 		6C53F9FD7E64459199CD6FA6 /* App/Services/UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06AE7FC5855549EA9655D7D6 /* App/Services/UpdateChecker.swift */; };
 		EC6395CE280C4D269EC32899 /* App/Resources/Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F7C44FFF40214773A687078E /* App/Resources/Localizable.xcstrings */; };
+		56B7157D4FC44D9AB6B53C73 /* App/Resources/Assets/ui-back-main.png in Resources */ = {isa = PBXBuildFile; fileRef = FC57B67359954DCDBEBAB2A3 /* App/Resources/Assets/ui-back-main.png */; };
 		1D30AFBBB9F24B77975AB16A /* App/Services/DiagnosticsLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6D5291E54545FFB6DEDDD3 /* App/Services/DiagnosticsLog.swift */; };
 		CAA9465E4934471685850294 /* App/Models/AppearanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58F8A9711954FC4A3BC8983 /* App/Models/AppearanceSettings.swift */; };
 		F72BE43DFB94459A9184A8D2 /* App/Views/RepositoryOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F688A5AC1A2B40178A7C72FD /* App/Views/RepositoryOverviewView.swift */; };
@@ -59,44 +60,6 @@
 		F50575ED30318AE800601A4A /* App/Views/RepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EC30318AE800601A4A /* App/Views/RepositoryRow.swift */; };
 		F50575EF30318AEB00601A4A /* App/Views/RecentRepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EE30318AEB00601A4A /* App/Views/RecentRepositoryRow.swift */; };
 		F50575F130318AEE00601A4A /* App/Views/StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575F030318AEE00601A4A /* App/Views/StatusBar.swift */; };
-		F50576263031ABBA00601A4A /* build-android.sh in Resources */ = {isa = PBXBuildFile; fileRef = F50575F43031ABBA00601A4A /* build-android.sh */; };
-		F50576273031ABBA00601A4A /* build-ios.sh in Resources */ = {isa = PBXBuildFile; fileRef = F50575F53031ABBA00601A4A /* build-ios.sh */; };
-		F50576283031ABBA00601A4A /* requirements.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576173031ABBA00601A4A /* requirements.md */; };
-		F50576293031ABBA00601A4A /* crap.png in Resources */ = {isa = PBXBuildFile; fileRef = F505760E3031ABBA00601A4A /* crap.png */; };
-		F505762A3031ABBA00601A4A /* architecture.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576153031ABBA00601A4A /* architecture.md */; };
-		F505762B3031ABBA00601A4A /* 05-Screen-Pref-Appearance.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576053031ABBA00601A4A /* 05-Screen-Pref-Appearance.png */; };
-		F505762C3031ABBA00601A4A /* projects.json in Resources */ = {isa = PBXBuildFile; fileRef = F50575FE3031ABBA00601A4A /* projects.json */; };
-		F505762D3031ABBA00601A4A /* release.sh in Resources */ = {isa = PBXBuildFile; fileRef = F50575F63031ABBA00601A4A /* release.sh */; };
-		F505762E3031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576203031ABBA00601A4A /* README.md */; };
-		F505762F3031ABBA00601A4A /* rules-context.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576183031ABBA00601A4A /* rules-context.md */; };
-		F50576303031ABBA00601A4A /* LXC-Release-Build-Manager-workbench.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576103031ABBA00601A4A /* LXC-Release-Build-Manager-workbench.png */; };
-		F50576313031ABBA00601A4A /* 02-Screen-Pref-Repos.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576023031ABBA00601A4A /* 02-Screen-Pref-Repos.png */; };
-		F50576323031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576163031ABBA00601A4A /* README.md */; };
-		F50576333031ABBA00601A4A /* 04-Screen-Pref-Logs-Console.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576043031ABBA00601A4A /* 04-Screen-Pref-Logs-Console.png */; };
-		F50576343031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50575F23031ABBA00601A4A /* README.md */; };
-		F50576353031ABBA00601A4A /* 07-Screen-Pref-advanced.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576073031ABBA00601A4A /* 07-Screen-Pref-advanced.png */; };
-		F50576363031ABBA00601A4A /* 03-Screen-Pref-Build-Exec.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576033031ABBA00601A4A /* 03-Screen-Pref-Build-Exec.png */; };
-		F50576373031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50575FC3031ABBA00601A4A /* README.md */; };
-		F50576383031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F505761A3031ABBA00601A4A /* README.md */; };
-		F50576393031ABBA00601A4A /* worklog-2026-08-16.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576223031ABBA00601A4A /* worklog-2026-08-16.md */; };
-		F505763A3031ABBA00601A4A /* USER_GUIDE.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576003031ABBA00601A4A /* USER_GUIDE.md */; };
-		F505763B3031ABBA00601A4A /* Screen-Pref-Generl-01.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576093031ABBA00601A4A /* Screen-Pref-Generl-01.png */; };
-		F505763C3031ABBA00601A4A /* ui-back-main.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576113031ABBA00601A4A /* ui-back-main.png */; };
-		F505763D3031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50575FF3031ABBA00601A4A /* README.md */; };
-		F505763E3031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576243031ABBA00601A4A /* README.md */; };
-		F505763F3031ABBA00601A4A /* Build-Console-Screen-01.png in Resources */ = {isa = PBXBuildFile; fileRef = F505760B3031ABBA00601A4A /* Build-Console-Screen-01.png */; };
-		F50576403031ABBA00601A4A /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = F50575FA3031ABBA00601A4A /* .gitkeep */; };
-		F50576413031ABBA00601A4A /* Prefernce-Screen-Concept.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576083031ABBA00601A4A /* Prefernce-Screen-Concept.png */; };
-		F50576423031ABBA00601A4A /* 06-Screen-Pref-Notifcation.png in Resources */ = {isa = PBXBuildFile; fileRef = F50576063031ABBA00601A4A /* 06-Screen-Pref-Notifcation.png */; };
-		F50576433031ABBA00601A4A /* decision-2026-08-16.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576133031ABBA00601A4A /* decision-2026-08-16.md */; };
-		F50576443031ABBA00601A4A /* Build-Console-Screen-Concept-02a.png in Resources */ = {isa = PBXBuildFile; fileRef = F505760C3031ABBA00601A4A /* Build-Console-Screen-Concept-02a.png */; };
-		F50576453031ABBA00601A4A /* LXC-BuildManager.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F505760F3031ABBA00601A4A /* LXC-BuildManager.pdf */; };
-		F50576463031ABBA00601A4A /* LXC-BRM.app in Resources */ = {isa = PBXBuildFile; fileRef = F50575F83031ABBA00601A4A /* LXC-BRM.app */; };
-		F50576473031ABBA00601A4A /* Plan-PreferenceScreen-todo.md in Resources */ = {isa = PBXBuildFile; fileRef = F505761F3031ABBA00601A4A /* Plan-PreferenceScreen-todo.md */; };
-		F50576483031ABBA00601A4A /* LXC-BRM-2026-08-16.dmg in Resources */ = {isa = PBXBuildFile; fileRef = F50575FB3031ABBA00601A4A /* LXC-BRM-2026-08-16.dmg */; };
-		F50576493031ABBA00601A4A /* todo-2026-08-16.md in Resources */ = {isa = PBXBuildFile; fileRef = F50576213031ABBA00601A4A /* todo-2026-08-16.md */; };
-		F505764A3031ABBA00601A4A /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F505761C3031ABBA00601A4A /* README.md */; };
-		F505764B3031ABBA00601A4A /* Build-Console-Screen-Concept-02b.png in Resources */ = {isa = PBXBuildFile; fileRef = F505760D3031ABBA00601A4A /* Build-Console-Screen-Concept-02b.png */; };
 		FEEDFCE5AA26DC939D4E44DE /* RepositoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F0A7F761D84D0548A244BA /* RepositoryStore.swift */; };
 /* End PBXBuildFile section */
 
@@ -148,6 +111,7 @@
 		D9F2EA63DB8D411B8E3A239A /* App/Services/AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/AppLanguage.swift; sourceTree = "<group>"; };
 		06AE7FC5855549EA9655D7D6 /* App/Services/UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/UpdateChecker.swift; sourceTree = "<group>"; };
 		F7C44FFF40214773A687078E /* App/Resources/Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = App/Resources/Localizable.xcstrings; sourceTree = "<group>"; };
+		FC57B67359954DCDBEBAB2A3 /* App/Resources/Assets/ui-back-main.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = App/Resources/Assets/ui-back-main.png; sourceTree = "<group>"; };
 		4A6D5291E54545FFB6DEDDD3 /* App/Services/DiagnosticsLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Services/DiagnosticsLog.swift; sourceTree = "<group>"; };
 		D58F8A9711954FC4A3BC8983 /* App/Models/AppearanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Models/AppearanceSettings.swift; sourceTree = "<group>"; };
 		F688A5AC1A2B40178A7C72FD /* App/Views/RepositoryOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/Views/RepositoryOverviewView.swift; sourceTree = "<group>"; };
@@ -328,6 +292,7 @@
 				20CBBA8C125D48F897441F4F /* App/Models/MarkdownParser.swift */,
 				2135B85648764E8FB1F5480E /* App/Models/MarkdownBlock.swift */,
 				F7C44FFF40214773A687078E /* App/Resources/Localizable.xcstrings */,
+				FC57B67359954DCDBEBAB2A3 /* App/Resources/Assets/ui-back-main.png */,
 				D9F2EA63DB8D411B8E3A239A /* App/Services/AppLanguage.swift */,
 				06AE7FC5855549EA9655D7D6 /* App/Services/UpdateChecker.swift */,
 				4A6D5291E54545FFB6DEDDD3 /* App/Services/DiagnosticsLog.swift */,
@@ -574,36 +539,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC6395CE280C4D269EC32899 /* App/Resources/Localizable.xcstrings in Resources */,
-				F50576263031ABBA00601A4A /* build-android.sh in Resources */,
-				F50576273031ABBA00601A4A /* build-ios.sh in Resources */,
-				F50576283031ABBA00601A4A /* requirements.md in Resources */,
-				F50576293031ABBA00601A4A /* crap.png in Resources */,
-				F505762A3031ABBA00601A4A /* architecture.md in Resources */,
-				F505762B3031ABBA00601A4A /* 05-Screen-Pref-Appearance.png in Resources */,
-				F505762C3031ABBA00601A4A /* projects.json in Resources */,
-				F505762D3031ABBA00601A4A /* release.sh in Resources */,
-				F505762F3031ABBA00601A4A /* rules-context.md in Resources */,
-				F50576303031ABBA00601A4A /* LXC-Release-Build-Manager-workbench.png in Resources */,
-				F50576313031ABBA00601A4A /* 02-Screen-Pref-Repos.png in Resources */,
-				F50576333031ABBA00601A4A /* 04-Screen-Pref-Logs-Console.png in Resources */,
-				F50576353031ABBA00601A4A /* 07-Screen-Pref-advanced.png in Resources */,
-				F50576363031ABBA00601A4A /* 03-Screen-Pref-Build-Exec.png in Resources */,
-				F50576393031ABBA00601A4A /* worklog-2026-08-16.md in Resources */,
-				F505763A3031ABBA00601A4A /* USER_GUIDE.md in Resources */,
-				F505763B3031ABBA00601A4A /* Screen-Pref-Generl-01.png in Resources */,
-				F505763C3031ABBA00601A4A /* ui-back-main.png in Resources */,
-				F505763F3031ABBA00601A4A /* Build-Console-Screen-01.png in Resources */,
-				F50576403031ABBA00601A4A /* .gitkeep in Resources */,
-				F50576413031ABBA00601A4A /* Prefernce-Screen-Concept.png in Resources */,
-				F50576423031ABBA00601A4A /* 06-Screen-Pref-Notifcation.png in Resources */,
-				F50576433031ABBA00601A4A /* decision-2026-08-16.md in Resources */,
-				F50576443031ABBA00601A4A /* Build-Console-Screen-Concept-02a.png in Resources */,
-				F50576453031ABBA00601A4A /* LXC-BuildManager.pdf in Resources */,
-				F50576463031ABBA00601A4A /* LXC-BRM.app in Resources */,
-				F50576473031ABBA00601A4A /* Plan-PreferenceScreen-todo.md in Resources */,
-				F50576483031ABBA00601A4A /* LXC-BRM-2026-08-16.dmg in Resources */,
-				F50576493031ABBA00601A4A /* todo-2026-08-16.md in Resources */,
-				F505764B3031ABBA00601A4A /* Build-Console-Screen-Concept-02b.png in Resources */,
+				56B7157D4FC44D9AB6B53C73 /* App/Resources/Assets/ui-back-main.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -731,7 +667,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = Support/context;
 				DEVELOPMENT_TEAM = 6EERS23K5D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -818,7 +753,6 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = Support/context;
 				DEVELOPMENT_TEAM = 6EERS23K5D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;

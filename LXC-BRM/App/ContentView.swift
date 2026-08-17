@@ -56,6 +56,7 @@ struct ContentView: View {
                 StatusBar(repository: store.selectedRepository, preferences: preferencesStore.preferences)
             }
         }
+        .background(AppBackground(preferences: preferencesStore.preferences))
         .preferredColorScheme(preferredColorScheme)
         // Appearance preferences were stored and shown but never read; these apply them.
         .tint(AppearanceSettings.accentColor(preferencesStore.preferences))
