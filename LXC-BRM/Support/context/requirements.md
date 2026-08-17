@@ -282,7 +282,7 @@ User can add, remove, and organize multiple repos.
 - [x] Native macOS `.app` package
 - [x] Basic dashboard UI
 
-(These checkmarks describe the requested v1 scope. Actual implementation and verification status lives in `../worklog/todo-2026-08-16.md`.)
+(These checkmarks describe the requested v1 scope. Actual implementation status starts at [`../worklog/BRM-Plan-todo.md`](../worklog/BRM-Plan-todo.md), whose **Requirements coverage** table maps each section above to the plan that owns it; the verification level for each claim is in [`../worklog/Plan-QualityVerification-todo.md`](../worklog/Plan-QualityVerification-todo.md).)
 
 ## Out of Scope (v2+)
 

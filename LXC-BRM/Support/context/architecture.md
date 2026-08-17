@@ -53,23 +53,39 @@ The key boundary is intentional: GitHub URLs can be inspected through the Conten
 - `Support/context/diagrams/` owns the source-controlled visual maps of those boundaries.
 - `Support/frameworks/` owns the framework and integration inventory.
 - `Support/shared/` owns reusable conventions and cross-feature ideas.
-- `Support/worklog/` owns the master checklist, feature plans, and dated execution narratives.
+- `Support/worklog/` owns the master plan index and every area plan beneath it.
 
 ## Documentation architecture
 
-- The repository root `README.md` is the top-level landing page.
+- The repository root `README.md` is the top-level landing page, and it routes to the delivery plan.
 - `LXC-BRM/README.md` is the app product guide.
 - `Support/README.md` is the Support handbook and full project map.
-- Each Support child README is an index for that folder, not a replacement for the master worklog.
-- The master dated todo is the release-wide tracker. Detailed feature plans live beside it and link back to the master.
-- Dated decision records live under `context/decisions/`.
+- Each Support child README is an index for that folder, not a replacement for the plan index.
+- `Support/worklog/BRM-Plan-todo.md` is the master index for delivery. It links every
+  `Plan-<Area>-todo.md` file, mirrors its count, and maps each requirements section to the plan
+  that owns it. It carries no tasks itself.
+- One plan owns one area — a window region, a tab, a feature, or an engineering concern — and
+  states its boundary in its opening lines.
+- There are no dated todo or worklog files. What shipped is recorded in the owning plan;
+  cross-cutting evidence lives in `Support/worklog/Plan-QualityVerification-todo.md`, and the
+  artifact flow in `Support/worklog/Plan-ReleasePackaging-todo.md`. See
+  [`decisions/decision-2026-08-18.md`](decisions/decision-2026-08-18.md).
+- Dated decision records live under `context/decisions/`; a later record names what it supersedes
+  rather than editing the earlier one.
+
+```text
+README.md  ->  Support/worklog/BRM-Plan-todo.md  ->  Plan-<Area>-todo.md  ->  code
+                         ^                                    |
+              context/requirements.md, decisions/             v
+                                              Plan-QualityVerification-todo.md
+```
 
 ## Decision precedence
 
 1. Code describes the shipped runtime behavior.
 2. Dated decisions describe the chosen implementation when the requirements input is ambiguous or conflicts with the product direction.
 3. Requirements describe the requested behavior and historical scope.
-4. Worklog files describe delivery status and verification evidence.
+4. The plans under `Support/worklog/` describe delivery status and verification evidence.
 
 If these sources disagree, do not silently rewrite history. Update the decision or worklog so the difference is visible, then change the code intentionally.
 
