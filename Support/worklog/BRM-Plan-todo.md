@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**617 of 814 items done — 197 still pending (76%).**
+**619 of 815 items done — 196 still pending (76%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
 | The window, by region | 54 | 38 | In progress |
 | Inside the main panel | 20 | 28 | In progress |
-| The six tabs, inside the container | 256 | 24 | In progress |
+| The six tabs, inside the container | 258 | 23 | In progress |
 | Features | 186 | 41 | In progress |
 | Engineering, quality, and release | 101 | 66 | In progress |
-| **All areas** | **617** | **197** | **In progress** |
+| **All areas** | **619** | **196** | **In progress** |
 
 ## The plans, by area
 
@@ -68,9 +68,9 @@ Everything a tab *does* belongs to its own plan, not to the container.
 | [Plan-Tab-Logs-todo](Plan-Tab-Logs-todo.md) | Logs — saved log files, filters, search, export | 9 | 2 | In progress |
 | [Plan-Tab-History-todo](Plan-Tab-History-todo.md) | History — every recorded run for the repository | 4 | 3 | In progress |
 | [Plan-Tab-Overview-todo](Plan-Tab-Overview-todo.md) | Overview — repository summary and build statistics | 4 | 3 | In progress |
-| [Plan-MarkdownExplorer-todo](Plan-MarkdownExplorer-todo.md) | Docs — markdown discovery, rendering, Preview/Source editing | 75 | 11 | In progress |
+| [Plan-MarkdownExplorer-todo](Plan-MarkdownExplorer-todo.md) | Docs — markdown discovery, rendering, Preview/Source editing | 77 | 10 | In progress |
 | [Plan-Tab-Settings-todo](Plan-Tab-Settings-todo.md) | Settings — per-repository, distinct from the Preferences window | 3 | 3 | In progress |
-| **The six tabs, inside the container — subtotal** | | **256** | **24** | **In progress** |
+| **The six tabs, inside the container — subtotal** | | **258** | **23** | **In progress** |
 
 ### Features
 

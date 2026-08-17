@@ -24,7 +24,8 @@ struct MarkdownRenderedView: View {
         .textSelection(.enabled)
         // Relative links in a document are relative to that document's folder, not to the app.
         // Foundation hands us the raw destination, so resolve it here and refuse anything
-        // that is not a file or an http(s) URL.
+        // that is not a file or an http(s) URL. Relative Markdown links are rewritten to file
+        // URLs first so SwiftUI can treat them like real clickable destinations.
         .environment(\.openURL, OpenURLAction { url in
             guard let resolved = resolveLink(url) else { return .discarded }
             NSWorkspace.shared.open(resolved)
@@ -228,8 +229,12 @@ struct MarkdownRenderedView: View {
     /// `.inlineOnlyPreservingWhitespace` is the mode that behaves: full-document parsing collapses
     /// block structure, which is exactly what this renderer already handled itself.
     private func inlineText(_ text: String) -> Text {
+        let markdown = MarkdownLinkResolver.rewriteRelativeLinks(
+            in: HTMLSupport.convertInlineHTML(text),
+            baseURL: baseURL
+        )
         guard let attributed = try? AttributedString(
-            markdown: text,
+            markdown: markdown,
             options: .init(
                 allowsExtendedAttributes: true,
                 interpretedSyntax: .inlineOnlyPreservingWhitespace,
@@ -240,6 +245,38 @@ struct MarkdownRenderedView: View {
             return Text(text)
         }
         return Text(attributed)
+    }
+
+}
+
+enum MarkdownLinkResolver {
+    /// Rewrites relative Markdown links to file URLs rooted at the current document folder.
+    ///
+    /// That makes a document's own traversal links clickable instead of leaving SwiftUI to
+    /// interpret a bare `../path.md`, which is what was failing in preview.
+    static func rewriteRelativeLinks(in text: String, baseURL: URL?) -> String {
+        guard let baseURL else { return text }
+        guard let regex = try? NSRegularExpression(
+            pattern: #"\[([^\]]+)\]\(((?![a-zA-Z][a-zA-Z0-9+.-]*:|/)[^)]+)\)"#,
+            options: []
+        ) else { return text }
+
+        var result = text
+        let matches = regex.matches(in: text, range: NSRange(text.startIndex..., in: text)).reversed()
+        for match in matches {
+            guard let fullRange = Range(match.range, in: text),
+                  let labelRange = Range(match.range(at: 1), in: text),
+                  let destinationRange = Range(match.range(at: 2), in: text) else { continue }
+
+            let label = String(text[labelRange])
+            let destination = String(text[destinationRange]).trimmingCharacters(in: .whitespacesAndNewlines)
+            let resolved = URL(fileURLWithPath: destination, relativeTo: baseURL).standardizedFileURL
+            let replacement = FileManager.default.fileExists(atPath: resolved.path)
+                ? "[\(label)](\(resolved.absoluteString))"
+                : String(text[fullRange])
+            result = result.replacingOccurrences(of: String(text[fullRange]), with: replacement)
+        }
+        return result
     }
 }
 

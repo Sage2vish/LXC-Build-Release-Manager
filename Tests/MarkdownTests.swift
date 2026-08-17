@@ -219,6 +219,26 @@ final class MarkdownTests: XCTestCase {
         }
     }
 
+    func testRelativeMarkdownLinksAreRewrittenToFileURLsWhenTheTargetExists() throws {
+        let docs = temporaryDirectory.appendingPathComponent("docs", isDirectory: true)
+        let guides = docs.appendingPathComponent("guides", isDirectory: true)
+        try FileManager.default.createDirectory(at: guides, withIntermediateDirectories: true)
+
+        let target = guides.appendingPathComponent("intro.md")
+        try "Hello".write(to: target, atomically: true, encoding: .utf8)
+
+        let source = "[Intro](guides/intro.md)"
+        let rewritten = MarkdownLinkResolver.rewriteRelativeLinks(in: source, baseURL: docs)
+
+        XCTAssertTrue(rewritten.contains(target.standardizedFileURL.absoluteString))
+    }
+
+    func testAbsoluteMarkdownLinksAreLeftAlone() {
+        let source = "[GitHub](https://github.com)"
+        let rewritten = MarkdownLinkResolver.rewriteRelativeLinks(in: source, baseURL: temporaryDirectory)
+        XCTAssertEqual(rewritten, source)
+    }
+
     // MARK: File tree
 
     func testTreeSkipsNoiseDirectoriesAndNestsFolders() throws {

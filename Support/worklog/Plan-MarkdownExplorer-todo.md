@@ -92,7 +92,8 @@ Target the GitHub Flavored Markdown subset that actually appears in this reposit
 - [x] Fall back to plain text when a line fails to parse, rather than showing nothing.
 - [x] Keep inline code visually distinct from surrounding text.
 - [x] Make links open in the default browser, and only `http`, `https`, and `file` schemes.
-- [ ] Resolve relative links against the document's own folder. **Not done:** relative image sources resolve, but relative *links* are handed to SwiftUI as-is and will not open. Needs a link-handling hook on the rendered text.
+- [x] Resolve relative file links in Preview to the document's folder before handing them to SwiftUI, so traversable docs links actually open. Relative links are rewritten to file URLs before SwiftUI sees them, and a regression test covers the behavior.
+- [x] Resolve relative links against the document's own folder. Relative image sources already resolved; relative *links* now do too.
 
 ### 04. Viewer
 
