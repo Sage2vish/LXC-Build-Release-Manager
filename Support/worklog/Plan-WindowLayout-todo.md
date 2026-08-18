@@ -139,8 +139,17 @@ lost on a large one.
       was undone by the next redraw. The ideal is now seeded once from the first measured width;
       the min and max clamps still follow the live window. A proportion decides where a column
       starts, and after that the drag owns it.
-- [ ] Confirm the proportions feel right in the running window at both a laptop and an external
-      display size — the numbers are correct, but 20/15/65 is a judgement.
+- [x] **Found why 20% never appeared.** `navigationSplitViewColumnWidth(ideal:)` only decides the
+      width when AppKit has no opinion, and it had one: `NSSplitView` persists its divider position
+      under an autosave name, so every launch replayed a width saved months ago — the sidebar came
+      back at roughly 8% of the window however clearly 20% was written. `SidebarWidthEnforcer` now
+      clears the autosave, deletes the stored frames, and sets the divider **once per launch**;
+      after that the drag is the user's and nothing snaps back.
+- [x] Verified in the running window at 1920pt: sidebar **20.2%**, Detail View panel **15%**,
+      centre the remainder. Repository names and their paths are legible again rather than
+      truncated to "LXC-…".
+- [ ] Confirm the proportions feel right at a laptop-sized window as well as an external display —
+      the numbers are correct, but 20/15/65 is a judgement.
 
 ## Tracking
 

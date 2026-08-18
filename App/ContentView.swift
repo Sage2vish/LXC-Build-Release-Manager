@@ -201,20 +201,53 @@ struct ContentView: View {
     /// SwiftUI's `NavigationSplitView` is backed by an `NSSplitViewController` whose split view
     /// autosaves its collapse state. Clearing the autosave name stops AppKit persisting and
     /// replaying that state, leaving the preference as the only record of what the user wanted.
-    private struct SidebarRestorationDisabler: NSViewRepresentable {
+    /// Stops AppKit restoring an old sidebar width, and sets the proportional one instead.
+    ///
+    /// `navigationSplitViewColumnWidth(ideal:)` only decides the width when AppKit has no opinion.
+    /// It had one: `NSSplitView` persists its divider position under an autosave name, so every
+    /// launch replayed whatever width the column happened to have months ago — which is why the
+    /// sidebar came back at roughly 8% of the window however clearly 20% was specified.
+    ///
+    /// This clears the autosave, deletes the stored frames, and sets the divider once per launch.
+    /// Once. After that the drag is the user's, and nothing snaps back.
+    private struct SidebarWidthEnforcer: NSViewRepresentable {
+        let targetWidth: CGFloat
+
+        final class Coordinator {
+            var applied = false
+        }
+
+        func makeCoordinator() -> Coordinator { Coordinator() }
         func makeNSView(context: Context) -> NSView { NSView(frame: .zero) }
 
         func updateNSView(_ nsView: NSView, context: Context) {
+            guard !context.coordinator.applied, targetWidth > 0 else { return }
             DispatchQueue.main.async {
                 var view: NSView? = nsView
                 while let current = view {
-                    if let splitView = current as? NSSplitView {
-                        splitView.autosaveName = nil
-                        return
+                    guard let splitView = current as? NSSplitView else {
+                        view = current.superview
+                        continue
                     }
-                    view = current.superview
+                    Self.forgetStoredFrames(named: splitView.autosaveName)
+                    splitView.autosaveName = nil
+                    guard splitView.arrangedSubviews.count > 1 else { return }
+                    splitView.setPosition(targetWidth, ofDividerAt: 0)
+                    context.coordinator.applied = true
+                    return
                 }
             }
+        }
+
+        /// AppKit writes divider positions into user defaults; leaving them behind means the old
+        /// width returns the moment this enforcement is removed.
+        private static func forgetStoredFrames(named autosaveName: NSSplitView.AutosaveName?) {
+            let defaults = UserDefaults.standard
+            var keys = ["NSSplitView Subview Frames \(autosaveName ?? "")"]
+            keys += defaults.dictionaryRepresentation().keys.filter {
+                $0.hasPrefix("NSSplitView Subview Frames")
+            }
+            for key in Set(keys) { defaults.removeObject(forKey: key) }
         }
     }
 
@@ -386,9 +419,13 @@ struct ContentView: View {
                 ideal: LayoutMetrics.sidebarColumn(for: seedWidth ?? windowWidth).ideal,
                 max: LayoutMetrics.sidebarColumn(for: windowWidth).max
             )
-            // Stops AppKit persisting and replaying the split view's collapse state, which
-            // otherwise fights the saved preference on the next launch.
-            .background(SidebarRestorationDisabler())
+            // Clears the divider position AppKit restored from an earlier session and applies
+            // the proportional width once, so 20% is what actually appears.
+            .background(
+                SidebarWidthEnforcer(
+                    targetWidth: LayoutMetrics.sidebarColumn(for: seedWidth ?? windowWidth).ideal
+                )
+            )
             // SwiftUI's built-in toggle writes through the visibility binding, which we ignore,
             // so it would look broken. The replacement lives on the split view, where it stays
             // reachable once the sidebar is hidden.

@@ -85,19 +85,21 @@ so they are reachable from every tab and present even with no repository open.
       project SVG icons, tinted as templates so they follow the label colour.
 - [x] **Two separate toolbar items, not one clump.** Each is its own `ToolbarItem`, so macOS gives
       them its own spacing and either can move or be hidden without touching the other.
-- [x] **Equal height, structurally.** Both are built on one `ToolbarPill`, whose height is
-      `LayoutMetrics.toolbarControlHeight`. The previous attempt set a frame on each and they
-      still disagreed: a `.menu` picker draws its own control chrome at its own intrinsic height
-      and ignored the frame. The language control is a `Menu` in the same pill instead, so the two
-      heights cannot drift — and a test reads both from the same constant.
+- [x] **Equal height, by letting AppKit decide.** Two earlier attempts failed for the same
+      reason: a toolbar does not render custom backgrounds behind its items, so a hand-drawn
+      capsule never appeared — the appearance control showed as three loose icons and the language
+      control as blue link text, with matched numbers and mismatched UI. Both are native controls
+      now, a segmented picker and a menu picker, sized by the toolbar itself. Verified in the
+      running window: three capsules, one height.
 - [x] The bar shows the language's native name; the full `English — native` pairing is in the
       menu, where there is room for it, with a tick against the active language.
 - [x] A language picker naming each language in English and in its own script (`Hindi — हिन्दी`).
 - [x] Both bind to the preferences Preferences already owns, so the two surfaces cannot disagree.
 - [x] Hosted on the app shell rather than the repository detail view, so they never disappear when
       no repository is selected.
-- [ ] Check the pair in the real title bar at the minimum window width, where the sidebar toggle,
-      Rescan and the inspector toggle are competing for the same strip.
+- [x] Checked in the real title bar: appearance, language, and the refresh/show-hide pair read as
+      three separate capsule groups on one line.
+- [ ] Check them at the minimum window width, where all four controls compete for the same strip.
 - [ ] Decide whether language stays here or moves to the status bar — the alternative is recorded
       in [`Plan-StatusBar-todo.md`](Plan-StatusBar-todo.md) section 02. Both are one-line moves now.
 

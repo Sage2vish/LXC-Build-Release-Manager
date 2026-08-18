@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**675 of 843 items done — 168 still pending (80%).**
+**678 of 846 items done — 168 still pending (80%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
-| The window, by region | 76 | 36 | In progress |
+| The window, by region | 77 | 36 | In progress |
 | Inside the main panel | 23 | 11 | In progress |
 | The six tabs, inside the container | 272 | 15 | In progress |
-| Features | 201 | 40 | In progress |
+| Features | 203 | 40 | In progress |
 | Engineering, quality, and release | 103 | 66 | In progress |
-| **All areas** | **675** | **168** | **In progress** |
+| **All areas** | **678** | **168** | **In progress** |
 
 ## The plans, by area
 
@@ -40,12 +40,12 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
-| [Plan-AppShellUI-todo](Plan-AppShellUI-todo.md) | Whole window — background, material and glass language, theme and accent | 12 | 21 | In progress |
+| [Plan-AppShellUI-todo](Plan-AppShellUI-todo.md) | Whole window — background, material and glass language, theme and accent | 13 | 21 | In progress |
 | [Plan-LeftSidebar-todo](Plan-LeftSidebar-todo.md) | Left sidebar — repositories, recents, add/remove, the footer buttons | 33 | 2 | In progress |
 | [Plan-MainPanel-todo](Plan-MainPanel-todo.md) | Main panel — index over the three bands and six tabs below | — | — | Index only |
 | [Plan-DetailViewPanel-todo](Plan-DetailViewPanel-todo.md) | Detail View panel — the right inspector and its cards | 19 | 8 | In progress |
 | [Plan-StatusBar-todo](Plan-StatusBar-todo.md) | Status bar — repository, branch, platform, auto-detect chips | 12 | 5 | In progress |
-| **The window, by region — subtotal** | | **76** | **36** | **In progress** |
+| **The window, by region — subtotal** | | **77** | **36** | **In progress** |
 
 ### Inside the main panel
 
@@ -81,8 +81,8 @@ Product behaviour that spans regions rather than living in one of them.
 | [Plan-PreferenceScreen-todo](Plan-PreferenceScreen-todo.md) | Preferences window — seven tabs, every field, and the wiring audit | 55 | 36 | In progress |
 | [Plan-Updates-todo](Plan-Updates-todo.md) | Update checking — GitHub Releases feed, version comparison, channels | 23 | 0 | Done ✅ |
 | [Plan-Localization-todo](Plan-Localization-todo.md) | Localization — English and Hindi, the string catalogue, switching | 28 | 3 | In progress |
-| [Plan-WindowLayout-todo](Plan-WindowLayout-todo.md) | Window layout — resizing, the View menu, panel visibility | 95 | 1 | In progress |
-| **Features — subtotal** | | **201** | **40** | **In progress** |
+| [Plan-WindowLayout-todo](Plan-WindowLayout-todo.md) | Window layout — resizing, the View menu, panel visibility | 97 | 1 | In progress |
+| **Features — subtotal** | | **203** | **40** | **In progress** |
 
 ### Engineering, quality, and release
 

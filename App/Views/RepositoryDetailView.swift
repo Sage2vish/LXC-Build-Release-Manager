@@ -164,6 +164,9 @@ struct RepositoryDetailView: View {
             }
         }
         .toolbar {
+            // Refresh and show/hide keep the plain toolbar button look — no capsule. What they
+            // share with the appearance and language controls is the height, so all three sit on
+            // one line rather than three slightly different ones.
             ToolbarItem {
                 Button {
                     Task { await scan() }
@@ -177,8 +180,12 @@ struct RepositoryDetailView: View {
                 Button {
                     showInspector.wrappedValue.toggle()
                 } label: {
-                    Label("Toggle Detail View", systemImage: "sidebar.right")
+                    Label(
+                        showInspector.wrappedValue ? "Hide Detail View" : "Show Detail View",
+                        systemImage: "sidebar.right"
+                    )
                 }
+                .help(showInspector.wrappedValue ? "Hide the right panel" : "Show the right panel")
             }
         }
         .overlay(alignment: .trailing) {

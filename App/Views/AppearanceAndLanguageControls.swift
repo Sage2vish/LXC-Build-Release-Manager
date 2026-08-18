@@ -2,89 +2,43 @@ import SwiftUI
 
 /// The two window-level settings that live in the top bar: appearance and language.
 ///
-/// They are **two separate controls**, not one widget with two halves — you can move, hide or
-/// reposition either without touching the other. What they share is exactly one thing: the pill
-/// they are drawn in, defined once in `ToolbarPill` so their heights cannot drift apart. Setting a
-/// height on each independently is what let them disagree before: a `.menu` picker keeps its own
-/// intrinsic height and quietly ignored the frame it was given.
+/// **Both are native AppKit controls, deliberately.** The first attempt drew its own capsule and
+/// forced a height; neither survived contact with the toolbar — AppKit does not render custom
+/// backgrounds behind toolbar items, so the appearance control appeared as three loose icons and
+/// the language control as a blue hyperlink. A segmented picker and a bordered menu are drawn by
+/// the toolbar itself, which is also the only way three controls get genuinely identical heights:
+/// the system decides the height, not three numbers that have to be kept in agreement.
 ///
-/// Neither control introduces a setting. Each binds to the value Preferences already owns.
-
-// MARK: - The shared pill
-
-/// One definition of the toolbar control's shape, height and surface.
-///
-/// Both controls are built on it, so "the same height" is structural rather than two numbers that
-/// happen to match today.
-struct ToolbarPill<Content: View>: View {
-    @ViewBuilder var content: () -> Content
-
-    /// The height of every control in the top bar. One constant, one source.
-    static var height: CGFloat { LayoutMetrics.toolbarControlHeight }
-
-    var body: some View {
-        content()
-            .frame(height: Self.height)
-            .background(Capsule().fill(.quaternary.opacity(0.55)))
-            .clipShape(Capsule())
-            .overlay(Capsule().strokeBorder(.quaternary, lineWidth: 0.5))
-            // Fixed vertically only: the pill owns its height, its content owns its width.
-            .fixedSize(horizontal: false, vertical: true)
-    }
-}
+/// They remain two separate controls — separate `ToolbarItem`s — and neither introduces a setting;
+/// each binds to the value Preferences already owns.
 
 // MARK: - Appearance
 
-/// A three-stop slider: Bright · Default · Dark.
+/// A three-stop control: Bright · Default · Dark, drawn as the system's segmented capsule.
 ///
-/// Built rather than borrowed from `Picker(.segmented)` because the requested behaviour is a
-/// slider — one knob travelling between three stops — and a segmented picker cannot show a knob
-/// move. Default sits in the middle: it is the resting position, with an override either side.
+/// Default sits in the middle because it is the resting position, with an override either side.
 struct AppearanceSlider: View {
     @Binding var theme: AppTheme
 
+    /// Ordered deliberately rather than taken from `allCases`, whose order is a declaration detail.
     private static let stops: [AppTheme] = [.light, .system, .dark]
-    private var stopWidth: CGFloat { LayoutMetrics.appearanceStopWidth }
 
     var body: some View {
-        ToolbarPill {
-            HStack(spacing: 0) {
-                ForEach(Self.stops) { stop in
-                    Button {
-                        withAnimation(.snappy(duration: 0.18)) { theme = stop }
-                    } label: {
-                        Image(Self.asset(for: stop))
-                            .renderingMode(.template)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 14, height: 14)
-                            .frame(width: stopWidth, height: ToolbarPill<EmptyView>.height)
-                            .foregroundStyle(theme == stop ? Color.primary : Color.secondary)
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
+        Picker("", selection: $theme) {
+            ForEach(Self.stops) { stop in
+                Image(Self.asset(for: stop))
+                    .renderingMode(.template)
                     .help(Self.help(for: stop))
                     .accessibilityLabel(Self.title(for: stop))
-                    .accessibilityAddTraits(theme == stop ? [.isSelected] : [])
-                }
-            }
-            .background(alignment: .leading) {
-                // The knob: one shape that travels, so this reads as a slider rather than three
-                // buttons that happen to sit together.
-                Capsule()
-                    .fill(.background)
-                    .shadow(color: .black.opacity(0.18), radius: 1.5, y: 0.5)
-                    .frame(width: stopWidth, height: ToolbarPill<EmptyView>.height - 4)
-                    .offset(x: knobOffset)
+                    .tag(stop)
             }
         }
-        .accessibilityElement(children: .contain)
+        .pickerStyle(.segmented)
+        .labelsHidden()
+        .fixedSize()
+        .help("Appearance: follow the system, or force bright or dark")
         .accessibilityLabel("Appearance")
         .accessibilityValue(Self.title(for: theme))
-    }
-
-    private var knobOffset: CGFloat {
-        CGFloat(Self.stops.firstIndex(of: theme) ?? 1) * stopWidth
     }
 
     /// Asset names, not SF Symbols: the icons are project SVGs held as vector data, so they stay
@@ -118,9 +72,9 @@ struct AppearanceSlider: View {
 
 /// Every language the app ships, each written **in English and in its own script**.
 ///
-/// A `Menu` rather than a `Picker`: a `.menu` picker draws its own control chrome at its own
-/// height, which is precisely why the two toolbar controls did not match. This puts the same pill
-/// around a plain label, so both controls are the same height by construction.
+/// A bordered `Picker`, so the toolbar draws it at the same height as the appearance control
+/// beside it. The bar shows the native name; the menu carries the full `English — native` pairing,
+/// where there is room for it.
 struct LanguagePicker: View {
     @Binding var language: String
 
@@ -128,49 +82,29 @@ struct LanguagePicker: View {
     /// needed rather than leaving a half-translated window unexplained.
     var onChangeRequiresRelaunch: (AppLanguage) -> Void = { _ in }
 
-    private var current: AppLanguage { AppLanguage(preference: language) }
+    private var selection: Binding<AppLanguage> {
+        Binding(
+            get: { AppLanguage(preference: language) },
+            set: { newValue in
+                guard newValue.rawValue != language else { return }
+                language = newValue.rawValue
+                onChangeRequiresRelaunch(newValue)
+            }
+        )
+    }
 
     var body: some View {
-        Menu {
+        Picker("", selection: selection) {
             ForEach(AppLanguage.allCases) { option in
-                Button {
-                    guard option != current else { return }
-                    language = option.rawValue
-                    onChangeRequiresRelaunch(option)
-                } label: {
-                    // A tick beside the active language, because a menu that closes without
-                    // confirming what is selected leaves you guessing.
-                    if option == current {
-                        Label(option.pickerLabel, systemImage: "checkmark")
-                    } else {
-                        Text(option.pickerLabel)
-                    }
-                }
-            }
-        } label: {
-            ToolbarPill {
-                HStack(spacing: 5) {
-                    Image(systemName: "globe")
-                        .font(.system(size: 11, weight: .medium))
-                    // The short name in the bar; the full "English — native" pairing is in the
-                    // menu, where there is room for it.
-                    Text(current.nativeName)
-                        .font(.system(size: 11, weight: .medium))
-                        .lineLimit(1)
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 8, weight: .semibold))
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, 10)
-                .foregroundStyle(Color.primary)
+                Text(option.pickerLabel).tag(option)
             }
         }
-        .menuStyle(.borderlessButton)
-        .menuIndicator(.hidden)
+        .pickerStyle(.menu)
+        .labelsHidden()
         .fixedSize()
         .help("Language used by the app's own interface")
         .accessibilityLabel("Language")
-        .accessibilityValue(current.pickerLabel)
+        .accessibilityValue(AppLanguage(preference: language).pickerLabel)
     }
 }
 

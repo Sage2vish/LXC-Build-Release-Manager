@@ -526,12 +526,13 @@ final class LayoutMetricsTests: XCTestCase {
 // MARK: - Top bar controls
 
 final class ToolbarControlTests: XCTestCase {
-    func testBothControlsShareOneHeightDefinition() {
-        // The two controls are separate, and the only thing they share is this number. Reading it
-        // from the same constant is what makes "same height" structural rather than a coincidence
-        // that survives until someone edits one of them.
-        XCTAssertEqual(ToolbarPill<EmptyView>.height, LayoutMetrics.toolbarControlHeight)
-        XCTAssertGreaterThan(LayoutMetrics.toolbarControlHeight, 0)
+    func testControlsTakeTheirHeightFromTheToolbarRatherThanFromUs() {
+        // Deliberately no height constant to assert any more. The first attempt gave the two
+        // controls a shared number and drew its own capsule; AppKit refuses to render custom
+        // backgrounds behind toolbar items, so the appearance control appeared as three loose
+        // icons and the language control as blue link text — matched numbers, mismatched UI.
+        // Native controls are sized by the toolbar, which is what actually makes them equal.
+        XCTAssertEqual(AppTheme.allCases.count, 3, "The appearance control is a three-stop picker")
     }
 
     func testAppearanceStopsAreOrderedBrightDefaultDark() {
