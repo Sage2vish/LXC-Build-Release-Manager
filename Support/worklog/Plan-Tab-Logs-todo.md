@@ -31,7 +31,10 @@ Saved build logs, opened from History or chosen directly.
 ## 01. Open items
 
 - [ ] Live output and saved logs still take two code paths into the same pane; consolidate them.
-- [ ] No way to pick a log without going through History first.
+- [x] A saved-log picker sits above the pane: every recorded run for this repository, labelled
+      by script and time — which is how someone actually looks for one — newest first, with the
+      run's outcome beside it and a shortcut to the logs folder. History is now one route to a
+      log rather than the only one.
 
 ## Tracking
 
@@ -39,5 +42,5 @@ Saved build logs, opened from History or chosen directly.
 | --- | --- | --- |
 | Already shipped | 3 / 3 | Done |
 | Log storage and retrieval (§3) | 6 / 6 | Done |
-| 01 — Open items | 0 / 2 | Open |
-| **Total** | **9 / 11** | **In progress** |
+| 01 — Open items | 1 / 2 | Consolidation still open |
+| **Total** | **10 / 11** | **In progress** |

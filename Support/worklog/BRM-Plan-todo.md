@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**646 of 821 items done — 175 still pending (79%).**
+**647 of 821 items done — 174 still pending (79%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
 | The window, by region | 63 | 33 | In progress |
 | Inside the main panel | 33 | 15 | In progress |
-| The six tabs, inside the container | 261 | 20 | In progress |
+| The six tabs, inside the container | 262 | 19 | In progress |
 | Features | 186 | 41 | In progress |
 | Engineering, quality, and release | 103 | 66 | In progress |
-| **All areas** | **646** | **175** | **In progress** |
+| **All areas** | **647** | **174** | **In progress** |
 
 ## The plans, by area
 
@@ -65,12 +65,12 @@ Everything a tab *does* belongs to its own plan, not to the container.
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
 | [Plan-Tab-Build-todo](Plan-Tab-Build-todo.md) | Build — script discovery, the table, parameters, execution, live output | 161 | 2 | In progress |
-| [Plan-Tab-Logs-todo](Plan-Tab-Logs-todo.md) | Logs — saved log files, filters, search, export | 9 | 2 | In progress |
+| [Plan-Tab-Logs-todo](Plan-Tab-Logs-todo.md) | Logs — saved log files, filters, search, export | 10 | 1 | In progress |
 | [Plan-Tab-History-todo](Plan-Tab-History-todo.md) | History — every recorded run for the repository | 6 | 1 | In progress |
 | [Plan-Tab-Overview-todo](Plan-Tab-Overview-todo.md) | Overview — repository summary and build statistics | 4 | 3 | In progress |
 | [Plan-MarkdownExplorer-todo](Plan-MarkdownExplorer-todo.md) | Docs — markdown discovery, rendering, Preview/Source editing | 77 | 10 | In progress |
 | [Plan-Tab-Settings-todo](Plan-Tab-Settings-todo.md) | Settings — per-repository, distinct from the Preferences window | 4 | 2 | In progress |
-| **The six tabs, inside the container — subtotal** | | **261** | **20** | **In progress** |
+| **The six tabs, inside the container — subtotal** | | **262** | **19** | **In progress** |
 
 ### Features
 

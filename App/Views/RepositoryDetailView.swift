@@ -920,7 +920,7 @@ struct RepositoryDetailView: View {
     // MARK: Logs
 
     private var logsTab: some View {
-        Group {
+        VStack(alignment: .leading, spacing: 10) {
             if runner.isRunning {
                 LogPane(
                     title: "Live Output — \(runner.runningScript?.label ?? "")",
@@ -939,6 +939,9 @@ struct RepositoryDetailView: View {
                     isRunning: runner.isRunning
                 )
             } else if let record = selectedRecord {
+                // The log picker: until now the only route to a saved log was the History tab,
+                // so the Logs tab could show a log but never let you choose one.
+                savedLogPicker(selected: record)
                 LogPane(
                     title: "\(record.scriptLabel) — \(record.startedAt.formatted(date: .abbreviated, time: .shortened))",
                     lines: logLines(for: record),
@@ -959,6 +962,43 @@ struct RepositoryDetailView: View {
             } else {
                 ContentUnavailableView("No Logs Yet", systemImage: "doc.text", description: Text("Run a build to see live output and saved logs here."))
             }
+        }
+    }
+
+    /// Choose which saved run to read, without going through the History tab first.
+    ///
+    /// Runs are labelled by script and time because that is how someone looks for one — "the
+    /// release I ran this morning" — and the newest sits at the top, which is what a log list is
+    /// almost always asked for.
+    private func savedLogPicker(selected record: BuildRecord) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "clock.arrow.circlepath")
+                .foregroundStyle(.secondary)
+            Picker("", selection: Binding(
+                get: { record.id },
+                set: { selectedLogRecordID = $0 }
+            )) {
+                ForEach(records) { candidate in
+                    Text("\(candidate.scriptLabel) — \(candidate.startedAt.formatted(date: .abbreviated, time: .shortened))")
+                        .tag(candidate.id)
+                }
+            }
+            .labelsHidden()
+            .frame(maxWidth: 420)
+            .accessibilityLabel("Saved log")
+
+            Text(statusLabel(record.status))
+                .font(.caption.weight(.medium))
+                .foregroundStyle(BuildPresentation.color(for: record.status))
+
+            Spacer()
+
+            Button {
+                openLogsFolder()
+            } label: {
+                Label("Open Logs Folder", systemImage: "folder")
+            }
+            .help("Opens this repository's build/logs folder in Finder.")
         }
     }
 
