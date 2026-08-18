@@ -22,7 +22,8 @@ Every run recorded for this repository.
 
 - [ ] No way to clear or prune history from this tab.
 - [ ] No filtering by status or script.
-- [ ] Adopt the shared card treatment once the container defines it — the tab applies it, the shape is owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).
+- [ ] Adopt the container's shared card treatment so History matches the Build tab.
+      *(Shape owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).)*
 
 ## Tracking
 

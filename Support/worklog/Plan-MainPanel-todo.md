@@ -9,6 +9,11 @@
 > **This file is an index.** It holds no tasks of its own — every task lives in one of the plans
 > below. Supersedes the former `BuildScreen-plan-todo.md` and `BuildScreen-plan-todo_OLD.md`.
 
+## Work plan
+
+This file has none of its own. It is an index: every task about the centre column lives in one of
+the six tab plans or the three band plans below, so a change has exactly one home.
+
 ## The three bands
 
 The main panel is three stacked regions, each with its own plan.

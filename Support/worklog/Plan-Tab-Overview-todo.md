@@ -21,7 +21,8 @@ Repository summary and build statistics.
 ## 01. Open items
 
 - [ ] Statistics are all-time with no date range.
-- [ ] Adopt the shared card treatment once the container defines it — the tab applies it, the shape is owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).
+- [ ] Wrap the stat cards in the container's shared card treatment.
+      *(Shape owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).)*
 - [ ] "Total Builds Run" is all-time, while the requirements describe a per-session counter — a deliberate deviation worth confirming.
 
 ## Tracking

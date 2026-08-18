@@ -20,7 +20,8 @@ Per-repository settings. Distinct from the app-wide Preferences window, which ha
 ## 01. Open items
 
 - [ ] No confirmation before Remove from List, which is destructive.
-- [ ] Adopt the shared card treatment once the container defines it — the tab applies it, the shape is owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).
+- [ ] Wrap each settings group in the container's shared card treatment.
+      *(Shape owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).)*
 - [ ] Nothing here for per-repository build overrides; decide whether that belongs here or in Preferences.
 
 ## Tracking

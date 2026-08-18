@@ -23,6 +23,10 @@ asset_policy: simple
 # Indexes are generated and CI fails on drift:
 #   python3 Support/build-release/scripts/update-plan-index.py --check
 automation: ci-enforced
+
+# This repository generates its own indexes, so the skill's sync defers to it. CI runs the same
+# script with --check, which is what actually enforces freshness.
+generator: Support/build-release/scripts/update-plan-index.py
 support_root: Support
 
 enabled:

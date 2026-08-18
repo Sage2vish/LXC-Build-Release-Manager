@@ -49,8 +49,8 @@ Target the GitHub Flavored Markdown subset that actually appears in this reposit
 | `>` quotes | Left accent bar, secondary text colour, nestable |
 | Tables | Real grid with header row, per-column alignment from `:---:`, horizontal scroll |
 | `---` | Horizontal rule |
-| `[text](url)` | Tappable link; opens in the default browser |
-| `![alt](path)` | Local images resolved relative to the file and shown; remote images show a placeholder rather than fetching |
+| `[text]` + `(url)` | Tappable link; opens in the default browser |
+| `![alt]` + `(path)` | Local images resolved relative to the file and shown; remote images show a placeholder rather than fetching |
 | HTML blocks | Shown verbatim as escaped text — never executed |
 
 ## Non-Goals

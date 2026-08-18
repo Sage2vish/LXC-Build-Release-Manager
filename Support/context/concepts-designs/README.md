@@ -12,7 +12,7 @@ This folder contains the visual and source-reference material used to shape LXC 
 | `LXC-Release-Build-Manager-workbench.png` | Broader release manager workbench concept. |
 | `Logs-console-Screen-concept01a.png` | Logs and console concept. |
 | `ui-back-main.png` | Main navigation and shell reference. |
-| `36e3fb6e-83bf-428d-95d6-80fbb63f101b.png` | Additional visual reference retained from the design pass. |
+| `lexvora-consulting-logo.png` | Additional visual reference retained from the design pass. |
 | `crap.png` | Historical exploratory reference; not a product acceptance target. |
 
 ## Preferences surfaces

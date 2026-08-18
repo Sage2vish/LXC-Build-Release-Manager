@@ -190,9 +190,12 @@ def splice_generated(path: Path, start: str, end: str, rendered: str) -> tuple[s
 
 
 def synchronized_texts(root: Path) -> list[tuple[Path, str, str]]:
+    profile = root / "Support" / "project-system.yaml"
+    names = profile_name_map(profile) if profile.exists() else {}
+    plan_index = root / names.get("Support/worklog/Project-Plan.md", "Support/worklog/Project-Plan.md")
     targets = (
         (
-            root / "Support" / "worklog" / "Project-Plan.md",
+            plan_index,
             PLAN_START,
             PLAN_END,
             render_plan_index(root),
@@ -361,12 +364,20 @@ def audit_repository(root: Path) -> list[Finding]:
             if ANONYMOUS_ASSET.match(path.name) or UUID_NAME.match(path.name):
                 findings.append(Finding("WARN", path, "asset filename does not communicate purpose or ownership"))
 
-    try:
-        for path, current, updated in synchronized_texts(root):
-            if current != updated:
-                findings.append(Finding("ERROR", path, "generated index is stale; run sync"))
-    except ValueError as error:
-        findings.append(Finding("ERROR", root / "Support", str(error)))
+    # A repository that already generates its own indexes owns that job; the skill defers to it
+    # rather than demanding a second set of markers. The profile has to name the generator, and
+    # it has to exist, so "we have our own" cannot become "nobody checks".
+    generator = profile_values(profile).get("generator") if profile.exists() else None
+    if generator:
+        if not (root / generator).exists():
+            findings.append(Finding("ERROR", root / generator, "profile names a generator that does not exist"))
+    else:
+        try:
+            for path, current, updated in synchronized_texts(root):
+                if current != updated:
+                    findings.append(Finding("ERROR", path, "generated index is stale; run sync"))
+        except ValueError as error:
+            findings.append(Finding("ERROR", root / "Support", str(error)))
 
     return findings
 

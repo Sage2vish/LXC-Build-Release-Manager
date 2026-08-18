@@ -4,7 +4,7 @@ This repository ships as a branded macOS package for Lexvora Consulting.
 
 <p align="center">
   <a href="https://www.lexvoraconsulting.com/">
-    <img src="../context/concepts-designs/36e3fb6e-83bf-428d-95d6-80fbb63f101b.png" alt="Lexvora Consulting" width="960">
+    <img src="../context/concepts-designs/lexvora-consulting-logo.png" alt="Lexvora Consulting" width="960">
   </a>
 </p>
 
@@ -14,7 +14,7 @@ This repository ships as a branded macOS package for Lexvora Consulting.
 - Primary logo: [`brand-mark.svg`](../context/concepts-designs/brand-mark.svg)
 - App icon artwork: [`LXC-BRM-AppIcon2.png`](../context/concepts-designs/AppIcons/LXC-BRM-AppIcon2.png)
 - Supporting logo mark: [`AppIcon-BRM.png`](../context/concepts-designs/AppIcons/AppIcon-BRM.png)
-- Brand banner: [`36e3fb6e-83bf-428d-95d6-80fbb63f101b.png`](../context/concepts-designs/36e3fb6e-83bf-428d-95d6-80fbb63f101b.png)
+- Brand banner: [`lexvora-consulting-logo.png`](../context/concepts-designs/lexvora-consulting-logo.png)
 
 ## Package intent
 
