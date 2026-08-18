@@ -405,6 +405,11 @@ struct RepositoryDetailView: View {
                     Label("Copy Path", systemImage: "doc.on.doc")
                 }
                 .accessibilityLabel("Copy repository path")
+
+                // Appearance and language, right-aligned in the same band. Both drive the
+                // preferences Preferences already owns, so the two surfaces cannot disagree.
+                Divider().frame(height: 18)
+                AppearanceAndLanguageControls(preferencesStore: preferencesStore)
             }
             // Local folder first, GitHub URL below it. Whichever does not apply is omitted
             // entirely rather than rendered blank.

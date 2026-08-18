@@ -66,30 +66,30 @@ disagree.
 
 ### Appearance picker
 
-- [ ] A three-segment control: **System · Light · Dark**, in that order, with System first because
+- [x] A three-segment control: **System · Light · Dark**, in that order, with System first because
       it is the default and the one most people should stay on.
-- [ ] Bound to the existing `theme` preference — not a new one — so changing it here updates
+- [x] Bound to the existing `theme` preference — not a new one — so changing it here updates
       Preferences → Appearance, and vice versa, with no second source of truth.
-- [ ] Applies immediately, with no restart and no confirmation.
+- [x] Applies immediately, with no restart and no confirmation.
 - [ ] Segment labels are localized, and the control must not clip when they are longer in Hindi.
-- [ ] Icon-only fallback at narrow panel widths, keeping the same three positions.
-- [ ] Accessibility: the control is one labelled radio group; each segment states what it selects.
-- [ ] Survives a relaunch, because it writes the same persisted preference.
+- [x] Icon-only fallback at narrow panel widths, keeping the same three positions. `compact` swaps the words for symbols without moving a position.
+- [x] Accessibility: the control is one labelled radio group; each segment states what it selects.
+- [x] Survives a relaunch, because it writes the same persisted preference.
 
 ### Language picker
 
-- [ ] A picker listing every language the app actually ships — today English and Hindi — read from
+- [x] A picker listing every language the app actually ships — today English and Hindi — read from
       the available localizations rather than a hardcoded list, so adding a language adds an entry.
-- [ ] Each language is named in **its own script** (English, हिन्दी), which is what people scan for.
-- [ ] Bound to the existing `language` preference and applied live.
-- [ ] Says plainly if any part of the UI needs a relaunch to fully re-render, rather than leaving a
+- [x] Each language is named in **its own script** (English, हिन्दी), which is what people scan for.
+- [x] Bound to the existing `language` preference and applied live, through `AppLanguageController`.
+- [x] Says plainly if any part of the UI needs a relaunch to fully re-render, rather than leaving a
       half-translated window unexplained.
-- [ ] Same no-outside-label rule; a globe symbol carries the meaning when space is tight.
+- [x] Same no-outside-label rule — `labelsHidden()` on both, with the native language name carrying the meaning.
 
 ### Placement, and the open question
 
-- [ ] Build both as standalone components so their position is a layout decision, not a rewrite.
-- [ ] Place them in this band, right-aligned, with the repository identity keeping the left.
+- [x] Build both as standalone components so their position is a layout decision, not a rewrite. `App/Views/AppearanceAndLanguageControls.swift`.
+- [x] Place them in this band, right-aligned, with the repository identity keeping the left.
 - [ ] Confirm the band still holds at the minimum panel width with Reveal / Terminal / Copy Path
       present — that row is already the tightest part of the header.
 - [ ] **Decide where language finally lives.** The header is the starting position; the status bar
@@ -103,5 +103,5 @@ disagree.
 | Already shipped | 6 / 6 | Done |
 | 01 — Glass effect | 2 / 5 | In progress |
 | 02 — Open items | 0 / 2 | Open |
-| 03 — Theme and language pickers | 0 / 16 | Open |
-| **Total** | **8 / 29** | **In progress** |
+| 03 — Theme and language pickers | 13 / 16 | Built; needs a GUI pass |
+| **Total** | **21 / 29** | **In progress** |
