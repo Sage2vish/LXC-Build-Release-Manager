@@ -223,6 +223,29 @@ def profile_values(path: Path) -> dict[str, str]:
     return values
 
 
+def profile_name_map(path: Path) -> dict[str, str]:
+    """Read the profile's `names:` block: Lexvora role file -> this repository's file.
+
+    `structure: preserve-existing` is a documented mode, so a repository that grew its own
+    entry-point names must be able to declare them rather than either renaming its files or
+    living with permanent audit errors. Only the mapped roles move; everything else is still
+    required at its standard path.
+    """
+    mapping: dict[str, str] = {}
+    inside = False
+    for line in read_text(path).splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if not line.startswith((" ", "\t")):
+            inside = stripped == "names:"
+            continue
+        if inside and ":" in stripped:
+            role, actual = stripped.split(":", 1)
+            mapping[role.strip().strip("\"'")] = actual.strip().strip("\"'")
+    return mapping
+
+
 def exact_case_exists(path: Path) -> bool:
     if not path.exists():
         return False
@@ -255,12 +278,17 @@ def local_link_target(source: Path, raw_target: str) -> Path | None:
 def audit_repository(root: Path) -> list[Finding]:
     findings: list[Finding] = []
 
-    for relative in REQUIRED_FILES:
-        path = root / relative
-        if not path.exists():
-            findings.append(Finding("ERROR", path, "required scaffold file is missing"))
-
     profile = root / "Support" / "project-system.yaml"
+    names = profile_name_map(profile) if profile.exists() else {}
+
+    for relative in REQUIRED_FILES:
+        path = root / names.get(relative, relative)
+        if not path.exists():
+            detail = "required scaffold file is missing"
+            if relative in names:
+                detail += f" (mapped from {relative})"
+            findings.append(Finding("ERROR", path, detail))
+
     if profile.exists():
         values = profile_values(profile)
         if values.get("system") != "lexvora-project-management":

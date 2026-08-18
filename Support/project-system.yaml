@@ -1,0 +1,41 @@
+schema: 1
+system: lexvora-project-management
+attribution: Lexvora Consulting
+project: "LXC Build Release Manager"
+
+# The repository grew this system before the skill existed, so it keeps its own entry-point
+# names and maps them onto the Lexvora roles below. Renaming the master index would break the
+# one instruction this project has been most consistent about: BRM-Plan-todo.md is where the
+# journey starts.
+structure: preserve-existing
+
+# High assurance because the product's whole argument is inspectability: a claim it cannot
+# evidence is worse here than an unfinished feature.
+rigor: high-assurance
+planning_horizon: release
+
+# A compile closes nothing. The standing gate is a real GUI check for anything a person sees,
+# and a measurement for anything the requirements state as a number.
+evidence_gate: click-tested
+decision_style: adr
+asset_policy: simple
+
+# Indexes are generated and CI fails on drift:
+#   python3 Support/build-release/scripts/update-plan-index.py --check
+automation: ci-enforced
+support_root: Support
+
+enabled:
+  context: true
+  research: true
+  worklog: true
+  verification: true
+  build_release: true
+  frameworks: true
+  shared: true
+
+# Lexvora role -> this repository's file. Used by the audit so `preserve-existing` is a real
+# mode rather than a permanent list of errors.
+names:
+  Support/worklog/Project-Plan.md: Support/worklog/BRM-Plan-todo.md
+  Support/worklog/Verification.md: Support/worklog/Plan-QualityVerification-todo.md

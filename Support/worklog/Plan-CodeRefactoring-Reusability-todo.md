@@ -1,5 +1,7 @@
 # Code Refactoring and Reusability
 
+> **Owns:** the behaviour-preserving refactor: feature extraction, dependency seams, and reuse.
+
 ![Refactor](https://img.shields.io/badge/refactor-architecture-3155E8?style=for-the-badge&labelColor=0B1020)
 ![Swift](https://img.shields.io/badge/Swift-6.0-FF7357?style=for-the-badge&labelColor=0B1020)
 ![Platform](https://img.shields.io/badge/platform-macOS%2015%2B-28B487?style=for-the-badge&labelColor=0B1020)
@@ -86,6 +88,8 @@ Features
 ```
 
 The target is a direction, not permission to introduce layers without a consumer. A new abstraction must remove duplication, improve a test seam, or clarify ownership.
+
+## Work plan
 
 ## Work Plan
 
@@ -241,3 +245,12 @@ The refactor is complete only when all of the following are true:
 | Final build, test, GUI, and release verification | Pending |
 
 _This is the refactoring execution ledger. Only mark an implementation line `[x]` after the complete boundary, behavior, and verification condition is satisfied._
+
+## Tracking
+
+| Scope | Checked / Total | Status |
+| --- | --- | --- |
+| Whole plan | 31 / 69 | In progress |
+
+Counts are read from the checkboxes above by
+`Support/build-release/scripts/update-plan-index.py`, which mirrors them into the index.

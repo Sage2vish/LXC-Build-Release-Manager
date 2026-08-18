@@ -1,5 +1,7 @@
 # Plan — Main Panel (centre)
 
+> **Owns:** nothing directly — it is the index for the centre column's three bands and six tabs, each of which has its own plan.
+>
 > The centre column of the window. The other three regions have their own plans:
 > [left sidebar](Plan-LeftSidebar-todo.md) · [right Detail View panel](Plan-DetailViewPanel-todo.md) ·
 > [bottom status bar](Plan-StatusBar-todo.md).
@@ -68,3 +70,8 @@ app-wide. They are different surfaces with different plans.
 | Overview tab | 4 / 7 |
 | Docs tab | see [Plan-MarkdownExplorer-todo.md](Plan-MarkdownExplorer-todo.md) |
 | Settings tab | 3 / 6 |
+
+## Tracking
+
+This file holds no tasks of its own — it is an index. Progress lives in the plans
+it links to, and is rolled up in [`BRM-Plan-todo.md`](BRM-Plan-todo.md).

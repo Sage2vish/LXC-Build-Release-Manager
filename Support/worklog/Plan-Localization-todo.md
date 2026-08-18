@@ -1,5 +1,7 @@
 # Plan — Localization (`language`: English + Hindi)
 
+> **Owns:** localization: the string catalogue, the shipped languages, and how a language switch takes effect.
+
 The `language` preference has been stored and rendered since the settings screen was built, with
 nothing behind it and no localized resources in the app. It is currently disabled with copy
 saying "not active yet". This plan makes it real.
@@ -30,6 +32,8 @@ settings screen must say so rather than appearing to do nothing.
   user data and must stay verbatim.
 - No third-party localization framework.
 - Not machine-translating every string in bulk; a wrong Hindi string is worse than an English one.
+
+## Work plan
 
 ## Work Plan
 

@@ -1,6 +1,9 @@
 # LXC Build & Release Manager
 
 <div align="center">
+  <img src="Support/context/concepts-designs/AppIcons/LXC-BRM-AppIcon2.png" alt="LXC Build Release Manager app icon" width="140">
+  <br>
+  <br>
   <img src="Support/context/concepts-designs/brand-mark.svg" alt="LXC Build and Release Manager" width="760">
   <br>
   <br>

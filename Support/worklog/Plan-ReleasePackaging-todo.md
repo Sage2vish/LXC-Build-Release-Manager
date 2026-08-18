@@ -28,6 +28,8 @@ The entry point is `Support/build-release/scripts/release.sh`. Run it from the r
 ./Support/build-release/scripts/release.sh --publish --prerelease   # Beta channel
 ```
 
+## Work plan
+
 ## 01. Deliverables — shipped
 
 - [x] Build and packaging instructions — [`build-release/README.md`](../build-release/README.md).

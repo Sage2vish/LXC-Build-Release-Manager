@@ -1,5 +1,7 @@
 # Plan — Main panel: Toolbar (middle)
 
+> **Owns:** the middle band of the centre column: the six-tab picker and the rule beneath it.
+>
 > The middle band of the [main panel](Plan-MainPanel-todo.md). Siblings:
 > [Header](Plan-MainPanel-Header-todo.md) · [Container](Plan-MainPanel-Container-todo.md)
 
@@ -12,6 +14,8 @@ six tabs the container shows.
 | --- | --- |
 | Tab picker | Build · Logs · History · Overview · Docs · Settings, segmented, one at a time |
 | Divider | A single rule below the picker, separating it from the container |
+
+## Work plan
 
 ## Already shipped
 

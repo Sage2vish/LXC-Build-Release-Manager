@@ -1,5 +1,7 @@
 # Plan — Xcode project & IDE
 
+> **Owns:** the Xcode project itself: target membership, build settings, schemes, and project-file hygiene.
+
 Everything about `LXC-Build-Release-Manager.xcodeproj` itself: target membership, build settings, schemes, and the
 mechanics of keeping the project file correct as source files come and go.
 
@@ -24,6 +26,8 @@ Every file added during this work has needed that by hand, and a missed entry sh
 | Project location | Repository root | Flattened 2026-08-18; there is no container folder |
 | Scheme | `LXC-Build-Release-Manager`, **shared** | Added 2026-08-18; before that Xcode auto-generated a private one |
 | `Support/` in the navigator | Filesystem-synchronized group | No target membership — documentation is never an app resource |
+
+## Work plan
 
 ## 00. Flatten and rename — done 2026-08-18
 

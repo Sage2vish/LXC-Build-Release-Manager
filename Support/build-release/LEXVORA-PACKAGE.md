@@ -12,7 +12,7 @@ This repository ships as a branded macOS package for Lexvora Consulting.
 
 - Website: [lexvoraconsulting.com](https://www.lexvoraconsulting.com/)
 - Primary logo: [`brand-mark.svg`](../context/concepts-designs/brand-mark.svg)
-- App icon artwork: [`appicon2.png`](../context/concepts-designs/AppIcons/appicon2.png)
+- App icon artwork: [`LXC-BRM-AppIcon2.png`](../context/concepts-designs/AppIcons/LXC-BRM-AppIcon2.png)
 - Supporting logo mark: [`AppIcon-BRM.png`](../context/concepts-designs/AppIcons/AppIcon-BRM.png)
 - Brand banner: [`36e3fb6e-83bf-428d-95d6-80fbb63f101b.png`](../context/concepts-designs/36e3fb6e-83bf-428d-95d6-80fbb63f101b.png)
 

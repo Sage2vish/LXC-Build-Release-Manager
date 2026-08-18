@@ -1,5 +1,7 @@
 # Preferences Screen — Plan & Checklist
 
+> **Owns:** everything inside the app-wide Preferences window: seven tabs, every field, and the wiring behind them.
+
 Sources:
 - Initial concept mockup ("What I'd Like To Have In Preferences" / "Preferences – How It Will Look" / "How Preferences Will Open") — established the modal-dialog decision and an early 6-section field list.
 - Section taxonomy supplied 2026-08-16, refining those 6 sections into 7 (splits "UI/Display" into "Appearance" and pulls notification toggles into their own tab).
@@ -166,6 +168,8 @@ Mapping from the mockup's original fields into these 7 tabs (theme moved out of 
 - Draft/commit editing: edits apply to a local draft; only "Save" commits to the persisted store, "Cancel" discards.
 - Settings apply immediately after Save where possible (theme, font, etc.).
 - Persisted at `~/Library/Application Support/LXC-Build-Release-Manager/preferences.json` — keeping the existing `LXC-Build-Release-Manager` app-support folder name (the mockup's note said `BuildManager`; staying consistent with `RepositoryStore`/`BuildHistoryStore`, which already use `LXC-Build-Release-Manager`).
+
+## Work plan
 
 ## Wiring status — the 2026-08-16 audit
 

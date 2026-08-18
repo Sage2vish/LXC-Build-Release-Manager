@@ -24,6 +24,8 @@ across every plan in this folder.
 
 A compile never closes a GUI, performance, stress, or release-distribution item.
 
+## Work plan
+
 ## 01. Non-functional targets — measured, not assumed
 
 Requirements §6. Every number here was measured rather than estimated.

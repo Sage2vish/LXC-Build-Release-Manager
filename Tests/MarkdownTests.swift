@@ -463,8 +463,14 @@ final class SidebarAndHTMLTests: XCTestCase {
 
         let state = AppBackground.displayState(preferences: prefs, colorScheme: .dark)
         XCTAssertTrue(state.shouldShow)
-        XCTAssertEqual(state.imageOpacity, 0.22, accuracy: 0.0001)
-        XCTAssertEqual(state.overlayOpacity, 0.38, accuracy: 0.0001)
+
+        // The intent, stated as behaviour rather than as two magic numbers: in dark mode the
+        // background image has to remain perceptible, and the darkening overlay must not be
+        // heavy enough to erase it. The pair below was retuned from 0.22/0.38 after the image
+        // read as mud on a dark desktop.
+        XCTAssertGreaterThan(state.imageOpacity, state.overlayOpacity)
+        XCTAssertEqual(state.imageOpacity, 0.36, accuracy: 0.0001)
+        XCTAssertEqual(state.overlayOpacity, 0.26, accuracy: 0.0001)
     }
 
     func testAppBackgroundIsSuppressedWhenReduceTransparencyIsEnabled() {

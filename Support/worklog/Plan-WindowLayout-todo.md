@@ -1,8 +1,10 @@
 # Plan — Window Layout & View Menu (v0.1.2)
 
+> **Owns:** window layout: resizing, the View menu, and the visibility and persistence of each panel.
+
 Scope: the app **shell** only — the left repository container, the sidebar footer controls, the bottom status bar, the right detail/inspector panel, and the View menu entries that show/hide them. No Build tab, Logs, History, Overview, or Preferences *content* work in this pass.
 
-Source: verbal request, 2026-08-16. Read against `context/rules-context.md` and the existing shell code in `App/ContentView.swift`.
+Source: verbal request, 2026-08-16. Read against `context/rules.md` and the existing shell code in `App/ContentView.swift`.
 
 `[x]` = built and verified (compiles + traced). `[ ]` = not done. A box is only checked when the matching code exists and the target builds.
 
@@ -20,6 +22,8 @@ Source: verbal request, 2026-08-16. Read against `context/rules-context.md` and 
 | Version | `project.pbxproj:528, 615` — `MARKETING_VERSION = 1.0` | Should be `0.1.2`. |
 
 ---
+
+## Work plan
 
 ## Phases
 

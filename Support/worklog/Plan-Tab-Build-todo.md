@@ -1,5 +1,7 @@
 # Plan — Build tab
 
+> **Owns:** the Build tab: script discovery, the scripts table, parameters, the resolved command, execution, and the live output terminal.
+>
 > One of six tabs inside the [main panel's container](Plan-MainPanel-Container-todo.md).
 > Siblings: [Logs](Plan-Tab-Logs-todo.md) · [History](Plan-Tab-History-todo.md) ·
 > [Overview](Plan-Tab-Overview-todo.md) · [Docs](Plan-MarkdownExplorer-todo.md) ·
@@ -7,6 +9,8 @@
 
 Script discovery, the scripts table, parameters, the resolved command, build execution, and the
 live output terminal. This is the app's primary working surface.
+
+## Work plan
 
 ## 00. Vertical split — scripts over output
 
@@ -246,3 +250,12 @@ see `context/architecture.md` and
 - [x] The UI is accessible, native-feeling, and visually consistent with the rest of MyHealthHub.
 - [x] Tests cover the critical discovery, execution, and terminal workflows.
 - [x] The checklist can be used as an execution tracker in GitHub, Xcode, and Codex without extra interpretation.
+
+## Tracking
+
+| Scope | Checked / Total | Status |
+| --- | --- | --- |
+| Whole plan | 161 / 163 | In progress |
+
+Counts are read from the checkboxes above by
+`Support/build-release/scripts/update-plan-index.py`, which mirrors them into the index.

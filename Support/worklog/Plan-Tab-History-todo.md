@@ -1,11 +1,15 @@
 # Plan — History tab
 
+> **Owns:** the History tab: every run recorded for the selected repository.
+>
 > One of six tabs inside the [main panel's container](Plan-MainPanel-Container-todo.md).
 > Siblings: [Build](Plan-Tab-Build-todo.md) · [Logs](Plan-Tab-Logs-todo.md) ·
 > [History](Plan-Tab-History-todo.md) · [Overview](Plan-Tab-Overview-todo.md) ·
 > [Docs](Plan-MarkdownExplorer-todo.md) · [Settings](Plan-Tab-Settings-todo.md)
 
 Every run recorded for this repository.
+
+## Work plan
 
 ## Already shipped
 
@@ -18,7 +22,7 @@ Every run recorded for this repository.
 
 - [ ] No way to clear or prune history from this tab.
 - [ ] No filtering by status or script.
-- [ ] Apply the shared SectionCard so it matches the Build tab.
+- [ ] Adopt the shared card treatment once the container defines it — the tab applies it, the shape is owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).
 
 ## Tracking
 

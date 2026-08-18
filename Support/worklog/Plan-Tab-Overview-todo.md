@@ -1,11 +1,15 @@
 # Plan — Overview tab
 
+> **Owns:** the Overview tab: repository summary and build statistics.
+>
 > One of six tabs inside the [main panel's container](Plan-MainPanel-Container-todo.md).
 > Siblings: [Build](Plan-Tab-Build-todo.md) · [Logs](Plan-Tab-Logs-todo.md) ·
 > [History](Plan-Tab-History-todo.md) · [Overview](Plan-Tab-Overview-todo.md) ·
 > [Docs](Plan-MarkdownExplorer-todo.md) · [Settings](Plan-Tab-Settings-todo.md)
 
 Repository summary and build statistics.
+
+## Work plan
 
 ## Already shipped
 
@@ -17,7 +21,7 @@ Repository summary and build statistics.
 ## 01. Open items
 
 - [ ] Statistics are all-time with no date range.
-- [ ] Apply the shared SectionCard so it matches the Build tab.
+- [ ] Adopt the shared card treatment once the container defines it — the tab applies it, the shape is owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).
 - [ ] "Total Builds Run" is all-time, while the requirements describe a per-session counter — a deliberate deviation worth confirming.
 
 ## Tracking

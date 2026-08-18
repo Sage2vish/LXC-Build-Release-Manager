@@ -1,5 +1,7 @@
 # Plan — Left Sidebar Panel
 
+> **Owns:** the left panel and how repositories enter the app: the list, recents, add and remove, and the two footer buttons.
+>
 > Named **left** sidebar deliberately: the app has a right sidebar too — the Detail View Window
 > inspector — and "sidebar" alone is ambiguous once both exist.
 
@@ -19,6 +21,8 @@ what is already shipped recorded so nothing gets rebuilt by accident.
 | 4 | **Preferences** | Footer gear; opens the native Settings window. Also reachable with Cmd+, **The button belongs to this panel; everything inside that window is owned by [`Plan-PreferenceScreen-todo.md`](Plan-PreferenceScreen-todo.md) and is not duplicated here.** |
 
 Everything else in the panel — width, show/hide, footer placement — serves those four.
+
+## Work plan
 
 ## Already shipped
 

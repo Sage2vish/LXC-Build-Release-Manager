@@ -119,7 +119,8 @@ Start with [`worklog/README.md`](worklog/README.md) for the rules, then go to th
 | [`context/README.md`](context/README.md) | How to read the context set and use it for AI-assisted work. |
 | [`context/requirements.md`](context/requirements.md) | Functional requirements input retained in the repository. |
 | [`context/architecture.md`](context/architecture.md) | Current UI, workspace, documentation, and decision architecture. |
-| [`context/rules-context.md`](context/rules-context.md) | Rules that keep the workspace coherent. |
+| [`context/rules.md`](context/rules.md) | Rules that keep the workspace coherent. |
+| [`context/current-context.md`](context/current-context.md) | Where the project stands right now, and the boundaries that decide arguments. |
 | [`context/decisions/`](context/decisions/) | Dated records of choices that override or clarify the input. |
 | [`context/concepts-designs/`](context/concepts-designs/) | Screens, mockups, and the source requirements PDF. |
 | [`context/diagrams/`](context/diagrams/) | Self-contained SVG maps for system context, runtime architecture, and release flow. |
@@ -157,7 +158,7 @@ Every plan is reachable from the index; these are the ones a newcomer usually wa
 ### Before changing code
 
 1. Read this handbook.
-2. Read [`context/rules-context.md`](context/rules-context.md) and [`context/architecture.md`](context/architecture.md).
+2. Read [`context/rules.md`](context/rules.md) and [`context/architecture.md`](context/architecture.md).
 3. Read the relevant requirement and decision records.
 4. Open [`worklog/BRM-Plan-todo.md`](worklog/BRM-Plan-todo.md), use its **Where a new task goes** table to find the owning plan, and add the task there before implementation.
 
@@ -187,8 +188,7 @@ Every plan is reachable from the index; these are the ones a newcomer usually wa
 
 ## Related entry points
 
-- [Repository landing page](../../README.md)
-- [App product README](../README.md)
+- [Repository landing page](../README.md)
 - [Build and release](build-release/README.md)
 - [User guide](build-release/USER_GUIDE.md)
 - [Context](context/README.md)

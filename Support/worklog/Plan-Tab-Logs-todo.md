@@ -1,11 +1,15 @@
 # Plan — Logs tab
 
+> **Owns:** the Logs tab: saved log files, filters, search, and export.
+>
 > One of six tabs inside the [main panel's container](Plan-MainPanel-Container-todo.md).
 > Siblings: [Build](Plan-Tab-Build-todo.md) · [Logs](Plan-Tab-Logs-todo.md) ·
 > [History](Plan-Tab-History-todo.md) · [Overview](Plan-Tab-Overview-todo.md) ·
 > [Docs](Plan-MarkdownExplorer-todo.md) · [Settings](Plan-Tab-Settings-todo.md)
 
 Saved build logs, opened from History or chosen directly.
+
+## Work plan
 
 ## Already shipped
 

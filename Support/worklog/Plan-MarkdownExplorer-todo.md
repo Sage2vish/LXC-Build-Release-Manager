@@ -1,5 +1,7 @@
 # Plan — Markdown Explorer & Viewer ("Docs" tab)
 
+> **Owns:** the Docs tab: markdown discovery, rendering, and Preview/Source editing.
+
 A sixth tab beside Build, Logs, History, Overview, and Settings: browse every `.md` file in the
 open repository on the left, read it rendered on the right — the way GitHub renders it.
 
@@ -60,6 +62,8 @@ Target the GitHub Flavored Markdown subset that actually appears in this reposit
 - No syntax highlighting inside code fences in this pass; monospaced with a language label first.
 - No `.md` rendering for files outside the open repository.
 - No third-party package.
+
+## Work plan
 
 ## Work Plan
 

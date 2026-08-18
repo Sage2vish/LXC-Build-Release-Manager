@@ -1,5 +1,7 @@
 # Plan — Status Bar (bottom)
 
+> **Owns:** the strip across the bottom of the window and every chip in it.
+>
 > The fourth region of the window. The other three have their own plans:
 > [left sidebar](Plan-LeftSidebar-todo.md) · [main panel](Plan-MainPanel-todo.md) ·
 > [right Detail View panel](Plan-DetailViewPanel-todo.md).
@@ -15,6 +17,8 @@ glance, without taking a click to find out.
 | **Branch** | `.git/HEAD`, read from disk | `—` for GitHub-sourced repositories with no local checkout |
 | **Platform** | Static: macOS | Placeholder for when other targets exist |
 | **Auto-detect** | `autoDetectRepositoriesOnStartup` | Shows Enabled / Disabled, with a muted style when off |
+
+## Work plan
 
 ## Already shipped
 

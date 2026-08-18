@@ -1,5 +1,7 @@
 # Plan — Main panel: Header (top)
 
+> **Owns:** the top band of the centre column: repository identity, path lines, the three repo-wide actions, and the appearance and language controls.
+>
 > The top band of the [main panel](Plan-MainPanel-todo.md). Siblings:
 > [Toolbar](Plan-MainPanel-Toolbar-todo.md) · [Container](Plan-MainPanel-Container-todo.md)
 
@@ -15,6 +17,8 @@ actions that act on the repository as a whole.
 | Local folder | Labelled path line, middle-truncated |
 | GitHub | Labelled origin line, shown only when the repository has one |
 | Actions | Reveal in Finder · Open in Terminal · Copy Path |
+
+## Work plan
 
 ## Already shipped
 

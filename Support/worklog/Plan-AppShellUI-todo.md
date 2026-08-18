@@ -1,5 +1,7 @@
 # Plan — App shell UI (whole window)
 
+> **Owns:** the whole window's visual identity — background, material and glass language, theme and accent — so the four regions stay coherent instead of each inventing a look.
+>
 > The visual identity of the **whole LXC Build Release Manager window**, above and across the four regions. Anything
 > scoped to one region belongs to that region's plan instead:
 > [left sidebar](Plan-LeftSidebar-todo.md) · [main panel](Plan-MainPanel-todo.md) ·
@@ -17,9 +19,12 @@ Concepts live in `Support/context/concepts-designs/`:
 | --- | --- |
 | `ui-back-main.png` | The window background. 1536×1024 soft pastel gradient. **Copied to `App/Resources/Assets/` so it ships with the app** — the concepts folder is reference material, not a build input. |
 | `brand-mark.svg` | Brand mark |
+| `AppIcons/LXC-BRM-AppIcon2.png` | **The app icon.** 1254px source for the `AppIcon` set, the DMG volume icon, and the README |
 | `Build-Console-Screen-*.png` | Main panel concepts |
 | `Logs-console-Screen-concept01a.png` | Logs concepts |
 | `Preference-Screen/` | The seven Preferences tabs — owned by [Plan-PreferenceScreen-todo.md](Plan-PreferenceScreen-todo.md) |
+
+## Work plan
 
 ## 01. Window background
 

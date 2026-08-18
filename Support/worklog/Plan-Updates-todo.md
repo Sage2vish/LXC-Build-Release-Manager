@@ -1,5 +1,7 @@
 # Plan — Update Checking (`checkForUpdatesAutomatically`, `updateChannel`)
 
+> **Owns:** update checking: the GitHub Releases feed, version comparison, and the stable and beta channels.
+
 Both preferences have been stored and rendered in the General tab since the settings screen was
 built, with nothing behind them. They are currently disabled with copy saying "not active yet".
 This plan gives them a real implementation and re-enables them.
@@ -25,6 +27,8 @@ and the rate-limit handling added in the preferences pass.
   user a newer version exists and links to it; installing stays manual.
 - No new third-party dependency.
 - No background daemon. The check runs at launch and on demand.
+
+## Work plan
 
 ## Work Plan
 

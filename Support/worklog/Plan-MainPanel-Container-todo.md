@@ -1,5 +1,7 @@
 # Plan — Main panel: Container (work area)
 
+> **Owns:** the work area of the centre column: its surface, padding, scrolling, and the shared card treatment every tab adopts.
+>
 > The lower, largest band of the [main panel](Plan-MainPanel-todo.md). Siblings:
 > [Header](Plan-MainPanel-Header-todo.md) · [Toolbar](Plan-MainPanel-Toolbar-todo.md)
 
@@ -19,6 +21,8 @@ Each has its own plan. Nothing about a tab's behaviour belongs in this file.
 | Overview | [Plan-Tab-Overview-todo.md](Plan-Tab-Overview-todo.md) |
 | Docs | [Plan-MarkdownExplorer-todo.md](Plan-MarkdownExplorer-todo.md) |
 | Settings | [Plan-Tab-Settings-todo.md](Plan-Tab-Settings-todo.md) |
+
+## Work plan
 
 ## Already shipped
 

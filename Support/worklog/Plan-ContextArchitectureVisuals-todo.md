@@ -1,5 +1,7 @@
 # Context Architecture Visuals
 
+> **Owns:** the documentation diagram set and the context pages wired around it.
+
 ![Documentation](https://img.shields.io/badge/documentation-visual%20architecture-3155E8?style=for-the-badge&labelColor=0B1020)
 ![Format](https://img.shields.io/badge/assets-SVG%20%2B%20Markdown-28B487?style=for-the-badge&labelColor=0B1020)
 ![Scope](https://img.shields.io/badge/scope-context%20folder-FF7357?style=for-the-badge&labelColor=0B1020)
@@ -34,6 +36,8 @@ The diagrams are documentation artifacts, not marketing illustrations. They must
 | Architecture guide | Technical ownership map with embedded diagrams | `Support/context/architecture.md` |
 | Support handbook | Documentation map and feature/release story | `Support/README.md` |
 | Root landing page | Public project story and link to the canonical diagram set | `README.md` |
+
+## Work plan
 
 ## Work Plan
 
@@ -95,3 +99,12 @@ The plan is complete when:
 | Final diff review | Complete |
 
 _This file is the execution ledger for the documentation pass. Do not mark a line complete because work has merely started._
+
+## Tracking
+
+| Scope | Checked / Total | Status |
+| --- | --- | --- |
+| Whole plan | 25 / 25 | Complete |
+
+Counts are read from the checkboxes above by
+`Support/build-release/scripts/update-plan-index.py`, which mirrors them into the index.

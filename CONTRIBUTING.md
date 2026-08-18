@@ -5,7 +5,7 @@ Thank you for helping improve LXC Build Release Manager. This project values sma
 ## Before you change code
 
 1. Read the [Support Handbook](Support/README.md).
-2. Read the relevant [context rules](Support/context/rules-context.md), architecture notes, and decision records.
+2. Read the relevant [context rules](Support/context/rules.md), architecture notes, and decision records.
 3. Open the [BRM plan index](Support/worklog/BRM-Plan-todo.md), use its **Where a new task goes** table to find the plan that owns the surface you are changing, and find or add the matching item there before starting larger work.
 
 ## Local verification

@@ -1,5 +1,7 @@
 # Plan — Detail View Panel (right sidebar)
 
+> **Owns:** the right inspector column: its cards, its width, and its visibility.
+>
 > Named the **Detail View Panel** to match what the View menu already calls it — *Show Detail
 > View Window (Right Side)* — and to stay distinct from the left sidebar, which has its own plan
 > in [`Plan-LeftSidebar-todo.md`](Plan-LeftSidebar-todo.md).
@@ -17,6 +19,8 @@ current build status, recent history, and the quick actions.
 | 3 | **Build Status** | Live progress with Stop while running; the last result when idle |
 | 4 | **Build History** | The five most recent runs, with View All jumping to the History tab |
 | 5 | **Quick Actions** | Open Logs Folder, Export Current Log |
+
+## Work plan
 
 ## Already shipped
 

@@ -171,8 +171,10 @@ struct RepositoryDetailView: View {
             }
         }
         .overlay(alignment: .trailing) {
-            Divider()
-                .opacity(preferencesStore.preferences.reduceTransparency ? 0.75 : 0.9)
+            // A vertical hairline on the panel's right edge. `Divider()` cannot be used here:
+            // outside an HStack it lays out horizontally, so in an overlay it stretched the full
+            // width and drew a line straight across the middle of the window.
+            edgeSeparator(opacity: preferencesStore.preferences.reduceTransparency ? 0.75 : 0.9)
         }
         .inspector(isPresented: showInspector) {
             ZStack(alignment: .top) {
@@ -212,8 +214,7 @@ struct RepositoryDetailView: View {
                 .scrollContentBackground(.hidden)
             }
             .overlay(alignment: .leading) {
-                Divider()
-                    .opacity(preferencesStore.preferences.reduceTransparency ? 0.8 : 1)
+                edgeSeparator(opacity: preferencesStore.preferences.reduceTransparency ? 0.8 : 1)
             }
             .clipShape(Rectangle())
             // Wide enough to host parameter controls and a wrapped command preview.
@@ -222,6 +223,19 @@ struct RepositoryDetailView: View {
             // change at 1853pt with the panel open.
             .inspectorColumnWidth(min: 240, ideal: 340, max: 900)
         }
+    }
+
+    /// A one-point vertical rule for a column edge.
+    ///
+    /// Explicitly a `Rectangle` rather than a `Divider`: a `Divider` picks its orientation from
+    /// the stack it sits in, and an overlay is not a stack, so it defaults to horizontal and
+    /// stretches across the whole view.
+    private func edgeSeparator(opacity: Double) -> some View {
+        Rectangle()
+            .fill(Color(nsColor: .separatorColor))
+            .frame(width: 1)
+            .opacity(opacity)
+            .accessibilityHidden(true)
     }
 
     /// Full path of the selected script, wrapped rather than truncated. The scripts table

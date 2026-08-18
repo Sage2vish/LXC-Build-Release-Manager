@@ -18,7 +18,7 @@ The architecture is also available as a self-contained SVG set for quick orienta
 
 ## Read in this order
 
-1. [`rules-context.md`](rules-context.md) - non-negotiable workspace rules.
+1. [`rules.md`](rules.md) - non-negotiable workspace rules.
 2. [`architecture.md`](architecture.md) - the current app and Support structure.
 3. [`requirements.md`](requirements.md) - the functional requirements input.
 4. [`decisions/`](decisions/) - dated decisions that clarify or override the input.
