@@ -471,3 +471,53 @@ final class StatsRangeTests: XCTestCase {
         XCTAssertNil(empty.mostRecent)
     }
 }
+
+// MARK: - Column proportions
+
+final class LayoutMetricsTests: XCTestCase {
+    func testColumnsSplitTwentyFifteenAndTheRest() {
+        XCTAssertEqual(LayoutMetrics.sidebarWidthFraction, 0.20, accuracy: 0.0001)
+        XCTAssertEqual(LayoutMetrics.inspectorWidthFraction, 0.15, accuracy: 0.0001)
+        XCTAssertEqual(LayoutMetrics.centreWidthFraction, 0.65, accuracy: 0.0001,
+                       "The centre is the remainder, so the three must always total the window.")
+    }
+
+    func testIdealWidthsAreTrueProportionsOfTheWindow() {
+        let window: CGFloat = 1_600
+        XCTAssertEqual(LayoutMetrics.sidebarColumn(for: window).ideal, 320, accuracy: 0.5)
+        XCTAssertEqual(LayoutMetrics.inspectorColumn(for: window).ideal, 240, accuracy: 0.5)
+    }
+
+    func testColumnsScaleWithTheWindowRatherThanStayingFixed() {
+        let small = LayoutMetrics.sidebarColumn(for: 1_200).ideal
+        let large = LayoutMetrics.sidebarColumn(for: 2_400).ideal
+        XCTAssertEqual(large, small * 2, accuracy: 1,
+                       "A proportion has to move with the window; that is the whole point.")
+    }
+
+    func testAbsoluteFloorsWinOnAVerySmallWindow() {
+        // 20% of 600pt is 120pt, which cannot hold a repository name and the footer buttons.
+        XCTAssertEqual(LayoutMetrics.sidebarColumn(for: 600).ideal, LayoutMetrics.sidebarFloor, accuracy: 0.5)
+        XCTAssertEqual(LayoutMetrics.inspectorColumn(for: 600).ideal, LayoutMetrics.inspectorFloor, accuracy: 0.5)
+    }
+
+    func testMinimumsNeverExceedIdealsOrIdealsExceedMaximums() {
+        for window in stride(from: CGFloat(600), through: 3_200, by: 200) {
+            let sidebar = LayoutMetrics.sidebarColumn(for: window)
+            let inspector = LayoutMetrics.inspectorColumn(for: window)
+            XCTAssertLessThanOrEqual(sidebar.min, sidebar.ideal, "sidebar at \(window)")
+            XCTAssertLessThanOrEqual(sidebar.ideal, sidebar.max, "sidebar at \(window)")
+            XCTAssertLessThanOrEqual(inspector.min, inspector.ideal, "inspector at \(window)")
+            XCTAssertLessThanOrEqual(inspector.ideal, inspector.max, "inspector at \(window)")
+        }
+    }
+
+    func testSidePanelsNeverEatMoreThanTwoThirdsOfTheWindow() {
+        // Dragged fully open at once, the two side columns must still leave the centre a
+        // workable share; the centre is where the build actually happens.
+        for window in stride(from: CGFloat(900), through: 3_200, by: 100) {
+            let widest = LayoutMetrics.sidebarColumn(for: window).max + LayoutMetrics.inspectorColumn(for: window).max
+            XCTAssertLessThan(widest, window * 0.7, "Side columns swallow the centre at \(window)pt")
+        }
+    }
+}

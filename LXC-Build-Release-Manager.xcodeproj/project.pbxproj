@@ -19,6 +19,7 @@
 		39CE00E6F4CF48A0A7E35A17 /* RepositoryHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150D246C10354CBCA409B7A7 /* RepositoryHistoryView.swift */; };
 		42D194CFA8AD45AFBF28FC0E /* LogPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A00E28C35B04C4B9585B095 /* LogPresentation.swift */; };
 		4B5590D2F6DE9F6ACEEB834A /* BuildRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42A86DDBD972CFA5981609E /* BuildRecord.swift */; };
+		F5AC10000000000000000008 /* LayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000007 /* LayoutMetrics.swift */; };
 		F5AC10000000000000000004 /* HistoryFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000003 /* HistoryFilter.swift */; };
 		4C6B8D1F2A3E4C5D6F708192 /* BuildNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */; };
 		50CC22F6B112137092256122 /* BuildHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */; };
@@ -118,6 +119,7 @@
 		C3A1B2C3D4E5F60718293846 /* BuildWorkspaceStateStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildWorkspaceStateStore.swift; path = App/Services/BuildWorkspaceStateStore.swift; sourceTree = "<group>"; };
 		D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GitBranchReader.swift; path = App/Services/GitBranchReader.swift; sourceTree = "<group>"; };
 		D42A86DDBD972CFA5981609E /* BuildRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRecord.swift; path = App/Models/BuildRecord.swift; sourceTree = "<group>"; };
+		F5AC10000000000000000007 /* LayoutMetrics.swift */ = {isa = PBXFileReference; name = LayoutMetrics.swift; lastKnownFileType = sourcecode.swift; path = App/Models/LayoutMetrics.swift; sourceTree = "<group>"; };
 		F5AC10000000000000000003 /* HistoryFilter.swift */ = {isa = PBXFileReference; name = HistoryFilter.swift; lastKnownFileType = sourcecode.swift; path = App/Models/HistoryFilter.swift; sourceTree = "<group>"; };
 		D58F8A9711954FC4A3BC8983 /* AppearanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppearanceSettings.swift; path = App/Models/AppearanceSettings.swift; sourceTree = "<group>"; };
 		D9F2EA63DB8D411B8E3A239A /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppLanguage.swift; path = App/Services/AppLanguage.swift; sourceTree = "<group>"; };
@@ -251,6 +253,7 @@
 				1B97018D171778322754574B /* Repository.swift */,
 				925160EB5C5E561373968382 /* BuildScript.swift */,
 				D42A86DDBD972CFA5981609E /* BuildRecord.swift */,
+				F5AC10000000000000000007 /* LayoutMetrics.swift */,
 				F5AC10000000000000000003 /* HistoryFilter.swift */,
 				9ABC2F1F39F8FB25110771D4 /* Preferences.swift */,
 			);
@@ -434,6 +437,7 @@
 				FEEDFCE5AA26DC939D4E44DE /* RepositoryStore.swift in Sources */,
 				251FCCFB1823E848C6967B7C /* BuildScriptScanner.swift in Sources */,
 				4B5590D2F6DE9F6ACEEB834A /* BuildRecord.swift in Sources */,
+				F5AC10000000000000000008 /* LayoutMetrics.swift in Sources */,
 				F5AC10000000000000000004 /* HistoryFilter.swift in Sources */,
 				4C6B8D1F2A3E4C5D6F708192 /* BuildNotificationService.swift in Sources */,
 				C3A1B2C3D4E5F60718293847 /* BuildWorkspaceStateStore.swift in Sources */,

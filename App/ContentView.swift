@@ -111,7 +111,16 @@ struct ContentView: View {
     }
 
     private var splitView: some View {
-        navigationSplitView
+        // One measurement of the window, shared by both side columns, so their widths are
+        // proportions of what is actually on screen rather than fixed point values that mean
+        // something different on every display.
+        GeometryReader { proxy in
+            splitViewContent(windowWidth: proxy.size.width)
+        }
+    }
+
+    private func splitViewContent(windowWidth: CGFloat) -> some View {
+        navigationSplitView(windowWidth: windowWidth)
             // Appearance and language live in the window's own top bar rather than in the
             // repository header: they are app-wide settings, and the header is repository
             // identity. Trailing placement, not `.principal` — the centre of the title bar sits
@@ -124,12 +133,13 @@ struct ContentView: View {
             }
     }
 
-    private var navigationSplitView: some View {
+    private func navigationSplitView(windowWidth: CGFloat) -> some View {
         NavigationSplitView(columnVisibility: columnVisibility) {
-            sidebar
+            sidebar(windowWidth: windowWidth)
         } detail: {
             if let repository = store.selectedRepository {
                 RepositoryDetailView(
+                    windowWidth: windowWidth,
                     repository: repository,
                     store: store,
                     historyStore: historyStore,
@@ -281,7 +291,7 @@ struct ContentView: View {
         .accessibilityHint("Select recent repository \(repository.name)")
     }
 
-    private var sidebar: some View {
+    private func sidebar(windowWidth: CGFloat) -> some View {
         VStack(spacing: 0) {
             List(
                 selection: Binding(
@@ -344,12 +354,13 @@ struct ContentView: View {
             }
             .listStyle(.sidebar)
             .navigationTitle("Build Manager")
-            // The single-value form pins the column and removes the drag handle.
-            // min/ideal/max keeps the saved width as the starting point while letting the user drag.
+            // The single-value form pins the column and removes the drag handle. min/ideal/max
+            // keeps it draggable, and every number is a fraction of the window from
+            // `LayoutMetrics` — the sidebar starts at 20%.
             .navigationSplitViewColumnWidth(
-                min: 180,
-                ideal: preferencesStore.preferences.sidebarWidthPoints,
-                max: 420
+                min: LayoutMetrics.sidebarColumn(for: windowWidth).min,
+                ideal: LayoutMetrics.sidebarColumn(for: windowWidth).ideal,
+                max: LayoutMetrics.sidebarColumn(for: windowWidth).max
             )
             // Stops AppKit persisting and replaying the split view's collapse state, which
             // otherwise fights the saved preference on the next launch.

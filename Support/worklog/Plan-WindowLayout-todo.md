@@ -116,6 +116,26 @@ The three View-menu toggles must be readable and writable from **both** the `Sce
 
 ---
 
+## Pass 3 — Columns are proportions, not fixed points
+
+Added 2026-08-18. The three columns were sized in fixed points, so they were physically the same
+width on a 13-inch laptop and a 32-inch display: the sidebar swallowed a small screen and looked
+lost on a large one.
+
+- [x] The sidebar starts at **20%** of the window, the Detail View panel at **15%**, and the
+      centre takes the remaining **65%** — as the remainder, never a width of its own, so hiding a
+      panel widens the work area instead of leaving a gap.
+- [x] Every number lives in `LayoutMetrics` as a named default: the three fractions, the drag
+      clamps either side of them, and the absolute point floors. No proportion is written inside a
+      view.
+- [x] Absolute floors still win on a very small window, because 20% of 600pt cannot hold a
+      repository name and the footer buttons.
+- [x] Tested: the fractions total the window, ideals scale linearly with it, floors take over when
+      the window is small, min ≤ ideal ≤ max at every width from 600 to 3200pt, and both side
+      columns dragged fully open still leave the centre more than a third.
+- [ ] Confirm the proportions feel right in the running window at both a laptop and an external
+      display size — the numbers are correct, but 20/15/65 is a judgement.
+
 ## Tracking
 
 | Phase | Checked / Total | Status |

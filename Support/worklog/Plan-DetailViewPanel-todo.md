@@ -44,10 +44,10 @@ as three unrelated widgets rather than one panel.
 - [x] Selected Script and Build Parameters moved their titles into the ribbon; Build Parameters'
       spinner and Build History's "View All" became ribbon accessories rather than title-row
       improvisations.
-- [x] **The label is a tab**: rounded at its top-left and top-right, square at its bottom-left and
-      bottom-right, so it sits on its content rather than floating above it. The card carries the
-      same shape, so the tint reaches the corner instead of leaving two square shoulders. Every
-      other corner in the panel is square.
+- [x] **The label is a tab, and only the label is rounded**: its top-left and top-right corners
+      curve, its bottom-left and bottom-right are hard square. The panel underneath it is square
+      on all four corners — a box with a tab on it. First attempt rounded the card as well, which
+      rounded the panel; corrected.
 - [x] The detail line — a script filename, a run count — sits **inside the box**, not in the
       label. The label names the section and nothing else; a filename in it made the label two
       things at once.

@@ -7,6 +7,9 @@ import AppKit
 /// Extracted from `ContentView` so the app shell is composition only. Its dependency surface is
 /// still wide - see the refactor plan's section 04 for the remaining split into per-tab views.
 struct RepositoryDetailView: View {
+    /// The window's current width, so the Detail View panel can be a proportion of it rather
+    /// than a fixed number of points. Measured once by the app shell and handed down.
+    let windowWidth: CGFloat
     let repository: Repository
     @ObservedObject var store: RepositoryStore
     @ObservedObject var historyStore: BuildHistoryStore
@@ -30,6 +33,7 @@ struct RepositoryDetailView: View {
     @State private var isConfirmingRemoval = false
 
     init(
+        windowWidth: CGFloat,
         repository: Repository,
         store: RepositoryStore,
         historyStore: BuildHistoryStore,
@@ -39,6 +43,7 @@ struct RepositoryDetailView: View {
         runner: BuildRunner,
         initialTab: DetailTab = .build
     ) {
+        self.windowWidth = windowWidth
         self.repository = repository
         self.store = store
         self.historyStore = historyStore
@@ -208,11 +213,13 @@ struct RepositoryDetailView: View {
                 edgeSeparator(opacity: preferencesStore.preferences.reduceTransparency ? 0.8 : 1)
             }
             .clipShape(Rectangle())
-            // Wide enough to host parameter controls and a wrapped command preview.
-            // These minimums add straight into the window's own minimum width. Kept low
-            // enough that opening the panel cannot pin the window — measured before this
-            // change at 1853pt with the panel open.
-            .inspectorColumnWidth(min: 240, ideal: 340, max: 900)
+            // A proportion of the window — 15% — rather than a fixed band, with clamps so a
+            // drag stays sane at both extremes. Every number comes from `LayoutMetrics`.
+            .inspectorColumnWidth(
+                min: LayoutMetrics.inspectorColumn(for: windowWidth).min,
+                ideal: LayoutMetrics.inspectorColumn(for: windowWidth).ideal,
+                max: LayoutMetrics.inspectorColumn(for: windowWidth).max
+            )
         }
     }
 

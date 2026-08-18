@@ -22,19 +22,19 @@ struct InspectorCard<Content: View, Accessory: View>: View {
     @ViewBuilder var accessory: () -> Accessory
     @ViewBuilder var content: () -> Content
 
-    /// Rounded at the top, square at the bottom.
+    /// The rounding belongs to the **label only**.
     ///
-    /// The ribbon reads as a tab sitting on its content: the curve at the top separates one card
-    /// from the one above it, while the flat base keeps the card sitting squarely on the column
-    /// rather than floating in it.
-    private let topCornerRadius: CGFloat = 8
+    /// The label is a tab: rounded at its top-left and top-right, hard square at its bottom-left
+    /// and bottom-right. The panel underneath it is square on all four corners — it is a box, and
+    /// the tab sits on top of it.
+    private let labelCornerRadius = LayoutMetrics.inspectorLabelCornerRadius
 
-    private var cardShape: UnevenRoundedRectangle {
+    private var labelShape: UnevenRoundedRectangle {
         UnevenRoundedRectangle(
-            topLeadingRadius: topCornerRadius,
+            topLeadingRadius: labelCornerRadius,
             bottomLeadingRadius: 0,
             bottomTrailingRadius: 0,
-            topTrailingRadius: topCornerRadius
+            topTrailingRadius: labelCornerRadius
         )
     }
 
@@ -55,9 +55,8 @@ struct InspectorCard<Content: View, Accessory: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
         }
-        .background(Color.inspectorCardSurface, in: cardShape)
-        .overlay(cardShape.stroke(Color.sectionBorder, lineWidth: 1))
-        .clipShape(cardShape)
+        .background(Color.inspectorCardSurface, in: Rectangle())
+        .overlay(Rectangle().stroke(Color.sectionBorder, lineWidth: 1))
         .accessibilityElement(children: .contain)
         .accessibilityLabel(title)
     }
@@ -74,17 +73,8 @@ struct InspectorCard<Content: View, Accessory: View>: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        // The ribbon carries the same rounded top as the card, so the tint reaches the corner
-        // instead of leaving two square shoulders above it.
-        .background(
-            UnevenRoundedRectangle(
-                topLeadingRadius: topCornerRadius,
-                bottomLeadingRadius: 0,
-                bottomTrailingRadius: 0,
-                topTrailingRadius: topCornerRadius
-            )
-            .fill(Color.inspectorRibbon)
-        )
+        // Only this shape is rounded, and only along its top edge.
+        .background(labelShape.fill(Color.inspectorRibbon))
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.sectionBorder)
