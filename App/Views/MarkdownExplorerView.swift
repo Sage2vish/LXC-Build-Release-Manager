@@ -39,16 +39,22 @@ struct MarkdownExplorerView: View {
 
     var body: some View {
         HSplitView {
+            // Floors kept small. Every minimum here adds into the window's own minimum width,
+            // and a file tree that insists on 170pt plus a document that insists on 260pt made
+            // the whole window refuse to narrow past them.
             explorer
-                .frame(minWidth: 170, idealWidth: 280, maxWidth: 460)
+                .frame(minWidth: 120, idealWidth: 260, maxWidth: 420)
             document
-                .frame(minWidth: 260)
+                .frame(minWidth: 180)
         }
-        // Makes it discoverable that the two panes can be resized.
-        .onHover { isOverDivider in
-            if isOverDivider { NSCursor.resizeLeftRight.push() } else { NSCursor.pop() }
-        }
-        .frame(minHeight: 420)
+        // No cursor override: this modifier applied to the whole tab, not to the divider, so
+        // the pointer became a resize arrow anywhere over the Docs tab and lied about what
+        // could be dragged. AppKit already shows the right cursor over an HSplitView divider.
+        //
+        // No minimum height either: the tab fills whatever the window gives it and compresses
+        // with it. A 420pt floor meant a short window clipped the document instead of scrolling
+        // it.
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task(id: repository.id) { await rescan() }
         .onDisappear { scanTask?.cancel() }
     }
@@ -192,7 +198,10 @@ struct MarkdownExplorerView: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-                .frame(width: 170)
+                // A minimum rather than a fixed width: "Preview"/"Source" are longer in other
+                // languages, and a hard 170pt clipped them.
+                .frame(minWidth: 150)
+                .fixedSize()
                 .accessibilityLabel("Document view mode")
                 .onChange(of: viewMode) { _, newValue in
                     // Editing only exists inside Source.

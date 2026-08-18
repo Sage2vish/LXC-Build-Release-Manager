@@ -95,7 +95,10 @@ struct LogPane: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-                .frame(width: 260)
+                // A ceiling, not a fixed width: four filter segments pinned at 260pt pushed the
+                // whole toolbar row - and with it the centre column - past what a narrow window
+                // could give it.
+                .frame(minWidth: 160, maxWidth: 260)
                 if let onStop {
                     Button(role: .destructive) { onStop() } label: {
                         Label("Stop", systemImage: "stop.fill")

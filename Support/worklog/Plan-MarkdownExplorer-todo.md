@@ -220,6 +220,22 @@ controls.
       panel. It currently sits as a hard-edged rectangle against the pane, which reads as
       unfinished next to the rounded cards everywhere else.
 
+## 10. Sizing — fixed 2026-08-18
+
+The tab could not be resized down, and stretched past what the window gave it.
+
+- [x] Removed the `minHeight: 420` floor. The tab now fills the window and compresses with it;
+      the floor meant a short window clipped the document rather than scrolling it.
+- [x] Lowered the split floors — explorer 170→120, document 260→180. Every minimum here adds
+      into the window's own minimum width, which is why the window refused to narrow.
+- [x] Removed an `.onHover` cursor override that was applied to the **whole tab** rather than the
+      divider, so the pointer became a resize arrow anywhere over Docs and lied about what could
+      be dragged. AppKit already shows the right cursor over an `HSplitView` divider.
+- [x] The Preview/Source picker is a minimum width rather than a fixed 170pt, so longer
+      translations do not clip.
+- [ ] Re-measure the window's minimum width now these floors are lower; the last recorded figure
+      was 1513pt. *(Owned by [`Plan-DetailViewPanel-todo.md`](Plan-DetailViewPanel-todo.md) 01.)*
+
 ## Tracking
 
 | Section | Checked / Total | Status |
@@ -233,7 +249,8 @@ controls.
 | 07 — Inline and block HTML | 14 / 14 | Done |
 | 08 — Preview / Source modes, with editing | 15 / 15 | Done |
 | 09 — Reading layout | 0 / 8 | Open |
-| **Total** | **75 / 86** | **In progress** |
+| 10 — Sizing | 4 / 5 | Re-measure open |
+| **Total** | **79 / 91** | **In progress** |
 
 ## Verified in the running app
 
