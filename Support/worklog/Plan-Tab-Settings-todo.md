@@ -22,7 +22,7 @@ Per-repository settings. Distinct from the app-wide Preferences window, which ha
 - [x] Remove from List now confirms first, and the message says plainly that only the list entry
       goes: the folder, its scripts, its logs and its build history all stay. The word "remove"
       beside a repository reads far more destructive than the action is.
-- [ ] Wrap each settings group in the container's shared card treatment.
+- [x] Repository Settings and GitHub Origin both use the shared `sectionCard()`.
       *(Shape owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).)*
 - [ ] Nothing here for per-repository build overrides; decide whether that belongs here or in Preferences.
 
@@ -31,4 +31,4 @@ Per-repository settings. Distinct from the app-wide Preferences window, which ha
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 3 / 3 | Done |
-| 01 — Open items | 1 / 3 | In progress |
+| 01 — Open items | 2 / 3 | Per-repository overrides still open |

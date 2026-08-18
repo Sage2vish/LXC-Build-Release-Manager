@@ -24,7 +24,8 @@ struct RepositoryHistoryView: View {
     }
 
     var body: some View {
-        GroupBox("Build History") {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Build History").font(.headline)
             if records.isEmpty {
                 Text("No builds run yet for this repository.")
                     .foregroundStyle(.secondary)
@@ -60,6 +61,7 @@ struct RepositoryHistoryView: View {
                 }
             }
         }
+        .sectionCard()
         .confirmationDialog(
             "Clear this repository's build history?",
             isPresented: $isConfirmingClear,

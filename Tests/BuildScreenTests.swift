@@ -408,3 +408,66 @@ final class AppLanguageLabelTests: XCTestCase {
         XCTAssertEqual(AppearanceSlider.asset(for: .dark), "theme-dark")
     }
 }
+
+// MARK: - Statistics date range
+
+final class StatsRangeTests: XCTestCase {
+    private let now = Date(timeIntervalSince1970: 1_700_000_000)
+
+    private func record(daysAgo: Double, status: BuildStatus = .success, duration: TimeInterval = 60) -> BuildRecord {
+        BuildRecord(
+            repositoryID: UUID(),
+            scriptFileName: "build.sh",
+            scriptLabel: "build",
+            startedAt: now.addingTimeInterval(-daysAgo * 24 * 60 * 60),
+            status: status,
+            durationSeconds: duration,
+            logFileName: "build.log"
+        )
+    }
+
+    func testAllTimeKeepsEverything() {
+        let records = [record(daysAgo: 1), record(daysAgo: 200)]
+        XCTAssertEqual(StatsRange.allTime.filter(records, now: now).count, 2)
+    }
+
+    func testWeekExcludesAnythingOlder() {
+        let records = [record(daysAgo: 1), record(daysAgo: 6.9), record(daysAgo: 7.1)]
+        XCTAssertEqual(StatsRange.week.filter(records, now: now).count, 2)
+    }
+
+    func testRangeBoundaryIsInclusive() {
+        // A run exactly on the boundary belongs to the range: excluding it would make the
+        // window silently shorter than it claims.
+        let records = [record(daysAgo: 7)]
+        XCTAssertEqual(StatsRange.week.filter(records, now: now).count, 1)
+    }
+
+    func testMonthAndQuarterWindows() {
+        let records = [record(daysAgo: 10), record(daysAgo: 45), record(daysAgo: 100)]
+        XCTAssertEqual(StatsRange.month.filter(records, now: now).count, 1)
+        XCTAssertEqual(StatsRange.quarter.filter(records, now: now).count, 2)
+    }
+
+    func testStatisticsAreComputedOverTheGivenRecordsOnly() {
+        let records = [
+            record(daysAgo: 1, status: .success, duration: 10),
+            record(daysAgo: 2, status: .failed, duration: 30),
+            record(daysAgo: 100, status: .failed, duration: 1_000)
+        ]
+        let recent = RepositoryStats.make(from: StatsRange.week.filter(records, now: now))
+        XCTAssertEqual(recent.totalBuilds, 2)
+        XCTAssertEqual(recent.successCount, 1)
+        XCTAssertEqual(recent.successRate, 0.5, accuracy: 0.0001)
+        XCTAssertEqual(recent.averageDuration, 20, accuracy: 0.0001)
+        XCTAssertEqual(recent.lastFailed?.durationSeconds, 30, "The 100-day-old failure is outside the range.")
+    }
+
+    func testEmptyRecordsProduceNoDivisionByZero() {
+        let empty = RepositoryStats.make(from: [])
+        XCTAssertEqual(empty.totalBuilds, 0)
+        XCTAssertEqual(empty.successRate, 0)
+        XCTAssertEqual(empty.averageDuration, 0)
+        XCTAssertNil(empty.mostRecent)
+    }
+}

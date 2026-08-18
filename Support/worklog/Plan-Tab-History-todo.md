@@ -29,7 +29,7 @@ Every run recorded for this repository.
       list derived from the records themselves so a run of a since-deleted script still appears.
       Filtering rules live in `HistoryFilter` and are unit-tested; a filtered list states how many
       runs it is hiding, so "nothing matches" can never be mistaken for "nothing ran".
-- [ ] Adopt the container's shared card treatment so History matches the Build tab.
+- [x] Uses the shared `sectionCard()` rather than a `GroupBox`, so History matches the Build tab.
       *(Shape owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).)*
 
 ## Tracking
@@ -37,5 +37,5 @@ Every run recorded for this repository.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 4 / 4 | Done |
-| 01 — Open items | 2 / 3 | Card treatment open |
+| 01 — Open items | 3 / 3 | Done |
 

@@ -49,21 +49,7 @@ final class BuildHistoryStore: ObservableObject {
     }
 
     func stats(for repositoryID: UUID) -> RepositoryStats {
-        let all = records(for: repositoryID)
-        let successCount = all.filter { $0.status == .success }.count
-        let failureCount = all.filter { $0.status == .failed }.count
-        let total = all.count
-        let successRate = total > 0 ? Double(successCount) / Double(total) : 0
-        let averageDuration = total > 0 ? all.map(\.durationSeconds).reduce(0, +) / Double(total) : 0
-        return RepositoryStats(
-            totalBuilds: total,
-            successCount: successCount,
-            failureCount: failureCount,
-            successRate: successRate,
-            averageDuration: averageDuration,
-            mostRecent: all.first,
-            lastFailed: all.first { $0.status == .failed }
-        )
+        RepositoryStats.make(from: records(for: repositoryID))
     }
 
     private func load() {

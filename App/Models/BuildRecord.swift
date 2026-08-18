@@ -118,4 +118,57 @@ struct RepositoryStats {
     let averageDuration: TimeInterval
     let mostRecent: BuildRecord?
     let lastFailed: BuildRecord?
+
+    /// Statistics for exactly these records.
+    ///
+    /// Pure, so the same arithmetic serves the store's all-time figures and any date-ranged view
+    /// without two implementations that can disagree about what a success rate means. Expects
+    /// records newest-first, which is how the store hands them out.
+    static func make(from records: [BuildRecord]) -> RepositoryStats {
+        let total = records.count
+        let successCount = records.filter { $0.status == .success }.count
+        let failureCount = records.filter { $0.status == .failed }.count
+        return RepositoryStats(
+            totalBuilds: total,
+            successCount: successCount,
+            failureCount: failureCount,
+            // A repository with no runs has no success rate. Zero is the honest answer only
+            // because the view shows a dash whenever there are no builds at all.
+            successRate: total > 0 ? Double(successCount) / Double(total) : 0,
+            averageDuration: total > 0 ? records.map(\.durationSeconds).reduce(0, +) / Double(total) : 0,
+            mostRecent: records.first,
+            lastFailed: records.first { $0.status == .failed }
+        )
+    }
+}
+
+/// How far back the Overview tab counts.
+///
+/// "All time" stays the default: it is what the history actually contains, and a range that
+/// silently excluded runs would make a success rate mean something different from one glance to
+/// the next.
+enum StatsRange: String, CaseIterable, Identifiable {
+    case allTime = "All time"
+    case week = "Last 7 days"
+    case month = "Last 30 days"
+    case quarter = "Last 90 days"
+
+    var id: String { rawValue }
+
+    /// Days included, or `nil` for everything.
+    var days: Int? {
+        switch self {
+        case .allTime: return nil
+        case .week: return 7
+        case .month: return 30
+        case .quarter: return 90
+        }
+    }
+
+    /// The records this range covers, counted back from `now`.
+    func filter(_ records: [BuildRecord], now: Date = Date()) -> [BuildRecord] {
+        guard let days else { return records }
+        let cutoff = now.addingTimeInterval(-Double(days) * 24 * 60 * 60)
+        return records.filter { $0.startedAt >= cutoff }
+    }
 }

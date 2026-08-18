@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**648 of 821 items done — 173 still pending (79%).**
+**653 of 821 items done — 168 still pending (80%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
 | The window, by region | 63 | 33 | In progress |
-| Inside the main panel | 34 | 14 | In progress |
-| The six tabs, inside the container | 262 | 19 | In progress |
+| Inside the main panel | 35 | 13 | In progress |
+| The six tabs, inside the container | 266 | 15 | In progress |
 | Features | 186 | 41 | In progress |
 | Engineering, quality, and release | 103 | 66 | In progress |
-| **All areas** | **648** | **173** | **In progress** |
+| **All areas** | **653** | **168** | **In progress** |
 
 ## The plans, by area
 
@@ -55,8 +55,8 @@ The centre column is three stacked bands, each with its own plan.
 | --- | --- | ---: | ---: | --- |
 | [Plan-MainPanel-Header-todo](Plan-MainPanel-Header-todo.md) | Header — repository name, badge, path lines, Reveal / Terminal / Copy | 22 | 7 | In progress |
 | [Plan-MainPanel-Toolbar-todo](Plan-MainPanel-Toolbar-todo.md) | Toolbar — the six-tab picker and the rule beneath it | 7 | 4 | In progress |
-| [Plan-MainPanel-Container-todo](Plan-MainPanel-Container-todo.md) | Container — work-area surface, padding, scrolling, card treatment | 5 | 3 | In progress |
-| **Inside the main panel — subtotal** | | **34** | **14** | **In progress** |
+| [Plan-MainPanel-Container-todo](Plan-MainPanel-Container-todo.md) | Container — work-area surface, padding, scrolling, card treatment | 6 | 2 | In progress |
+| **Inside the main panel — subtotal** | | **35** | **13** | **In progress** |
 
 ### The six tabs, inside the container
 
@@ -66,11 +66,11 @@ Everything a tab *does* belongs to its own plan, not to the container.
 | --- | --- | ---: | ---: | --- |
 | [Plan-Tab-Build-todo](Plan-Tab-Build-todo.md) | Build — script discovery, the table, parameters, execution, live output | 161 | 2 | In progress |
 | [Plan-Tab-Logs-todo](Plan-Tab-Logs-todo.md) | Logs — saved log files, filters, search, export | 10 | 1 | In progress |
-| [Plan-Tab-History-todo](Plan-Tab-History-todo.md) | History — every recorded run for the repository | 6 | 1 | In progress |
-| [Plan-Tab-Overview-todo](Plan-Tab-Overview-todo.md) | Overview — repository summary and build statistics | 4 | 3 | In progress |
+| [Plan-Tab-History-todo](Plan-Tab-History-todo.md) | History — every recorded run for the repository | 7 | 0 | Done ✅ |
+| [Plan-Tab-Overview-todo](Plan-Tab-Overview-todo.md) | Overview — repository summary and build statistics | 6 | 1 | In progress |
 | [Plan-MarkdownExplorer-todo](Plan-MarkdownExplorer-todo.md) | Docs — markdown discovery, rendering, Preview/Source editing | 77 | 10 | In progress |
-| [Plan-Tab-Settings-todo](Plan-Tab-Settings-todo.md) | Settings — per-repository, distinct from the Preferences window | 4 | 2 | In progress |
-| **The six tabs, inside the container — subtotal** | | **262** | **19** | **In progress** |
+| [Plan-Tab-Settings-todo](Plan-Tab-Settings-todo.md) | Settings — per-repository, distinct from the Preferences window | 5 | 1 | In progress |
+| **The six tabs, inside the container — subtotal** | | **266** | **15** | **In progress** |
 
 ### Features
 

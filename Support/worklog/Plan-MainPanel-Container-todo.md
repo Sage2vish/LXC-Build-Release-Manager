@@ -35,7 +35,7 @@ Each has its own plan. Nothing about a tab's behaviour belongs in this file.
 ## 01. Open items
 
 - [x] Tinted subtitle bars under both section titles, matching between Available Build Scripts and Live Output.
-- [ ] Apply the shared `SectionCard` to the remaining tabs' sections, so History, Overview and
+- [x] Applied the shared `SectionCard` to the remaining tabs' sections, so History, Overview and
       Settings match Build rather than each inventing their own surface.
 - [ ] Verify the card surface in dark mode; it has only been checked in light.
 - [ ] The container's minimum width is the main contributor to the window's 1513pt floor.
@@ -47,4 +47,4 @@ Each has its own plan. Nothing about a tab's behaviour belongs in this file.
 | --- | --- | --- |
 | Already shipped | 4 / 4 | Done |
 | 01 — Open items | 1 / 4 | In progress |
-| **Total** | **5 / 8** | **In progress** |
+| **Total** | **6 / 8** | **In progress** |

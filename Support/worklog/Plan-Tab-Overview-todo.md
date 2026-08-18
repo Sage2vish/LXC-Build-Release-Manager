@@ -20,8 +20,12 @@ Repository summary and build statistics.
 
 ## 01. Open items
 
-- [ ] Statistics are all-time with no date range.
-- [ ] Wrap the stat cards in the container's shared card treatment.
+- [x] A date range sits beside the statistics: All time (default), 7, 30 or 90 days. The card
+      states which window is on screen and how many runs it covers, because a success rate over
+      a week and one over all time are different claims that the numbers alone do not
+      distinguish. `StatsRange` and `RepositoryStats.make(from:)` are pure and tested, and the
+      store now uses the same arithmetic so ranged and all-time figures cannot disagree.
+- [x] Both sections use the shared `sectionCard()`, so Overview matches the Build tab.
       *(Shape owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).)*
 - [ ] "Total Builds Run" is all-time, while the requirements describe a per-session counter — a deliberate deviation worth confirming.
 
@@ -30,4 +34,4 @@ Repository summary and build statistics.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 4 / 4 | Done |
-| 01 — Open items | 0 / 3 | Open |
+| 01 — Open items | 2 / 3 | Deviation still open for your call |

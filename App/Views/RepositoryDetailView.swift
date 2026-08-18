@@ -1038,7 +1038,7 @@ struct RepositoryDetailView: View {
     // MARK: Overview
 
     private var overviewTab: some View {
-        RepositoryOverviewView(repository: repository, stats: stats) { statusBadge }
+        RepositoryOverviewView(repository: repository, records: records) { statusBadge }
     }
 
     // MARK: Docs
@@ -1053,8 +1053,8 @@ struct RepositoryDetailView: View {
 
     private var settingsTab: some View {
         VStack(alignment: .leading, spacing: 16) {
-            GroupBox("Repository Settings") {
-                VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Repository Settings").font(.headline)
                     Toggle("Pinned", isOn: Binding(
                         get: { repository.isPinned },
                         set: { _ in store.togglePin(repository) }
@@ -1074,16 +1074,16 @@ struct RepositoryDetailView: View {
                         // something far more destructive than it is.
                         Text("This only removes it from the app's list. The folder, its scripts, and its logs are left untouched on disk, and its build history is kept.")
                     }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 4)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .sectionCard()
 
             // Only a local repository needs this: a GitHub-sourced repo already carries its URL
             // in `source`, so there is nothing supplementary to set.
             if repository.source.isLocal {
-                GroupBox("GitHub Origin") {
-                    VStack(alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("GitHub Origin").font(.headline)
+                    Group {
                         Text("Record the GitHub URL this local folder was cloned from. It appears under the repository name at the top of this screen.")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -1111,8 +1111,8 @@ struct RepositoryDetailView: View {
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 4)
                 }
+                .sectionCard()
             }
         }
         .onAppear { gitHubURLDraft = repository.gitHubURL ?? "" }
