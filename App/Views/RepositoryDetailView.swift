@@ -179,26 +179,16 @@ struct RepositoryDetailView: View {
         }
         .inspector(isPresented: showInspector) {
             ZStack(alignment: .top) {
-                if preferencesStore.preferences.reduceTransparency {
-                    Color.clear
-                } else {
-                    ZStack {
-                        Rectangle().fill(.ultraThinMaterial)
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.12),
-                                Color.white.opacity(0.04),
-                                Color.black.opacity(0.01)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                        .blendMode(.softLight)
-                    }
-                }
+                // Matte, not glass. A translucent inspector pulled the desktop and the window
+                // background through the one column whose job is to be read, and the softLight
+                // sheen it carried made the top of the column brighter than the bottom.
+                Color.inspectorPanelSurface
 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
+                    // No spacing and no padding: the cards butt against each other and against
+                    // the column edges, so the panel reads as one column divided into sections
+                    // rather than as floating tiles.
+                    VStack(alignment: .leading, spacing: 0) {
                         // Parameters and the selected script's full path moved here from the
                         // centre column, so the Detail View Window carries the detail.
                         if case .success(let scripts) = scanResult,
@@ -210,7 +200,7 @@ struct RepositoryDetailView: View {
                         buildHistoryCard
                         quickActionsCard
                     }
-                    .padding(16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .scrollContentBackground(.hidden)
             }
@@ -242,9 +232,8 @@ struct RepositoryDetailView: View {
     /// Full path of the selected script, wrapped rather than truncated. The scripts table
     /// only shows the folder name, so this is where the complete path is readable.
     private func selectedScriptPathCard(for script: BuildScript) -> some View {
-        GroupBox {
+        InspectorCard(title: "Selected Script", subtitle: script.fileName) {
             VStack(alignment: .leading, spacing: 6) {
-                Text("Selected Script").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                 Text(script.label)
                     .font(.body.weight(.medium))
                 Label(script.location.label, systemImage: "folder")
@@ -257,7 +246,7 @@ struct RepositoryDetailView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(8)
-                    .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 6))
+                    .background(.quaternary.opacity(0.35), in: Rectangle())
                     .accessibilityLabel("Full script path: \(script.path)")
                 Button {
                     copy(script.path)
@@ -275,7 +264,7 @@ struct RepositoryDetailView: View {
     // MARK: Inspector — Build Status / History / Quick Actions
 
     private var buildStatusCard: some View {
-        GroupBox("Build Status") {
+        InspectorCard(title: "Build Status") {
             VStack(alignment: .leading, spacing: 6) {
                 if runner.isRunning, let script = runner.runningScript {
                     Label("In Progress", systemImage: "circle.dotted").foregroundStyle(.blue)
@@ -301,7 +290,17 @@ struct RepositoryDetailView: View {
     }
 
     private var buildHistoryCard: some View {
-        GroupBox {
+        InspectorCard(
+            title: "Build History",
+            subtitle: records.isEmpty ? nil : "last \(min(records.count, 5)) of \(records.count)",
+            accessory: {
+                if !records.isEmpty {
+                    Button("View All") { selectedTab = .history }
+                        .buttonStyle(.link)
+                        .font(.caption)
+                }
+            }
+        ) {
             VStack(alignment: .leading, spacing: 8) {
                 if records.isEmpty {
                     Text("No builds yet.").font(.caption).foregroundStyle(.secondary)
@@ -320,20 +319,11 @@ struct RepositoryDetailView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 4)
-        } label: {
-            HStack {
-                Text("Build History")
-                Spacer()
-                Button("View All") { selectedTab = .history }
-                    .buttonStyle(.link)
-                    .font(.caption)
-            }
         }
     }
 
     private var quickActionsCard: some View {
-        GroupBox("Quick Actions") {
+        InspectorCard(title: "Quick Actions") {
             VStack(alignment: .leading, spacing: 8) {
                 Button {
                     openLogsFolder()
@@ -467,10 +457,14 @@ struct RepositoryDetailView: View {
             // space beneath it.
             VSplitView {
                 buildScriptsPanel(scripts)
-                    .frame(minHeight: 180)
+                    // Floors kept deliberately low. They add together, and with the header,
+                    // toolbar and status bar above and below them, a pair of 180pt minimums
+                    // meant the output pane was clipped rather than compressed as soon as the
+                    // window got short.
+                    .frame(minHeight: 110)
                     .padding(.bottom, 6)
                 buildOutputPanel
-                    .frame(minHeight: 180)
+                    .frame(minHeight: 120)
                     .padding(.top, 6)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -719,17 +713,19 @@ struct RepositoryDetailView: View {
     }
 
     private func buildParametersPanel(for script: BuildScript) -> some View {
-        GroupBox {
+        InspectorCard(
+            title: "Build Parameters",
+            subtitle: script.fileName,
+            accessory: {
+                if runner.phase == .starting {
+                    ProgressView().controlSize(.small)
+                }
+            }
+        ) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Build Parameters").font(.headline)
-                        Text(script.fileName)
-                            .font(.caption.monospaced())
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                    if runner.phase == .starting {
+                    Spacer(minLength: 0)
+                    if false {
                         ProgressView().controlSize(.small)
                         Text("Starting…").font(.caption).foregroundStyle(.secondary)
                     }
@@ -765,7 +761,7 @@ struct RepositoryDetailView: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(8)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 6))
+                        .background(.quaternary.opacity(0.35), in: Rectangle())
                         .accessibilityLabel("Resolved build command")
                 }
             }
@@ -825,7 +821,7 @@ struct RepositoryDetailView: View {
             }
         }
         .padding(8)
-        .background(validationMessage == nil ? Color.clear : Color.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
+        .background(validationMessage == nil ? Color.clear : Color.red.opacity(0.08), in: Rectangle())
     }
 
     private func parameterBinding(for parameter: BuildParameterDefinition, script: BuildScript) -> Binding<String> {
@@ -877,11 +873,13 @@ struct RepositoryDetailView: View {
             },
             onStop: { runner.cancel(preferences: preferencesStore.preferences) },
             onClear: { confirmThenClearOutput() },
-            isRunning: runner.isRunning
+            isRunning: runner.isRunning,
+            fillsAvailableHeight: true
         )
         // Same card treatment as Available Build Scripts, so the two read as siblings
         // instead of one card and one bare rectangle.
         .sectionCard()
+        .frame(maxHeight: .infinity)
     }
 
     private func exportLiveLog() {

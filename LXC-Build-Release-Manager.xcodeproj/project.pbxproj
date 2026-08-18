@@ -48,6 +48,7 @@
 		A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9911BF5D489D90AE02811CB3 /* LogFileService.swift */; };
 		B9F71155AD8444DEA9DC2D4A /* MarkdownBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2135B85648764E8FB1F5480E /* MarkdownBlock.swift */; };
 		BDCB0E0C538C4EC2943A822F /* SectionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFAC8A705C4215BFE88FC2 /* SectionCard.swift */; };
+		F5AC10000000000000000006 /* InspectorCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000005 /* InspectorCard.swift */; };
 		F5AC10000000000000000002 /* AppearanceAndLanguageControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000001 /* AppearanceAndLanguageControls.swift */; };
 		BED536027379480A9D9E44D8 /* BuildCommandBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B47C22892D497FB697C5D8 /* BuildCommandBuilder.swift */; };
 		C3A1B2C3D4E5F60718293847 /* BuildWorkspaceStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A1B2C3D4E5F60718293846 /* BuildWorkspaceStateStore.swift */; };
@@ -129,6 +130,7 @@
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		F28AAA8F0F60490DBC0C6686 /* BuildPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BuildPresentation.swift; path = App/Models/BuildPresentation.swift; sourceTree = "<group>"; };
 		F3CFAC8A705C4215BFE88FC2 /* SectionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SectionCard.swift; path = App/Views/SectionCard.swift; sourceTree = "<group>"; };
+		F5AC10000000000000000005 /* InspectorCard.swift */ = {isa = PBXFileReference; name = InspectorCard.swift; lastKnownFileType = sourcecode.swift; path = App/Views/InspectorCard.swift; sourceTree = "<group>"; };
 		F5AC10000000000000000001 /* AppearanceAndLanguageControls.swift */ = {isa = PBXFileReference; name = AppearanceAndLanguageControls.swift; lastKnownFileType = sourcecode.swift; path = App/Views/AppearanceAndLanguageControls.swift; sourceTree = "<group>"; };
 		F50575EA30318AE700601A4A /* AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AddRepositorySheet.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
 		F50575EC30318AE800601A4A /* RepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RepositoryRow.swift; path = App/Views/RepositoryRow.swift; sourceTree = "<group>"; };
@@ -294,6 +296,7 @@
 				F688A5AC1A2B40178A7C72FD /* RepositoryOverviewView.swift */,
 				F50575EC30318AE800601A4A /* RepositoryRow.swift */,
 				F3CFAC8A705C4215BFE88FC2 /* SectionCard.swift */,
+				F5AC10000000000000000005 /* InspectorCard.swift */,
 				F5AC10000000000000000001 /* AppearanceAndLanguageControls.swift */,
 				F50575F030318AEE00601A4A /* StatusBar.swift */,
 			);
@@ -399,6 +402,7 @@
 				861A231DE9ADF1D1BFFE4A46 /* BuildReleaseManagerApp.swift in Sources */,
 				F50575EB30318AE700601A4A /* AddRepositorySheet.swift in Sources */,
 				BDCB0E0C538C4EC2943A822F /* SectionCard.swift in Sources */,
+				F5AC10000000000000000006 /* InspectorCard.swift in Sources */,
 				F5AC10000000000000000002 /* AppearanceAndLanguageControls.swift in Sources */,
 				C9169590718841339F33A00B /* MarkdownSourceView.swift in Sources */,
 				A693CC0C02F144FBB2F17670 /* HTMLSupport.swift in Sources */,

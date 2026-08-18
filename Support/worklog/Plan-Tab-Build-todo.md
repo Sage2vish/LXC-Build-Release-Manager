@@ -23,7 +23,10 @@ never reaches the status bar.
 - [x] Live Output fills down to the status bar.
 - [x] Live Output occupies its full share whether empty or full. The table's old 130–300pt height window was left over from the scrolling-column layout and was leaving a dead band; removed.
 - [x] Keep the scripts table scrollable within its own share.
-- [ ] Keep the existing Maximize Log Pane behaviour working alongside the split.
+- [x] Live Output no longer clips as the window shortens. `LogPane` was demanding a hard 220pt
+      minimum inside a pane that also had a 180pt floor; with the header, toolbar and status bar
+      above and below, the terminal was cut rather than compressed. The pane now fills whatever
+      the split gives it (`fillsAvailableHeight`), and the split's floors dropped to 110/120.
 - [ ] Preserve the split position while the repository stays selected.
 - [x] Both panes hold a 180pt minimum.
 

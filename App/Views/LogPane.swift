@@ -10,6 +10,10 @@ struct LogPane: View {
     var onStop: (() -> Void)? = nil
     var onClear: (() -> Void)? = nil
     var isRunning = false
+    /// When true the terminal takes whatever height its container gives it, instead of asking
+    /// for a fixed band. The Build tab's split needs this: a hard 220pt minimum inside a pane
+    /// that also had a 180pt minimum was what clipped the output as the window got shorter.
+    var fillsAvailableHeight = false
 
     @State private var searchText = ""
     @State private var filter: LogFilter
@@ -27,7 +31,8 @@ struct LogPane: View {
         onOpenInWindow: (() -> Void)? = nil,
         onStop: (() -> Void)? = nil,
         onClear: (() -> Void)? = nil,
-        isRunning: Bool = false
+        isRunning: Bool = false,
+        fillsAvailableHeight: Bool = false
     ) {
         self.title = title
         self.lines = lines
@@ -37,6 +42,7 @@ struct LogPane: View {
         self.onStop = onStop
         self.onClear = onClear
         self.isRunning = isRunning
+        self.fillsAvailableHeight = fillsAvailableHeight
         self._filter = State(initialValue: LogFilter(rawValue: preferences.defaultLogFilter) ?? .all)
         self._autoScroll = State(initialValue: preferences.autoScrollToBottom)
     }
@@ -198,7 +204,10 @@ struct LogPane: View {
                     }
                     .padding(8)
                 }
-                .frame(minHeight: 220, maxHeight: isExpanded ? 720 : 420)
+                .frame(
+                    minHeight: fillsAvailableHeight ? 80 : 180,
+                    maxHeight: fillsAvailableHeight ? .infinity : (isExpanded ? 720 : 420)
+                )
                 .background(pastelBackgroundColor)
                 .foregroundStyle(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 14))

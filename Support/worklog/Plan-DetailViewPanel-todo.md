@@ -33,6 +33,26 @@ current build status, recent history, and the quick actions.
 - [x] Behaves when no repository is selected.
 - [x] Inspector keeps a glass-like material surface even when the app shell background image changes, so the right panel still reads as frosted rather than flat.
 
+## 00. One column, one card language
+
+The five cards had drifted into three shapes — a caption title inside, a headline title inside, a
+`GroupBox` label outside, and one card with no title at all. Three treatments in one column read
+as three unrelated widgets rather than one panel.
+
+- [x] One `InspectorCard`: a tinted **ribbon** carrying the title, over the content. Every card
+      separates the same way, and a card is separable at a glance.
+- [x] Selected Script and Build Parameters moved their titles into the ribbon; Build Parameters'
+      spinner and Build History's "View All" became ribbon accessories rather than title-row
+      improvisations.
+- [x] **Square corners**, inside and out. Rounded corners within a square column read as tiles
+      floating in a container; the panel is one surface divided into sections.
+- [x] **Matte, not glass.** The translucent material pulled the desktop through the one column
+      whose job is to be read, and its softLight sheen made the top brighter than the bottom. The
+      cards are a bright flat surface on a slightly darker panel, so the seams stay visible.
+- [x] Cards run edge to edge and butt against each other — no gaps, no outer padding.
+- [ ] Check the ribbon tint against a custom accent colour: it is derived from the accent, and a
+      saturated accent could make five stacked ribbons loud.
+
 ## 01. The window will not resize while the panel is open — BUG
 
 Reported: with the Detail View panel open, the **whole application window** cannot be resized.
@@ -83,9 +103,10 @@ even though nothing is explicitly locked.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 7 / 7 | Done |
+| 00 — One column, one card language | 5 / 6 | Needs an accent check |
 | 01 — Window resize bug | 5 / 9 | Improved 1853 → 1513; verification open |
 | 02 — Follow-ups | 0 / 2 | Open |
-| **Total** | **12 / 18** | **In progress** |
+| **Total** | **17 / 24** | **In progress** |
 
 ## Measured result
 

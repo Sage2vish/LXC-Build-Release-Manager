@@ -22,12 +22,16 @@ import SwiftUI
 struct AppearanceSlider: View {
     @Binding var theme: AppTheme
 
+    /// Shared with the language picker so the pair reads as one unit in the toolbar rather than
+    /// two controls that happen to sit next to each other.
+    static let controlHeight: CGFloat = 24
+
     /// Ordered deliberately: System sits in the middle because it is the default and the
     /// resting position, with the two overrides either side of it.
     private static let stops: [AppTheme] = [.light, .system, .dark]
 
     private let stopWidth: CGFloat = 34
-    private let height: CGFloat = 24
+    private var height: CGFloat { Self.controlHeight }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -132,7 +136,9 @@ struct LanguagePicker: View {
         }
         .pickerStyle(.menu)
         .labelsHidden()
+        .controlSize(.small)
         .frame(maxWidth: 190)
+        .frame(height: AppearanceSlider.controlHeight)
         .help("Language used by the app's own interface")
         .accessibilityLabel("Language")
         .accessibilityValue(AppLanguage(preference: language).pickerLabel)
@@ -150,7 +156,9 @@ struct AppearanceAndLanguageControls: View {
     @State private var relaunchNotice: AppLanguage?
 
     var body: some View {
-        HStack(spacing: 10) {
+        // Appearance first, language to its right: the slider is the smaller, more frequently
+        // moved control, and it reads better nearer the content it changes.
+        HStack(spacing: 8) {
             AppearanceSlider(theme: preferencesStore.binding(\.theme))
             LanguagePicker(
                 language: preferencesStore.binding(\.language),

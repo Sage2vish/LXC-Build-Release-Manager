@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**645 of 813 items done — 168 still pending (79%).**
+**651 of 819 items done — 168 still pending (79%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
-| The window, by region | 67 | 35 | In progress |
+| The window, by region | 72 | 36 | In progress |
 | Inside the main panel | 23 | 11 | In progress |
-| The six tabs, inside the container | 266 | 15 | In progress |
+| The six tabs, inside the container | 267 | 14 | In progress |
 | Features | 186 | 41 | In progress |
 | Engineering, quality, and release | 103 | 66 | In progress |
-| **All areas** | **645** | **168** | **In progress** |
+| **All areas** | **651** | **168** | **In progress** |
 
 ## The plans, by area
 
@@ -43,9 +43,9 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 | [Plan-AppShellUI-todo](Plan-AppShellUI-todo.md) | Whole window — background, material and glass language, theme and accent | 9 | 21 | In progress |
 | [Plan-LeftSidebar-todo](Plan-LeftSidebar-todo.md) | Left sidebar — repositories, recents, add/remove, the footer buttons | 33 | 2 | In progress |
 | [Plan-MainPanel-todo](Plan-MainPanel-todo.md) | Main panel — index over the three bands and six tabs below | — | — | Index only |
-| [Plan-DetailViewPanel-todo](Plan-DetailViewPanel-todo.md) | Detail View panel — the right inspector and its cards | 13 | 7 | In progress |
+| [Plan-DetailViewPanel-todo](Plan-DetailViewPanel-todo.md) | Detail View panel — the right inspector and its cards | 18 | 8 | In progress |
 | [Plan-StatusBar-todo](Plan-StatusBar-todo.md) | Status bar — repository, branch, platform, auto-detect chips | 12 | 5 | In progress |
-| **The window, by region — subtotal** | | **67** | **35** | **In progress** |
+| **The window, by region — subtotal** | | **72** | **36** | **In progress** |
 
 ### Inside the main panel
 
@@ -64,13 +64,13 @@ Everything a tab *does* belongs to its own plan, not to the container.
 
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
-| [Plan-Tab-Build-todo](Plan-Tab-Build-todo.md) | Build — script discovery, the table, parameters, execution, live output | 161 | 2 | In progress |
+| [Plan-Tab-Build-todo](Plan-Tab-Build-todo.md) | Build — script discovery, the table, parameters, execution, live output | 162 | 1 | In progress |
 | [Plan-Tab-Logs-todo](Plan-Tab-Logs-todo.md) | Logs — saved log files, filters, search, export | 10 | 1 | In progress |
 | [Plan-Tab-History-todo](Plan-Tab-History-todo.md) | History — every recorded run for the repository | 7 | 0 | Done ✅ |
 | [Plan-Tab-Overview-todo](Plan-Tab-Overview-todo.md) | Overview — repository summary and build statistics | 6 | 1 | In progress |
 | [Plan-MarkdownExplorer-todo](Plan-MarkdownExplorer-todo.md) | Docs — markdown discovery, rendering, Preview/Source editing | 77 | 10 | In progress |
 | [Plan-Tab-Settings-todo](Plan-Tab-Settings-todo.md) | Settings — per-repository, distinct from the Preferences window | 5 | 1 | In progress |
-| **The six tabs, inside the container — subtotal** | | **266** | **15** | **In progress** |
+| **The six tabs, inside the container — subtotal** | | **267** | **14** | **In progress** |
 
 ### Features
 

@@ -183,6 +183,7 @@
       }
     },
     "Build Parameters" : {
+      "extractionState" : "stale",
       "localizations" : {
         "hi" : {
           "stringUnit" : {
@@ -729,6 +730,7 @@
 
     },
     "Selected Script" : {
+      "extractionState" : "stale",
       "localizations" : {
         "hi" : {
           "stringUnit" : {

@@ -114,10 +114,11 @@ struct ContentView: View {
         navigationSplitView
             // Appearance and language live in the window's own top bar rather than in the
             // repository header: they are app-wide settings, and the header is repository
-            // identity. `.principal` puts them in the middle of the title bar, where they stay
-            // put whether or not a repository is selected.
+            // identity. Trailing placement, not `.principal` — the centre of the title bar sits
+            // over the middle panel's content, while the right of the bar is where window-level
+            // controls belong. They stay present whether or not a repository is selected.
             .toolbar {
-                ToolbarItem(placement: .principal) {
+                ToolbarItemGroup(placement: .primaryAction) {
                     AppearanceAndLanguageControls(preferencesStore: preferencesStore)
                 }
             }
