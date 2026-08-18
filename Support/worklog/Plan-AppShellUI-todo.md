@@ -75,6 +75,23 @@ only part of the visual identity that appears before the window does.
 - [ ] Check it against both light and dark Dock backgrounds.
 - [ ] Decide whether the DMG gets a matching volume icon and background, or stays plain.
 
+## 05. Appearance and language in the window top bar
+
+Two app-wide settings that belong to the window rather than to any repository: the appearance
+slider and the language picker. They sit at `.principal` placement — the middle of the title bar —
+so they are reachable from every tab and present even with no repository open.
+
+- [x] A three-stop appearance slider — Bright · Default · Dark — with a travelling knob and
+      project SVG icons, tinted as templates so they follow the label colour.
+- [x] A language picker naming each language in English and in its own script (`Hindi — हिन्दी`).
+- [x] Both bind to the preferences Preferences already owns, so the two surfaces cannot disagree.
+- [x] Hosted on the app shell rather than the repository detail view, so they never disappear when
+      no repository is selected.
+- [ ] Check the pair in the real title bar at the minimum window width, where the sidebar toggle,
+      Rescan and the inspector toggle are competing for the same strip.
+- [ ] Decide whether language stays here or moves to the status bar — the alternative is recorded
+      in [`Plan-StatusBar-todo.md`](Plan-StatusBar-todo.md) section 02. Both are one-line moves now.
+
 ## Non-Goals
 
 - No per-repository theming.
@@ -89,4 +106,5 @@ only part of the visual identity that appears before the window does.
 | 02 — Material and glass language | 0 / 4 | Open |
 | 03 — Theme and accent | 0 / 3 | Open |
 | 04 — App icon | 0 / 7 | Open |
-| **Total** | **0 / 22** | **Open** |
+| 05 — Top-bar controls | 4 / 6 | Built; needs a GUI pass |
+| **Total** | **4 / 28** | **In progress** |

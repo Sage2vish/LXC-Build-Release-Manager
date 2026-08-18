@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**653 of 821 items done — 168 still pending (80%).**
+**645 of 813 items done — 168 still pending (79%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
-| The window, by region | 63 | 33 | In progress |
-| Inside the main panel | 35 | 13 | In progress |
+| The window, by region | 67 | 35 | In progress |
+| Inside the main panel | 23 | 11 | In progress |
 | The six tabs, inside the container | 266 | 15 | In progress |
 | Features | 186 | 41 | In progress |
 | Engineering, quality, and release | 103 | 66 | In progress |
-| **All areas** | **653** | **168** | **In progress** |
+| **All areas** | **645** | **168** | **In progress** |
 
 ## The plans, by area
 
@@ -40,12 +40,12 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
-| [Plan-AppShellUI-todo](Plan-AppShellUI-todo.md) | Whole window — background, material and glass language, theme and accent | 5 | 19 | In progress |
+| [Plan-AppShellUI-todo](Plan-AppShellUI-todo.md) | Whole window — background, material and glass language, theme and accent | 9 | 21 | In progress |
 | [Plan-LeftSidebar-todo](Plan-LeftSidebar-todo.md) | Left sidebar — repositories, recents, add/remove, the footer buttons | 33 | 2 | In progress |
 | [Plan-MainPanel-todo](Plan-MainPanel-todo.md) | Main panel — index over the three bands and six tabs below | — | — | Index only |
 | [Plan-DetailViewPanel-todo](Plan-DetailViewPanel-todo.md) | Detail View panel — the right inspector and its cards | 13 | 7 | In progress |
 | [Plan-StatusBar-todo](Plan-StatusBar-todo.md) | Status bar — repository, branch, platform, auto-detect chips | 12 | 5 | In progress |
-| **The window, by region — subtotal** | | **63** | **33** | **In progress** |
+| **The window, by region — subtotal** | | **67** | **35** | **In progress** |
 
 ### Inside the main panel
 
@@ -53,10 +53,10 @@ The centre column is three stacked bands, each with its own plan.
 
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
-| [Plan-MainPanel-Header-todo](Plan-MainPanel-Header-todo.md) | Header — repository name, badge, path lines, Reveal / Terminal / Copy | 22 | 7 | In progress |
+| [Plan-MainPanel-Header-todo](Plan-MainPanel-Header-todo.md) | Header — repository name, badge, path lines, Reveal / Terminal / Copy | 10 | 5 | In progress |
 | [Plan-MainPanel-Toolbar-todo](Plan-MainPanel-Toolbar-todo.md) | Toolbar — the six-tab picker and the rule beneath it | 7 | 4 | In progress |
 | [Plan-MainPanel-Container-todo](Plan-MainPanel-Container-todo.md) | Container — work-area surface, padding, scrolling, card treatment | 6 | 2 | In progress |
-| **Inside the main panel — subtotal** | | **35** | **13** | **In progress** |
+| **Inside the main panel — subtotal** | | **23** | **11** | **In progress** |
 
 ### The six tabs, inside the container
 

@@ -111,6 +111,19 @@ struct ContentView: View {
     }
 
     private var splitView: some View {
+        navigationSplitView
+            // Appearance and language live in the window's own top bar rather than in the
+            // repository header: they are app-wide settings, and the header is repository
+            // identity. `.principal` puts them in the middle of the title bar, where they stay
+            // put whether or not a repository is selected.
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    AppearanceAndLanguageControls(preferencesStore: preferencesStore)
+                }
+            }
+    }
+
+    private var navigationSplitView: some View {
         NavigationSplitView(columnVisibility: columnVisibility) {
             sidebar
         } detail: {
