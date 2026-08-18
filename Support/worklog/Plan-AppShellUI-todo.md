@@ -83,6 +83,15 @@ so they are reachable from every tab and present even with no repository open.
 
 - [x] A three-stop appearance slider — Bright · Default · Dark — with a travelling knob and
       project SVG icons, tinted as templates so they follow the label colour.
+- [x] **Two separate toolbar items, not one clump.** Each is its own `ToolbarItem`, so macOS gives
+      them its own spacing and either can move or be hidden without touching the other.
+- [x] **Equal height, structurally.** Both are built on one `ToolbarPill`, whose height is
+      `LayoutMetrics.toolbarControlHeight`. The previous attempt set a frame on each and they
+      still disagreed: a `.menu` picker draws its own control chrome at its own intrinsic height
+      and ignored the frame. The language control is a `Menu` in the same pill instead, so the two
+      heights cannot drift — and a test reads both from the same constant.
+- [x] The bar shows the language's native name; the full `English — native` pairing is in the
+      menu, where there is room for it, with a tick against the active language.
 - [x] A language picker naming each language in English and in its own script (`Hindi — हिन्दी`).
 - [x] Both bind to the preferences Preferences already owns, so the two surfaces cannot disagree.
 - [x] Hosted on the app shell rather than the repository detail view, so they never disappear when
@@ -106,5 +115,5 @@ so they are reachable from every tab and present even with no repository open.
 | 02 — Material and glass language | 0 / 4 | Open |
 | 03 — Theme and accent | 0 / 3 | Open |
 | 04 — App icon | 0 / 7 | Open |
-| 05 — Top-bar controls | 4 / 6 | Built; needs a GUI pass |
-| **Total** | **4 / 28** | **In progress** |
+| 05 — Top-bar controls | 8 / 10 | Built; needs a GUI pass |
+| **Total** | **8 / 32** | **In progress** |

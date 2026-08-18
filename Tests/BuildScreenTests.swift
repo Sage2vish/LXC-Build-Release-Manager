@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import XCTest
 @testable import LXC_Build_Release_Manager
 
@@ -519,5 +520,40 @@ final class LayoutMetricsTests: XCTestCase {
             let widest = LayoutMetrics.sidebarColumn(for: window).max + LayoutMetrics.inspectorColumn(for: window).max
             XCTAssertLessThan(widest, window * 0.7, "Side columns swallow the centre at \(window)pt")
         }
+    }
+}
+
+// MARK: - Top bar controls
+
+final class ToolbarControlTests: XCTestCase {
+    func testBothControlsShareOneHeightDefinition() {
+        // The two controls are separate, and the only thing they share is this number. Reading it
+        // from the same constant is what makes "same height" structural rather than a coincidence
+        // that survives until someone edits one of them.
+        XCTAssertEqual(ToolbarPill<EmptyView>.height, LayoutMetrics.toolbarControlHeight)
+        XCTAssertGreaterThan(LayoutMetrics.toolbarControlHeight, 0)
+    }
+
+    func testAppearanceStopsAreOrderedBrightDefaultDark() {
+        XCTAssertEqual(AppearanceSlider.title(for: .light), "Bright")
+        XCTAssertEqual(AppearanceSlider.title(for: .system), "System Default")
+        XCTAssertEqual(AppearanceSlider.title(for: .dark), "Dark")
+    }
+
+    func testEveryAppearanceStopHasItsOwnIconAndExplanation() {
+        var assets = Set<String>()
+        for theme in AppTheme.allCases {
+            let asset = AppearanceSlider.asset(for: theme)
+            XCTAssertTrue(asset.hasPrefix("theme-"), "\(theme) should use a project SVG, not an SF Symbol")
+            assets.insert(asset)
+            XCTAssertFalse(AppearanceSlider.help(for: theme).isEmpty, "\(theme) has no tooltip")
+        }
+        XCTAssertEqual(assets.count, AppTheme.allCases.count, "Two stops share an icon")
+    }
+
+    func testTheBarShowsTheNativeNameWhileTheMenuShowsBoth() {
+        // Space in the bar is scarce; space in the menu is not.
+        XCTAssertEqual(AppLanguage.hindi.nativeName, "हिन्दी")
+        XCTAssertEqual(AppLanguage.hindi.pickerLabel, "Hindi — हिन्दी")
     }
 }

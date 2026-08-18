@@ -1,74 +1,83 @@
 import SwiftUI
 
-/// The two settings people reach for often enough that burying them in Preferences is wrong:
-/// appearance and language. Both live in the centre column's top band — not in the right-hand
-/// inspector, which is about the selected script rather than about the app.
+/// The two window-level settings that live in the top bar: appearance and language.
 ///
-/// Both follow one rule: **no label outside the control**. The icons and the language names say
-/// what they are, so nothing sits beside them explaining it, and the band keeps its width for a
-/// repository name that already truncates.
+/// They are **two separate controls**, not one widget with two halves — you can move, hide or
+/// reposition either without touching the other. What they share is exactly one thing: the pill
+/// they are drawn in, defined once in `ToolbarPill` so their heights cannot drift apart. Setting a
+/// height on each independently is what let them disagree before: a `.menu` picker keeps its own
+/// intrinsic height and quietly ignored the frame it was given.
 ///
-/// Neither control introduces a setting. Each binds to the value Preferences already owns, so the
-/// two surfaces cannot drift apart.
+/// Neither control introduces a setting. Each binds to the value Preferences already owns.
+
+// MARK: - The shared pill
+
+/// One definition of the toolbar control's shape, height and surface.
+///
+/// Both controls are built on it, so "the same height" is structural rather than two numbers that
+/// happen to match today.
+struct ToolbarPill<Content: View>: View {
+    @ViewBuilder var content: () -> Content
+
+    /// The height of every control in the top bar. One constant, one source.
+    static var height: CGFloat { LayoutMetrics.toolbarControlHeight }
+
+    var body: some View {
+        content()
+            .frame(height: Self.height)
+            .background(Capsule().fill(.quaternary.opacity(0.55)))
+            .clipShape(Capsule())
+            .overlay(Capsule().strokeBorder(.quaternary, lineWidth: 0.5))
+            // Fixed vertically only: the pill owns its height, its content owns its width.
+            .fixedSize(horizontal: false, vertical: true)
+    }
+}
 
 // MARK: - Appearance
 
-/// A three-position slider: System · Light · Dark.
+/// A three-stop slider: Bright · Default · Dark.
 ///
 /// Built rather than borrowed from `Picker(.segmented)` because the requested behaviour is a
-/// slider — one knob that travels between three stops — and a segmented picker cannot show a knob
-/// moving. The knob is a single rounded rectangle that animates between positions, which also
-/// makes the current state readable at a glance instead of by comparing three similar segments.
+/// slider — one knob travelling between three stops — and a segmented picker cannot show a knob
+/// move. Default sits in the middle: it is the resting position, with an override either side.
 struct AppearanceSlider: View {
     @Binding var theme: AppTheme
 
-    /// Shared with the language picker so the pair reads as one unit in the toolbar rather than
-    /// two controls that happen to sit next to each other.
-    static let controlHeight: CGFloat = 24
-
-    /// Ordered deliberately: System sits in the middle because it is the default and the
-    /// resting position, with the two overrides either side of it.
     private static let stops: [AppTheme] = [.light, .system, .dark]
-
-    private let stopWidth: CGFloat = 34
-    private var height: CGFloat { Self.controlHeight }
+    private var stopWidth: CGFloat { LayoutMetrics.appearanceStopWidth }
 
     var body: some View {
-        HStack(spacing: 0) {
-            ForEach(Self.stops) { stop in
-                Button {
-                    withAnimation(.snappy(duration: 0.18)) { theme = stop }
-                } label: {
-                    Image(Self.asset(for: stop))
-                        .renderingMode(.template)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 14, height: 14)
-                        .frame(width: stopWidth, height: height)
-                        .foregroundStyle(theme == stop ? Color.primary : Color.secondary)
-                        .contentShape(Rectangle())
+        ToolbarPill {
+            HStack(spacing: 0) {
+                ForEach(Self.stops) { stop in
+                    Button {
+                        withAnimation(.snappy(duration: 0.18)) { theme = stop }
+                    } label: {
+                        Image(Self.asset(for: stop))
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 14, height: 14)
+                            .frame(width: stopWidth, height: ToolbarPill<EmptyView>.height)
+                            .foregroundStyle(theme == stop ? Color.primary : Color.secondary)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .help(Self.help(for: stop))
+                    .accessibilityLabel(Self.title(for: stop))
+                    .accessibilityAddTraits(theme == stop ? [.isSelected] : [])
                 }
-                .buttonStyle(.plain)
-                .help(Self.help(for: stop))
-                .accessibilityLabel(Self.title(for: stop))
-                .accessibilityAddTraits(theme == stop ? [.isSelected] : [])
+            }
+            .background(alignment: .leading) {
+                // The knob: one shape that travels, so this reads as a slider rather than three
+                // buttons that happen to sit together.
+                Capsule()
+                    .fill(.background)
+                    .shadow(color: .black.opacity(0.18), radius: 1.5, y: 0.5)
+                    .frame(width: stopWidth, height: ToolbarPill<EmptyView>.height - 4)
+                    .offset(x: knobOffset)
             }
         }
-        .background {
-            Capsule().fill(.quaternary.opacity(0.55))
-        }
-        .background(alignment: .leading) {
-            // The knob: one shape that travels, so the control reads as a slider rather than as
-            // three buttons that happen to sit together.
-            Capsule()
-                .fill(.background)
-                .shadow(color: .black.opacity(0.18), radius: 1.5, y: 0.5)
-                .frame(width: stopWidth, height: height - 3)
-                .offset(x: knobOffset + 1.5, y: 0)
-                .padding(.vertical, 1.5)
-        }
-        .clipShape(Capsule())
-        .overlay(Capsule().strokeBorder(.quaternary, lineWidth: 0.5))
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Appearance")
         .accessibilityValue(Self.title(for: theme))
@@ -78,8 +87,8 @@ struct AppearanceSlider: View {
         CGFloat(Self.stops.firstIndex(of: theme) ?? 1) * stopWidth
     }
 
-    /// Asset names, not SF Symbols: the icons are project SVGs, kept as vector data in the asset
-    /// catalogue so they stay crisp at any size and tint with the label colour.
+    /// Asset names, not SF Symbols: the icons are project SVGs held as vector data, so they stay
+    /// crisp at any size and tint with the label colour.
     static func asset(for theme: AppTheme) -> String {
         switch theme {
         case .light: return "theme-light"
@@ -109,8 +118,9 @@ struct AppearanceSlider: View {
 
 /// Every language the app ships, each written **in English and in its own script**.
 ///
-/// The list comes from `AppLanguage`, which is also what the settings screen and the language
-/// controller read, so adding a language adds an entry here for free.
+/// A `Menu` rather than a `Picker`: a `.menu` picker draws its own control chrome at its own
+/// height, which is precisely why the two toolbar controls did not match. This puts the same pill
+/// around a plain label, so both controls are the same height by construction.
 struct LanguagePicker: View {
     @Binding var language: String
 
@@ -118,65 +128,67 @@ struct LanguagePicker: View {
     /// needed rather than leaving a half-translated window unexplained.
     var onChangeRequiresRelaunch: (AppLanguage) -> Void = { _ in }
 
-    private var selection: Binding<AppLanguage> {
-        Binding(
-            get: { AppLanguage(preference: language) },
-            set: { newValue in
-                language = newValue.rawValue
-                onChangeRequiresRelaunch(newValue)
-            }
-        )
-    }
+    private var current: AppLanguage { AppLanguage(preference: language) }
 
     var body: some View {
-        Picker("", selection: selection) {
+        Menu {
             ForEach(AppLanguage.allCases) { option in
-                Text(option.pickerLabel).tag(option)
+                Button {
+                    guard option != current else { return }
+                    language = option.rawValue
+                    onChangeRequiresRelaunch(option)
+                } label: {
+                    // A tick beside the active language, because a menu that closes without
+                    // confirming what is selected leaves you guessing.
+                    if option == current {
+                        Label(option.pickerLabel, systemImage: "checkmark")
+                    } else {
+                        Text(option.pickerLabel)
+                    }
+                }
+            }
+        } label: {
+            ToolbarPill {
+                HStack(spacing: 5) {
+                    Image(systemName: "globe")
+                        .font(.system(size: 11, weight: .medium))
+                    // The short name in the bar; the full "English — native" pairing is in the
+                    // menu, where there is room for it.
+                    Text(current.nativeName)
+                        .font(.system(size: 11, weight: .medium))
+                        .lineLimit(1)
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 8, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 10)
+                .foregroundStyle(Color.primary)
             }
         }
-        .pickerStyle(.menu)
-        .labelsHidden()
-        .controlSize(.small)
-        .frame(maxWidth: 190)
-        .frame(height: AppearanceSlider.controlHeight)
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
         .help("Language used by the app's own interface")
         .accessibilityLabel("Language")
-        .accessibilityValue(AppLanguage(preference: language).pickerLabel)
+        .accessibilityValue(current.pickerLabel)
     }
 }
 
-// MARK: - Both together
+// MARK: - Language switching side effect
 
-/// The pair as they sit in the main panel header: appearance, then language.
+/// Applies a language change and reports whether a relaunch is needed.
 ///
-/// Grouped into one view so their placement is a layout decision rather than a rewrite.
-struct AppearanceAndLanguageControls: View {
-    @ObservedObject var preferencesStore: PreferencesStore
+/// Kept out of both controls so neither has to know how macOS applies a language, and so the
+/// alert has one home rather than one per control.
+struct LanguageChangeHandler: ViewModifier {
+    @Binding var pending: AppLanguage?
 
-    @State private var relaunchNotice: AppLanguage?
-
-    var body: some View {
-        // Appearance first, language to its right: the slider is the smaller, more frequently
-        // moved control, and it reads better nearer the content it changes.
-        HStack(spacing: 8) {
-            AppearanceSlider(theme: preferencesStore.binding(\.theme))
-            LanguagePicker(
-                language: preferencesStore.binding(\.language),
-                onChangeRequiresRelaunch: { language in
-                    if AppLanguageController.apply(language) {
-                        relaunchNotice = language
-                    }
-                }
-            )
-        }
-        .alert(
+    func body(content: Content) -> some View {
+        content.alert(
             "Restart to finish switching language",
-            isPresented: Binding(
-                get: { relaunchNotice != nil },
-                set: { if !$0 { relaunchNotice = nil } }
-            )
+            isPresented: Binding(get: { pending != nil }, set: { if !$0 { pending = nil } })
         ) {
-            Button("OK", role: .cancel) { relaunchNotice = nil }
+            Button("OK", role: .cancel) { pending = nil }
         } message: {
             Text("Menus and system text change the next time the app is opened. Everything else keeps working in the meantime.")
         }

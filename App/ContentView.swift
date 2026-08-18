@@ -75,6 +75,7 @@ struct ContentView: View {
                     }
             }
         }
+        .modifier(LanguageChangeHandler(pending: $pendingLanguageRelaunch))
         .background(AppBackground(preferences: preferencesStore.preferences))
         .preferredColorScheme(preferredColorScheme)
         // Appearance preferences were stored and shown but never read; these apply them.
@@ -115,6 +116,8 @@ struct ContentView: View {
     /// Deliberately not updated as the window resizes: a live ideal re-pins the columns and makes
     /// them impossible to drag. The clamps below still follow the live width.
     @State private var seedWidth: CGFloat?
+    /// Set when a language switch actually changed the override and a relaunch is needed.
+    @State private var pendingLanguageRelaunch: AppLanguage?
 
     private var splitView: some View {
         // One measurement of the window, shared by both side columns, so their widths are
@@ -136,8 +139,18 @@ struct ContentView: View {
             // over the middle panel's content, while the right of the bar is where window-level
             // controls belong. They stay present whether or not a repository is selected.
             .toolbar {
-                ToolbarItemGroup(placement: .primaryAction) {
-                    AppearanceAndLanguageControls(preferencesStore: preferencesStore)
+                // Two items, not one group: they are separate controls and macOS gives them its
+                // own spacing, rather than being glued together inside a single item.
+                ToolbarItem(placement: .primaryAction) {
+                    AppearanceSlider(theme: preferencesStore.binding(\.theme))
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    LanguagePicker(
+                        language: preferencesStore.binding(\.language),
+                        onChangeRequiresRelaunch: { language in
+                            if AppLanguageController.apply(language) { pendingLanguageRelaunch = language }
+                        }
+                    )
                 }
             }
     }

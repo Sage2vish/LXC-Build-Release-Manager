@@ -83,6 +83,17 @@ enum LayoutMetrics {
 
     // MARK: Detail View panel
 
+    // MARK: Top bar
+
+    /// The height of every control in the window's top bar.
+    ///
+    /// Named once so the appearance slider and the language control cannot disagree: they are
+    /// separate controls, and the only thing they share is this number and the pill drawn from it.
+    static let toolbarControlHeight: CGFloat = 24
+
+    /// The width of one stop on the appearance slider.
+    static let appearanceStopWidth: CGFloat = 34
+
     /// The corner radius applied to a card's **label only** — its top-left and top-right. The
     /// panel below the label is square on all four corners.
     static let inspectorLabelCornerRadius: CGFloat = 8
