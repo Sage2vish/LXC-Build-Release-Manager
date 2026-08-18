@@ -110,12 +110,21 @@ struct ContentView: View {
         }
     }
 
+    /// The window width captured at first layout, used only to seed the two side columns.
+    ///
+    /// Deliberately not updated as the window resizes: a live ideal re-pins the columns and makes
+    /// them impossible to drag. The clamps below still follow the live width.
+    @State private var seedWidth: CGFloat?
+
     private var splitView: some View {
         // One measurement of the window, shared by both side columns, so their widths are
         // proportions of what is actually on screen rather than fixed point values that mean
         // something different on every display.
         GeometryReader { proxy in
             splitViewContent(windowWidth: proxy.size.width)
+                .onAppear {
+                    if seedWidth == nil, proxy.size.width > 0 { seedWidth = proxy.size.width }
+                }
         }
     }
 
@@ -140,6 +149,7 @@ struct ContentView: View {
             if let repository = store.selectedRepository {
                 RepositoryDetailView(
                     windowWidth: windowWidth,
+                    seedWidth: seedWidth ?? windowWidth,
                     repository: repository,
                     store: store,
                     historyStore: historyStore,
@@ -359,7 +369,8 @@ struct ContentView: View {
             // `LayoutMetrics` — the sidebar starts at 20%.
             .navigationSplitViewColumnWidth(
                 min: LayoutMetrics.sidebarColumn(for: windowWidth).min,
-                ideal: LayoutMetrics.sidebarColumn(for: windowWidth).ideal,
+                // Seeded once. A live ideal would drag the column back under the pointer.
+                ideal: LayoutMetrics.sidebarColumn(for: seedWidth ?? windowWidth).ideal,
                 max: LayoutMetrics.sidebarColumn(for: windowWidth).max
             )
             // Stops AppKit persisting and replaying the split view's collapse state, which

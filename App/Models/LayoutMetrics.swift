@@ -55,6 +55,14 @@ enum LayoutMetrics {
         return Swift.max(floor, usable * fraction)
     }
 
+    /// Why `ideal` is seeded once and never recomputed.
+    ///
+    /// `navigationSplitViewColumnWidth(min:ideal:max:)` and `inspectorColumnWidth(...)` treat
+    /// `ideal` as the width the column *wants*. Handing them a freshly computed ideal on every
+    /// layout pass re-pins the column, so a drag springs straight back and the panel feels stuck.
+    /// The proportion decides where a column **starts**; after that the user's drag owns it, and
+    /// only the min/max clamps still apply.
+
     /// min / ideal / max for the sidebar column at this window width.
     static func sidebarColumn(for windowWidth: CGFloat) -> (min: CGFloat, ideal: CGFloat, max: CGFloat) {
         (

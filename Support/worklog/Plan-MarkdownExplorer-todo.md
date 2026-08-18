@@ -226,13 +226,18 @@ The tab could not be resized down, and stretched past what the window gave it.
 
 - [x] Removed the `minHeight: 420` floor. The tab now fills the window and compresses with it;
       the floor meant a short window clipped the document rather than scrolling it.
-- [x] Lowered the split floors — explorer 170→120, document 260→180. Every minimum here adds
-      into the window's own minimum width, which is why the window refused to narrow.
+- [x] **Removed the split constraints entirely.** Lowering them was not enough: any `ideal`
+      width is re-applied on every layout pass, so dragging the divider sprang straight back and
+      the tab felt frozen. The two panes now size from their content and the divider decides,
+      which is what flexible actually means.
 - [x] Removed an `.onHover` cursor override that was applied to the **whole tab** rather than the
       divider, so the pointer became a resize arrow anywhere over Docs and lied about what could
       be dragged. AppKit already shows the right cursor over an `HSplitView` divider.
-- [x] The Preview/Source picker is a minimum width rather than a fixed 170pt, so longer
-      translations do not clip.
+- [x] The Preview/Source picker sizes to its own labels in whatever language they are written,
+      rather than to a number.
+- [x] Removed the 1400pt reading-measure cap on the rendered document. The divider is how a
+      reader chooses their line length; a hidden ceiling only made the pane stop responding at
+      wide window sizes.
 - [ ] Re-measure the window's minimum width now these floors are lower; the last recorded figure
       was 1513pt. *(Owned by [`Plan-DetailViewPanel-todo.md`](Plan-DetailViewPanel-todo.md) 01.)*
 

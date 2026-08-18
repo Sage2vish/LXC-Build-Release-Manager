@@ -39,13 +39,13 @@ struct MarkdownExplorerView: View {
 
     var body: some View {
         HSplitView {
-            // Floors kept small. Every minimum here adds into the window's own minimum width,
-            // and a file tree that insists on 170pt plus a document that insists on 260pt made
-            // the whole window refuse to narrow past them.
+            // No width constraints at all. Every minimum, ideal or maximum written here does two
+            // unwanted things: it adds into the window's own minimum width, and — because an
+            // ideal is re-applied on each layout pass — it drags the divider back under the
+            // pointer. AppKit sizes these two panes from their content and then lets the divider
+            // decide, which is what "flexible" actually means.
             explorer
-                .frame(minWidth: 120, idealWidth: 260, maxWidth: 420)
             document
-                .frame(minWidth: 180)
         }
         // No cursor override: this modifier applied to the whole tab, not to the divider, so
         // the pointer became a resize arrow anywhere over the Docs tab and lied about what
@@ -162,10 +162,9 @@ struct MarkdownExplorerView: View {
                             baseURL: URL(fileURLWithPath: node.path).deletingLastPathComponent()
                         )
                         .padding(24)
-                        // No fixed 900pt column: the document flows to the pane. The cap is
-                        // generous and only exists so a full-screen window does not produce
-                        // unreadably long lines.
-                        .frame(maxWidth: 1400, alignment: .leading)
+                        // The document flows to the pane, full stop. No column cap: the divider
+                        // is how a reader chooses their line length, and a hidden ceiling only
+                        // makes the pane stop responding at wide window sizes.
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
@@ -198,9 +197,7 @@ struct MarkdownExplorerView: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-                // A minimum rather than a fixed width: "Preview"/"Source" are longer in other
-                // languages, and a hard 170pt clipped them.
-                .frame(minWidth: 150)
+                // Sized by its own labels, in whatever language they are written.
                 .fixedSize()
                 .accessibilityLabel("Document view mode")
                 .onChange(of: viewMode) { _, newValue in

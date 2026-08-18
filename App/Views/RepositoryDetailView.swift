@@ -10,6 +10,9 @@ struct RepositoryDetailView: View {
     /// The window's current width, so the Detail View panel can be a proportion of it rather
     /// than a fixed number of points. Measured once by the app shell and handed down.
     let windowWidth: CGFloat
+    /// The window width at first layout. Only the panel's starting width comes from this; a live
+    /// value would re-pin the column on every pass and make the divider impossible to drag.
+    let seedWidth: CGFloat
     let repository: Repository
     @ObservedObject var store: RepositoryStore
     @ObservedObject var historyStore: BuildHistoryStore
@@ -34,6 +37,7 @@ struct RepositoryDetailView: View {
 
     init(
         windowWidth: CGFloat,
+        seedWidth: CGFloat,
         repository: Repository,
         store: RepositoryStore,
         historyStore: BuildHistoryStore,
@@ -44,6 +48,7 @@ struct RepositoryDetailView: View {
         initialTab: DetailTab = .build
     ) {
         self.windowWidth = windowWidth
+        self.seedWidth = seedWidth
         self.repository = repository
         self.store = store
         self.historyStore = historyStore
@@ -215,9 +220,12 @@ struct RepositoryDetailView: View {
             .clipShape(Rectangle())
             // A proportion of the window — 15% — rather than a fixed band, with clamps so a
             // drag stays sane at both extremes. Every number comes from `LayoutMetrics`.
+            // 15% is where the panel starts, not where it is held. The ideal is seeded once so a
+            // drag sticks; the clamps follow the live window so the panel can never be dragged to
+            // a width that squeezes the centre out.
             .inspectorColumnWidth(
                 min: LayoutMetrics.inspectorColumn(for: windowWidth).min,
-                ideal: LayoutMetrics.inspectorColumn(for: windowWidth).ideal,
+                ideal: LayoutMetrics.inspectorColumn(for: seedWidth).ideal,
                 max: LayoutMetrics.inspectorColumn(for: windowWidth).max
             )
         }

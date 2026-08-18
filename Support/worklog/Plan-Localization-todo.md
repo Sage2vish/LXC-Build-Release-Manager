@@ -37,8 +37,14 @@ settings screen must say so rather than appearing to do nothing.
 
 ## 06. Coverage — the batch pass of 2026-08-18
 
-- [x] Catalogue grown from 133 keys to 231: 98 strings the app shows had never reached it.
-- [x] **Every translatable key now has Hindi** — 86 were missing, including whole sentences.
+- [x] Catalogue grown from 133 keys to **480**. 98 were added by hand; the rest arrived once
+      `SWIFT_EMIT_LOC_STRINGS` was switched on and Xcode harvested what the code actually shows —
+      which is the proof the setting was the missing piece.
+- [x] **All 459 translatable keys have Hindi**, including the entire Preferences vocabulary —
+      every field label, every explanatory sentence, every dropdown value.
+- [x] Format specifiers are verified rather than trusted: a translation whose `%@`/`%lld` set does
+      not match its source is rejected, because a dropped specifier crashes the formatter instead
+      of merely reading oddly.
 - [x] Technical values marked `shouldTranslate: false` rather than left looking unfinished:
       shell paths, `UTF-8`, timestamp formats, stream markers, system sound names, and the GitHub
       brand name.

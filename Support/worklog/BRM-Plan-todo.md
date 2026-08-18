@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**669 of 837 items done — 168 still pending (80%).**
+**672 of 840 items done — 168 still pending (80%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
 | The window, by region | 73 | 36 | In progress |
 | Inside the main panel | 23 | 11 | In progress |
-| The six tabs, inside the container | 271 | 15 | In progress |
-| Features | 199 | 40 | In progress |
+| The six tabs, inside the container | 272 | 15 | In progress |
+| Features | 201 | 40 | In progress |
 | Engineering, quality, and release | 103 | 66 | In progress |
-| **All areas** | **669** | **168** | **In progress** |
+| **All areas** | **672** | **168** | **In progress** |
 
 ## The plans, by area
 
@@ -68,9 +68,9 @@ Everything a tab *does* belongs to its own plan, not to the container.
 | [Plan-Tab-Logs-todo](Plan-Tab-Logs-todo.md) | Logs — saved log files, filters, search, export | 10 | 1 | In progress |
 | [Plan-Tab-History-todo](Plan-Tab-History-todo.md) | History — every recorded run for the repository | 7 | 0 | Done ✅ |
 | [Plan-Tab-Overview-todo](Plan-Tab-Overview-todo.md) | Overview — repository summary and build statistics | 6 | 1 | In progress |
-| [Plan-MarkdownExplorer-todo](Plan-MarkdownExplorer-todo.md) | Docs — markdown discovery, rendering, Preview/Source editing | 81 | 11 | In progress |
+| [Plan-MarkdownExplorer-todo](Plan-MarkdownExplorer-todo.md) | Docs — markdown discovery, rendering, Preview/Source editing | 82 | 11 | In progress |
 | [Plan-Tab-Settings-todo](Plan-Tab-Settings-todo.md) | Settings — per-repository, distinct from the Preferences window | 5 | 1 | In progress |
-| **The six tabs, inside the container — subtotal** | | **271** | **15** | **In progress** |
+| **The six tabs, inside the container — subtotal** | | **272** | **15** | **In progress** |
 
 ### Features
 
@@ -80,9 +80,9 @@ Product behaviour that spans regions rather than living in one of them.
 | --- | --- | ---: | ---: | --- |
 | [Plan-PreferenceScreen-todo](Plan-PreferenceScreen-todo.md) | Preferences window — seven tabs, every field, and the wiring audit | 55 | 36 | In progress |
 | [Plan-Updates-todo](Plan-Updates-todo.md) | Update checking — GitHub Releases feed, version comparison, channels | 23 | 0 | Done ✅ |
-| [Plan-Localization-todo](Plan-Localization-todo.md) | Localization — English and Hindi, the string catalogue, switching | 27 | 3 | In progress |
-| [Plan-WindowLayout-todo](Plan-WindowLayout-todo.md) | Window layout — resizing, the View menu, panel visibility | 94 | 1 | In progress |
-| **Features — subtotal** | | **199** | **40** | **In progress** |
+| [Plan-Localization-todo](Plan-Localization-todo.md) | Localization — English and Hindi, the string catalogue, switching | 28 | 3 | In progress |
+| [Plan-WindowLayout-todo](Plan-WindowLayout-todo.md) | Window layout — resizing, the View menu, panel visibility | 95 | 1 | In progress |
+| **Features — subtotal** | | **201** | **40** | **In progress** |
 
 ### Engineering, quality, and release
 

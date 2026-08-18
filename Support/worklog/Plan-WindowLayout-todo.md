@@ -133,6 +133,12 @@ lost on a large one.
 - [x] Tested: the fractions total the window, ideals scale linearly with it, floors take over when
       the window is small, min ≤ ideal ≤ max at every width from 600 to 3200pt, and both side
       columns dragged fully open still leave the centre more than a third.
+- [x] **Fixed the reason the columns would not drag.** `ideal` in
+      `navigationSplitViewColumnWidth` and `inspectorColumnWidth` is the width a column *wants*,
+      and it was being recomputed from the live window width on every layout pass — so each drag
+      was undone by the next redraw. The ideal is now seeded once from the first measured width;
+      the min and max clamps still follow the live window. A proportion decides where a column
+      starts, and after that the drag owns it.
 - [ ] Confirm the proportions feel right in the running window at both a laptop and an external
       display size — the numbers are correct, but 20/15/65 is a judgement.
 
