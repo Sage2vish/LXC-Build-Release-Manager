@@ -161,6 +161,25 @@ rmdir "$MOUNT_POINT" >/dev/null 2>&1 || true
 echo "Converting to final compressed DMG"
 hdiutil convert "$TMP_DMG_PATH" -format UDZO -ov -o "$DMG_PATH" >/dev/null
 rm -f "$TMP_DMG_PATH"
+if [ -f "$DMG_VOLUME_ICON" ]; then
+  TMP_SWIFT="$(mktemp /tmp/lxc-brm-dmg-icon.XXXXXX.swift)"
+  cat > "$TMP_SWIFT" <<EOF
+import AppKit
+import Foundation
+
+let dmgPath = URL(fileURLWithPath: "$DMG_PATH").path
+let iconPath = URL(fileURLWithPath: "$DMG_VOLUME_ICON").path
+if let icon = NSImage(contentsOfFile: iconPath) {
+    let ok = NSWorkspace.shared.setIcon(icon, forFile: dmgPath, options: [])
+    if !ok {
+        fputs("Warning: could not set icon on \(dmgPath)\n", stderr)
+    }
+}
+EOF
+  swift "$TMP_SWIFT"
+  rm -f "$TMP_SWIFT"
+  SetFile -a C "$DMG_PATH" >/dev/null 2>&1 || true
+fi
 
 echo "Release artifact staged at $DMG_PATH (version $VERSION)"
 
