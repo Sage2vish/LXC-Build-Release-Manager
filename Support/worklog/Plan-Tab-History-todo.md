@@ -20,8 +20,15 @@ Every run recorded for this repository.
 
 ## 01. Open items
 
-- [ ] No way to clear or prune history from this tab.
-- [ ] No filtering by status or script.
+- [x] Clear this repository's history from the tab, guarded by a confirmation that says what it
+      does and does not touch — log files on disk and other repositories are left alone. The
+      confirmation follows the "Confirm before clearing" preference. `BuildHistoryStore.clear(for:)`
+      is deliberately separate from `clearAll()`: a tab-scoped control must never reach past its
+      repository.
+- [x] Filter by outcome (All / Succeeded / Failed / Cancelled) and by script, with the script
+      list derived from the records themselves so a run of a since-deleted script still appears.
+      Filtering rules live in `HistoryFilter` and are unit-tested; a filtered list states how many
+      runs it is hiding, so "nothing matches" can never be mistaken for "nothing ran".
 - [ ] Adopt the container's shared card treatment so History matches the Build tab.
       *(Shape owned by [`Plan-MainPanel-Container-todo.md`](Plan-MainPanel-Container-todo.md).)*
 
@@ -30,4 +37,5 @@ Every run recorded for this repository.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 4 / 4 | Done |
-| 01 — Open items | 0 / 3 | Open |
+| 01 — Open items | 2 / 3 | Card treatment open |
+

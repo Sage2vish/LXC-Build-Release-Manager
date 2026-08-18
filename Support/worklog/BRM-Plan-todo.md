@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**639 of 821 items done — 182 still pending (78%).**
+**642 of 821 items done — 179 still pending (78%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
 | The window, by region | 60 | 36 | In progress |
 | Inside the main panel | 33 | 15 | In progress |
-| The six tabs, inside the container | 258 | 23 | In progress |
+| The six tabs, inside the container | 261 | 20 | In progress |
 | Features | 186 | 41 | In progress |
 | Engineering, quality, and release | 102 | 67 | In progress |
-| **All areas** | **639** | **182** | **In progress** |
+| **All areas** | **642** | **179** | **In progress** |
 
 ## The plans, by area
 
@@ -66,11 +66,11 @@ Everything a tab *does* belongs to its own plan, not to the container.
 | --- | --- | ---: | ---: | --- |
 | [Plan-Tab-Build-todo](Plan-Tab-Build-todo.md) | Build — script discovery, the table, parameters, execution, live output | 161 | 2 | In progress |
 | [Plan-Tab-Logs-todo](Plan-Tab-Logs-todo.md) | Logs — saved log files, filters, search, export | 9 | 2 | In progress |
-| [Plan-Tab-History-todo](Plan-Tab-History-todo.md) | History — every recorded run for the repository | 4 | 3 | In progress |
+| [Plan-Tab-History-todo](Plan-Tab-History-todo.md) | History — every recorded run for the repository | 6 | 1 | In progress |
 | [Plan-Tab-Overview-todo](Plan-Tab-Overview-todo.md) | Overview — repository summary and build statistics | 4 | 3 | In progress |
 | [Plan-MarkdownExplorer-todo](Plan-MarkdownExplorer-todo.md) | Docs — markdown discovery, rendering, Preview/Source editing | 77 | 10 | In progress |
-| [Plan-Tab-Settings-todo](Plan-Tab-Settings-todo.md) | Settings — per-repository, distinct from the Preferences window | 3 | 3 | In progress |
-| **The six tabs, inside the container — subtotal** | | **258** | **23** | **In progress** |
+| [Plan-Tab-Settings-todo](Plan-Tab-Settings-todo.md) | Settings — per-repository, distinct from the Preferences window | 4 | 2 | In progress |
+| **The six tabs, inside the container — subtotal** | | **261** | **20** | **In progress** |
 
 ### Features
 

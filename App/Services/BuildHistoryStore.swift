@@ -34,6 +34,16 @@ final class BuildHistoryStore: ObservableObject {
         save()
     }
 
+    /// Removes one repository's history and leaves every other repository untouched.
+    ///
+    /// Distinct from `clearAll()` on purpose: the History tab is scoped to the repository in
+    /// front of you, and a control there must never reach past it.
+    func clear(for repositoryID: UUID) {
+        guard recordsByRepository[repositoryID] != nil else { return }
+        recordsByRepository[repositoryID] = nil
+        save()
+    }
+
     func lastRun(for repositoryID: UUID, scriptFileName: String) -> BuildRecord? {
         records(for: repositoryID).first { $0.scriptFileName == scriptFileName }
     }

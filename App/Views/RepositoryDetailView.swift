@@ -27,6 +27,7 @@ struct RepositoryDetailView: View {
     @State private var gitHubURLDraft = ""
     @State private var gitHubURLError: String?
     @State private var pickerError: String?
+    @State private var isConfirmingRemoval = false
 
     init(
         repository: Repository,
@@ -983,10 +984,15 @@ struct RepositoryDetailView: View {
     // MARK: History
 
     private var historyTab: some View {
-        RepositoryHistoryView(records: records) { record in
-            selectedLogRecordID = record.id
-            selectedTab = .logs
-        }
+        RepositoryHistoryView(
+            records: records,
+            onSelectRecord: { record in
+                selectedLogRecordID = record.id
+                selectedTab = .logs
+            },
+            onClearHistory: { historyStore.clear(for: repository.id) },
+            confirmBeforeClearing: preferencesStore.preferences.confirmBeforeClearing
+        )
     }
 
     // MARK: Overview
@@ -1014,7 +1020,19 @@ struct RepositoryDetailView: View {
                         set: { _ in store.togglePin(repository) }
                     ))
                     Button("Remove from List", role: .destructive) {
-                        store.remove(repository)
+                        isConfirmingRemoval = true
+                    }
+                    .confirmationDialog(
+                        "Remove \(repository.name) from the list?",
+                        isPresented: $isConfirmingRemoval,
+                        titleVisibility: .visible
+                    ) {
+                        Button("Remove", role: .destructive) { store.remove(repository) }
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        // Worth stating plainly: the word "remove" beside a repository reads as
+                        // something far more destructive than it is.
+                        Text("This only removes it from the app's list. The folder, its scripts, and its logs are left untouched on disk, and its build history is kept.")
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

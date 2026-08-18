@@ -279,3 +279,91 @@ final class BuildScreenTests: XCTestCase {
         XCTAssertTrue(condition(), "Condition was not met before the timeout")
     }
 }
+
+// MARK: - History filtering
+
+final class HistoryFilterTests: XCTestCase {
+    private func record(
+        _ label: String,
+        _ status: BuildStatus,
+        at offset: TimeInterval = 0
+    ) -> BuildRecord {
+        BuildRecord(
+            repositoryID: UUID(),
+            scriptFileName: "\(label).sh",
+            scriptLabel: label,
+            startedAt: Date(timeIntervalSince1970: 1_700_000_000 + offset),
+            status: status,
+            durationSeconds: 60,
+            logFileName: "build.log"
+        )
+    }
+
+    func testAllOutcomeKeepsEveryRecord() {
+        let records = [record("build", .success), record("release", .failed), record("test", .cancelled)]
+        XCTAssertEqual(HistoryFilter.apply(records).count, 3)
+    }
+
+    func testOutcomeFilterSelectsOneStatus() {
+        let records = [record("build", .success), record("release", .failed), record("test", .cancelled)]
+        XCTAssertEqual(HistoryFilter.apply(records, outcome: .failed).map(\.scriptLabel), ["release"])
+        XCTAssertEqual(HistoryFilter.apply(records, outcome: .cancelled).map(\.scriptLabel), ["test"])
+    }
+
+    func testScriptFilterSelectsOneScriptAcrossOutcomes() {
+        let records = [record("build", .success), record("build", .failed, at: 10), record("release", .success)]
+        XCTAssertEqual(HistoryFilter.apply(records, script: "build").count, 2)
+    }
+
+    func testFiltersCombine() {
+        let records = [record("build", .success), record("build", .failed, at: 10), record("release", .failed)]
+        let result = HistoryFilter.apply(records, outcome: .failed, script: "build")
+        XCTAssertEqual(result.count, 1)
+        XCTAssertEqual(result.first?.scriptLabel, "build")
+    }
+
+    func testScriptLabelsAreUniqueAndSorted() {
+        let records = [record("release", .success), record("build", .failed), record("release", .cancelled)]
+        XCTAssertEqual(HistoryFilter.scriptLabels(in: records), ["build", "release"])
+    }
+
+    func testFilteringPreservesIncomingOrder() {
+        let records = [record("a", .success, at: 30), record("b", .success, at: 20), record("c", .success, at: 10)]
+        XCTAssertEqual(HistoryFilter.apply(records).map(\.scriptLabel), ["a", "b", "c"])
+    }
+
+    func testSummaryOnlyAppearsWhenSomethingIsHidden() {
+        XCTAssertNil(HistoryFilter.summary(shown: 5, total: 5))
+        XCTAssertEqual(HistoryFilter.summary(shown: 2, total: 5), "Showing 2 of 5 runs.")
+    }
+
+    @MainActor
+    func testClearingOneRepositoryLeavesOthersIntact() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("BRM-History-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let store = BuildHistoryStore(storeURL: directory.appendingPathComponent("build-history.json"))
+        let kept = UUID()
+        let cleared = UUID()
+        for repositoryID in [kept, cleared] {
+            store.record(
+                BuildRecord(
+                    repositoryID: repositoryID,
+                    scriptFileName: "build.sh",
+                    scriptLabel: "build",
+                    startedAt: Date(timeIntervalSince1970: 1_700_000_000),
+                    status: .success,
+                    durationSeconds: 60,
+                    logFileName: "build.log"
+                )
+            )
+        }
+
+        store.clear(for: cleared)
+
+        XCTAssertTrue(store.records(for: cleared).isEmpty)
+        XCTAssertEqual(store.records(for: kept).count, 1, "Clearing one repository must not touch another's history.")
+    }
+}
