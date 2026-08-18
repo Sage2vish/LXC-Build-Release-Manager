@@ -21,6 +21,8 @@ DERIVED_DATA_DIR="$PROJECT_ROOT/.derivedData"
 APP_NAME="LXC-Build-Release-Manager"
 APP_PATH="$DERIVED_DATA_DIR/Build/Products/Release/$APP_NAME.app"
 STAGING_DIR="$BUILD_RELEASE_DIR/version/staging"
+DMG_BACKGROUND="$BUILD_RELEASE_DIR/../context/concepts-designs/Back-Images/ui-back-main.png"
+DMG_README="$BUILD_RELEASE_DIR/version/DMG-README.txt"
 
 PUBLISH=false
 PRERELEASE=false
@@ -62,15 +64,85 @@ TAG="v$VERSION"
 rm -rf "$STAGING_DIR"
 mkdir -p "$STAGING_DIR"
 cp -R "$APP_PATH" "$STAGING_DIR/"
+if [ -f "$DMG_BACKGROUND" ]; then
+  mkdir -p "$STAGING_DIR/.background"
+  cp "$DMG_BACKGROUND" "$STAGING_DIR/.background/background.png"
+fi
+ln -s /Applications "$STAGING_DIR/Applications"
+cat > "$DMG_README" <<'EOF'
+Lexvora Consulting package
+
+Website:
+https://www.lexvoraconsulting.com/
+
+This DMG contains:
+- LXC-Build-Release-Manager.app
+- Applications alias for drag-and-drop install
+- branded background art
+
+Install:
+1. Open the DMG.
+2. Drag the app to Applications.
+3. Eject the disk image when done.
+EOF
+cp "$DMG_README" "$STAGING_DIR/DMG-README.txt"
 
 echo "Creating DMG at $DMG_PATH"
 rm -f "$DMG_PATH"
+TMP_DMG_PATH="${DMG_PATH%.dmg}.temp.dmg"
+rm -f "$TMP_DMG_PATH"
 hdiutil create \
   -volname "$APP_NAME" \
   -srcfolder "$STAGING_DIR" \
   -ov \
-  -format UDZO \
-  "$DMG_PATH"
+  -format UDRW \
+  "$TMP_DMG_PATH"
+
+MOUNT_POINT="$(mktemp -d /tmp/lxc-brm-dmg.XXXXXX)"
+cleanup() {
+  hdiutil detach "$MOUNT_POINT" >/dev/null 2>&1 || true
+  rmdir "$MOUNT_POINT" >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
+echo "Configuring Finder presentation for $TMP_DMG_PATH"
+hdiutil attach "$TMP_DMG_PATH" -mountpoint "$MOUNT_POINT" -nobrowse >/dev/null
+BACKGROUND_FILE="$MOUNT_POINT/.background/background.png"
+cat <<EOF | osascript
+tell application "Finder"
+  try
+    tell disk "$APP_NAME"
+      open
+      delay 1
+      set current view of container window to icon view
+      set toolbar visible of container window to false
+      set statusbar visible of container window to false
+      set bounds of container window to {120, 120, 1080, 760}
+      set icon size of icon view options of container window to 144
+      set arrangement of icon view options of container window to not arranged
+      set background picture of icon view options of container window to POSIX file "$BACKGROUND_FILE"
+      try
+        set position of item "$APP_NAME.app" of container window to {220, 250}
+      end try
+      try
+        set position of item "Applications" of container window to {700, 250}
+      end try
+      try
+        set position of item "DMG-README.txt" of container window to {460, 530}
+      end try
+      update without registering applications
+    end tell
+  end try
+end tell
+EOF
+sync
+hdiutil detach "$MOUNT_POINT" >/dev/null
+trap - EXIT
+rmdir "$MOUNT_POINT" >/dev/null 2>&1 || true
+
+echo "Converting to final compressed DMG"
+hdiutil convert "$TMP_DMG_PATH" -format UDZO -ov -o "$DMG_PATH" >/dev/null
+rm -f "$TMP_DMG_PATH"
 
 echo "Release artifact staged at $DMG_PATH (version $VERSION)"
 

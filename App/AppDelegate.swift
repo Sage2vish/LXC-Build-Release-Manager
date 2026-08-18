@@ -4,6 +4,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     var runners: BuildRunnerRegistry?
     var preferencesStore: PreferencesStore?
 
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Force the Dock/Finder icon to match the packaged asset, even if the system cache
+        // is still holding onto an older generic placeholder from a previous launch.
+        if let icon = NSImage(named: "AppIcon") {
+            NSApplication.shared.applicationIconImage = icon
+        }
+    }
+
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         guard preferencesStore?.preferences.confirmBeforeQuittingDuringBuild == true,
               runners?.hasAnyRunningBuild == true else {

@@ -8,6 +8,8 @@
 
 This folder owns the operational path from the Xcode project to a local release artifact. It contains the command scripts, the example project mapping, the release staging area, and the documentation a human needs to run the flow safely.
 
+For the branded packaging notes, see [`LEXVORA-PACKAGE.md`](LEXVORA-PACKAGE.md).
+
 ## Ownership map
 
 | Path | Responsibility |
@@ -19,6 +21,7 @@ This folder owns the operational path from the Xcode project to a local release 
 | `logs/` | Documentation for release-support logs; application run logs live in the target repository. |
 | `version/` | Final local artifact staging, including `version/staging/`. |
 | `USER_GUIDE.md` | Human-facing guide to the app workflow. |
+| `LEXVORA-PACKAGE.md` | Brand-facing package notes and website pointer. |
 
 ## Canonical commands
 

@@ -21,7 +21,7 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**625 of 820 items done — 195 still pending (76%).**
+**626 of 821 items done — 195 still pending (76%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
@@ -29,8 +29,8 @@ work there. Do not add task detail to this file — it is an index and a map, no
 | Inside the main panel | 20 | 28 | In progress |
 | The six tabs, inside the container | 258 | 23 | In progress |
 | Features | 186 | 41 | In progress |
-| Engineering, quality, and release | 101 | 67 | In progress |
-| **All areas** | **625** | **195** | **In progress** |
+| Engineering, quality, and release | 102 | 67 | In progress |
+| **All areas** | **626** | **195** | **In progress** |
 
 ## The plans, by area
 
@@ -93,9 +93,9 @@ Work that has no visible surface of its own, but decides whether the visible one
 | [Plan-CodeRefactoring-Reusability-todo](Plan-CodeRefactoring-Reusability-todo.md) | Feature extraction, dependency seams, reuse — behaviour preserving | 31 | 38 | In progress |
 | [Plan-XcodeProject-todo](Plan-XcodeProject-todo.md) | Target membership, build settings, schemes, project-file hygiene | 12 | 13 | In progress |
 | [Plan-QualityVerification-todo](Plan-QualityVerification-todo.md) | Non-functional targets, tests, GUI coverage, the evidence ledger | 19 | 6 | In progress |
-| [Plan-ReleasePackaging-todo](Plan-ReleasePackaging-todo.md) | Release script, staging, the `.dmg`, tags, signing, publication | 14 | 10 | In progress |
+| [Plan-ReleasePackaging-todo](Plan-ReleasePackaging-todo.md) | Release script, staging, the `.dmg`, tags, signing, publication | 15 | 10 | In progress |
 | [Plan-ContextArchitectureVisuals-todo](Plan-ContextArchitectureVisuals-todo.md) | The SVG diagram set and its documentation wiring | 25 | 0 | Done ✅ |
-| **Engineering, quality, and release — subtotal** | | **101** | **67** | **In progress** |
+| **Engineering, quality, and release — subtotal** | | **102** | **67** | **In progress** |
 
 <!-- plan-index:end -->
 

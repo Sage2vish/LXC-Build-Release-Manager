@@ -48,6 +48,8 @@ The entry point is `Support/build-release/scripts/release.sh`. Run it from the r
 - [x] `--prerelease` puts the build on the Beta channel.
 - [x] Generated binaries stay out of git: `Support/build-release/version/` and `*.dmg` are
       ignored. Binaries belong in Releases, not in history.
+- [x] The staged DMG mounts with the branded background folder, the app bundle, the
+      `Applications` link, and the package README visible at the top level.
 - [ ] **Nothing is published yet.** The releases feed is empty, and the only tag,
       `release-2026-08-16`, is not a version string, so the updater ignores it rather than
       misreading it as newer. Publishing the first real release is the open step.
