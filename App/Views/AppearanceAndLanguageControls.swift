@@ -1,80 +1,117 @@
 import SwiftUI
 
 /// The two settings people reach for often enough that burying them in Preferences is wrong:
-/// appearance and language.
+/// appearance and language. Both live in the centre column's top band — not in the right-hand
+/// inspector, which is about the selected script rather than about the app.
 ///
-/// Both follow one rule — **no label outside the control**. The segments carry their own words, so
-/// nothing has to sit beside them explaining what they are, and the header keeps its width for the
-/// repository name.
+/// Both follow one rule: **no label outside the control**. The icons and the language names say
+/// what they are, so nothing sits beside them explaining it, and the band keeps its width for a
+/// repository name that already truncates.
 ///
-/// Neither control introduces a setting. Each drives the value Preferences already owns, through a
-/// binding into `PreferencesStore`, so the two surfaces cannot drift apart: changing appearance
-/// here moves Preferences → Appearance, and vice versa.
+/// Neither control introduces a setting. Each binds to the value Preferences already owns, so the
+/// two surfaces cannot drift apart.
 
 // MARK: - Appearance
 
-/// System · Light · Dark, in that order — System first because it is the default and the one most
-/// people should stay on.
-struct AppearancePicker: View {
+/// A three-position slider: System · Light · Dark.
+///
+/// Built rather than borrowed from `Picker(.segmented)` because the requested behaviour is a
+/// slider — one knob that travels between three stops — and a segmented picker cannot show a knob
+/// moving. The knob is a single rounded rectangle that animates between positions, which also
+/// makes the current state readable at a glance instead of by comparing three similar segments.
+struct AppearanceSlider: View {
     @Binding var theme: AppTheme
 
-    /// Ordered deliberately rather than taken from `allCases`, whose order is a declaration
-    /// detail and would put System last.
-    private static let ordered: [AppTheme] = [.system, .light, .dark]
+    /// Ordered deliberately: System sits in the middle because it is the default and the
+    /// resting position, with the two overrides either side of it.
+    private static let stops: [AppTheme] = [.light, .system, .dark]
 
-    /// Below this width the words are dropped for symbols; the three positions stay identical, so
-    /// muscle memory survives the switch.
-    var compact = false
+    private let stopWidth: CGFloat = 34
+    private let height: CGFloat = 24
 
     var body: some View {
-        Picker("", selection: $theme) {
-            ForEach(Self.ordered) { option in
-                if compact {
-                    Image(systemName: Self.symbol(for: option))
-                        .accessibilityLabel(Self.title(for: option))
-                        .tag(option)
-                } else {
-                    Text(Self.title(for: option)).tag(option)
+        HStack(spacing: 0) {
+            ForEach(Self.stops) { stop in
+                Button {
+                    withAnimation(.snappy(duration: 0.18)) { theme = stop }
+                } label: {
+                    Image(Self.asset(for: stop))
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 14, height: 14)
+                        .frame(width: stopWidth, height: height)
+                        .foregroundStyle(theme == stop ? Color.primary : Color.secondary)
+                        .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
+                .help(Self.help(for: stop))
+                .accessibilityLabel(Self.title(for: stop))
+                .accessibilityAddTraits(theme == stop ? [.isSelected] : [])
             }
         }
-        .pickerStyle(.segmented)
-        .labelsHidden()
-        .frame(maxWidth: compact ? 108 : 210)
-        .help("Appearance: follow the system, or force light or dark")
+        .background {
+            Capsule().fill(.quaternary.opacity(0.55))
+        }
+        .background(alignment: .leading) {
+            // The knob: one shape that travels, so the control reads as a slider rather than as
+            // three buttons that happen to sit together.
+            Capsule()
+                .fill(.background)
+                .shadow(color: .black.opacity(0.18), radius: 1.5, y: 0.5)
+                .frame(width: stopWidth, height: height - 3)
+                .offset(x: knobOffset + 1.5, y: 0)
+                .padding(.vertical, 1.5)
+        }
+        .clipShape(Capsule())
+        .overlay(Capsule().strokeBorder(.quaternary, lineWidth: 0.5))
+        .accessibilityElement(children: .contain)
         .accessibilityLabel("Appearance")
         .accessibilityValue(Self.title(for: theme))
     }
 
-    static func title(for theme: AppTheme) -> LocalizedStringKey {
+    private var knobOffset: CGFloat {
+        CGFloat(Self.stops.firstIndex(of: theme) ?? 1) * stopWidth
+    }
+
+    /// Asset names, not SF Symbols: the icons are project SVGs, kept as vector data in the asset
+    /// catalogue so they stay crisp at any size and tint with the label colour.
+    static func asset(for theme: AppTheme) -> String {
         switch theme {
-        case .system: return "System"
-        case .light: return "Light"
+        case .light: return "theme-light"
+        case .system: return "theme-system"
+        case .dark: return "theme-dark"
+        }
+    }
+
+    static func title(for theme: AppTheme) -> String {
+        switch theme {
+        case .light: return "Bright"
+        case .system: return "System Default"
         case .dark: return "Dark"
         }
     }
 
-    static func symbol(for theme: AppTheme) -> String {
+    static func help(for theme: AppTheme) -> String {
         switch theme {
-        case .system: return "circle.lefthalf.filled"
-        case .light: return "sun.max"
-        case .dark: return "moon"
+        case .light: return "Bright — always use the light appearance"
+        case .system: return "Default — follow the macOS appearance"
+        case .dark: return "Dark — always use the dark appearance"
         }
     }
 }
 
 // MARK: - Language
 
-/// Every language the app actually ships, named in its own script.
+/// Every language the app ships, each written **in English and in its own script**.
 ///
 /// The list comes from `AppLanguage`, which is also what the settings screen and the language
-/// controller read, so adding a language adds an entry here for free — there is no second list to
-/// forget.
+/// controller read, so adding a language adds an entry here for free.
 struct LanguagePicker: View {
     @Binding var language: String
 
-    /// Set when a switch needs a relaunch to finish, so the caller can say so instead of leaving
-    /// a half-translated window unexplained.
+    /// Called when a switch genuinely changes the override, so the caller can say a relaunch is
+    /// needed rather than leaving a half-translated window unexplained.
     var onChangeRequiresRelaunch: (AppLanguage) -> Void = { _ in }
 
     private var selection: Binding<AppLanguage> {
@@ -90,43 +127,34 @@ struct LanguagePicker: View {
     var body: some View {
         Picker("", selection: selection) {
             ForEach(AppLanguage.allCases) { option in
-                // The native name is what someone scanning for their own language looks for.
-                Text(option.nativeName).tag(option)
+                Text(option.pickerLabel).tag(option)
             }
         }
         .pickerStyle(.menu)
         .labelsHidden()
-        .frame(maxWidth: 150)
+        .frame(maxWidth: 190)
         .help("Language used by the app's own interface")
         .accessibilityLabel("Language")
-        .accessibilityValue(AppLanguage(preference: language).nativeName)
+        .accessibilityValue(AppLanguage(preference: language).pickerLabel)
     }
 }
 
 // MARK: - Both together
 
-/// The pair as they sit in the main panel header: appearance, then language, right-aligned.
+/// The pair as they sit in the main panel header: appearance, then language.
 ///
-/// Grouped into one view so their placement is a layout decision rather than a rewrite — the open
-/// question of whether language finally belongs here or in the status bar is answered by moving
-/// this, not by rebuilding it.
+/// Grouped into one view so their placement is a layout decision rather than a rewrite.
 struct AppearanceAndLanguageControls: View {
     @ObservedObject var preferencesStore: PreferencesStore
-    var compact = false
 
     @State private var relaunchNotice: AppLanguage?
 
     var body: some View {
         HStack(spacing: 10) {
-            AppearancePicker(
-                theme: preferencesStore.binding(\.theme),
-                compact: compact
-            )
+            AppearanceSlider(theme: preferencesStore.binding(\.theme))
             LanguagePicker(
                 language: preferencesStore.binding(\.language),
                 onChangeRequiresRelaunch: { language in
-                    // Only a genuine change to the override needs a relaunch; the controller
-                    // reports that rather than the view guessing.
                     if AppLanguageController.apply(language) {
                         relaunchNotice = language
                     }
@@ -142,12 +170,7 @@ struct AppearanceAndLanguageControls: View {
         ) {
             Button("OK", role: .cancel) { relaunchNotice = nil }
         } message: {
-            Text("Menus and system text change when \(Text(verbatim: appName)) is next opened. Everything else keeps working in the meantime.")
+            Text("Menus and system text change the next time the app is opened. Everything else keeps working in the meantime.")
         }
-    }
-
-    private var appName: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
-            ?? "LXC Build Release Manager"
     }
 }

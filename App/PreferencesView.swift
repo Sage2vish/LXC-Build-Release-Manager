@@ -189,11 +189,11 @@ struct PreferencesView: View {
             pickerRow("Language", "English is the main language. Changing this needs a relaunch.") {
                 Picker("", selection: $draft.language) {
                     ForEach(AppLanguage.allCases) { language in
-                        Text(language.nativeName).tag(language.rawValue)
+                        Text(language.pickerLabel).tag(language.rawValue)
                     }
                 }
                 .labelsHidden()
-                .frame(width: 180)
+                .frame(width: 220)
             }
         }
     }

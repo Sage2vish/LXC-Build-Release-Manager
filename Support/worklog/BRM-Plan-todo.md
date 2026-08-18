@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**647 of 821 items done — 174 still pending (79%).**
+**648 of 821 items done — 173 still pending (79%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
 | The window, by region | 63 | 33 | In progress |
-| Inside the main panel | 33 | 15 | In progress |
+| Inside the main panel | 34 | 14 | In progress |
 | The six tabs, inside the container | 262 | 19 | In progress |
 | Features | 186 | 41 | In progress |
 | Engineering, quality, and release | 103 | 66 | In progress |
-| **All areas** | **647** | **174** | **In progress** |
+| **All areas** | **648** | **173** | **In progress** |
 
 ## The plans, by area
 
@@ -53,10 +53,10 @@ The centre column is three stacked bands, each with its own plan.
 
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
-| [Plan-MainPanel-Header-todo](Plan-MainPanel-Header-todo.md) | Header — repository name, badge, path lines, Reveal / Terminal / Copy | 21 | 8 | In progress |
+| [Plan-MainPanel-Header-todo](Plan-MainPanel-Header-todo.md) | Header — repository name, badge, path lines, Reveal / Terminal / Copy | 22 | 7 | In progress |
 | [Plan-MainPanel-Toolbar-todo](Plan-MainPanel-Toolbar-todo.md) | Toolbar — the six-tab picker and the rule beneath it | 7 | 4 | In progress |
 | [Plan-MainPanel-Container-todo](Plan-MainPanel-Container-todo.md) | Container — work-area surface, padding, scrolling, card treatment | 5 | 3 | In progress |
-| **Inside the main panel — subtotal** | | **33** | **15** | **In progress** |
+| **Inside the main panel — subtotal** | | **34** | **14** | **In progress** |
 
 ### The six tabs, inside the container
 

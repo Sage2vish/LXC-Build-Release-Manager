@@ -367,3 +367,44 @@ final class HistoryFilterTests: XCTestCase {
         XCTAssertEqual(store.records(for: kept).count, 1, "Clearing one repository must not touch another's history.")
     }
 }
+
+// MARK: - Language naming
+
+final class AppLanguageLabelTests: XCTestCase {
+    func testLabelShowsEnglishNameThenNativeName() {
+        XCTAssertEqual(AppLanguage.hindi.pickerLabel, "Hindi — हिन्दी")
+    }
+
+    func testLabelIsNotRepeatedWhenBothNamesMatch() {
+        // English in English is "English"; printing it twice either side of a dash is noise.
+        XCTAssertEqual(AppLanguage.english.pickerLabel, "English")
+    }
+
+    func testSystemDefaultNamesABehaviourNotALanguage() {
+        XCTAssertEqual(AppLanguage.systemDefault.pickerLabel, "System Default")
+    }
+
+    func testEveryShippedLanguageHasBothNamesAndACode() {
+        for language in AppLanguage.allCases {
+            XCTAssertFalse(language.englishName.isEmpty)
+            XCTAssertFalse(language.nativeName.isEmpty)
+            if language != .systemDefault {
+                XCTAssertNotNil(language.languageCode, "\(language) ships without a language code")
+            }
+        }
+    }
+
+    func testUnknownStoredValueFallsBackToSystemDefault() {
+        XCTAssertEqual(AppLanguage(preference: "Klingon"), .systemDefault)
+    }
+
+    func testAppearanceSliderStopsRunLightSystemDark() {
+        // System sits in the middle: it is the resting position, with an override either side.
+        XCTAssertEqual(AppearanceSlider.title(for: .light), "Bright")
+        XCTAssertEqual(AppearanceSlider.title(for: .system), "System Default")
+        XCTAssertEqual(AppearanceSlider.title(for: .dark), "Dark")
+        XCTAssertEqual(AppearanceSlider.asset(for: .light), "theme-light")
+        XCTAssertEqual(AppearanceSlider.asset(for: .system), "theme-system")
+        XCTAssertEqual(AppearanceSlider.asset(for: .dark), "theme-dark")
+    }
+}

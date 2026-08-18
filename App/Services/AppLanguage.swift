@@ -2,9 +2,11 @@ import Foundation
 
 /// The languages the app ships.
 ///
-/// English is the development language and the fallback for any key Hindi does not define.
+/// English is the development language and the fallback for any key another language does not
+/// define. Adding a language means adding one case here and its strings to the catalogue —
+/// nothing else in the app keeps a second list.
 enum AppLanguage: String, CaseIterable, Identifiable {
-    /// Follow macOS, falling back to English when the system language is neither supported one.
+    /// Follow macOS, falling back to English when the system language is not a supported one.
     case systemDefault = "System Default"
     case english = "English"
     case hindi = "Hindi"
@@ -20,13 +22,36 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Name shown in its own language, which is what users scanning a language list expect.
+    /// The language's name in English.
+    var englishName: String {
+        switch self {
+        case .systemDefault: return "System Default"
+        case .english: return "English"
+        case .hindi: return "Hindi"
+        }
+    }
+
+    /// The language's name written in its own script.
     var nativeName: String {
         switch self {
         case .systemDefault: return "System Default"
         case .english: return "English"
         case .hindi: return "हिन्दी"
         }
+    }
+
+    /// How the language reads in a picker: **English name — native name**.
+    ///
+    /// Both halves earn their place. Someone who reads the interface in English needs to find
+    /// "Hindi"; someone who reads Hindi scans for "हिन्दी" and may not recognise the English word
+    /// at all. Showing one without the other excludes exactly the person the entry is for.
+    ///
+    /// System Default is the one exception: it names a behaviour rather than a language, so
+    /// repeating it either side of a dash would be noise.
+    var pickerLabel: String {
+        guard self != .systemDefault else { return englishName }
+        guard englishName != nativeName else { return englishName }
+        return "\(englishName) — \(nativeName)"
     }
 
     /// An unrecognised stored value falls back to System Default rather than breaking, so an
