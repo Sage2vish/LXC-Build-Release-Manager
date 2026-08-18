@@ -37,6 +37,10 @@ Each has its own plan. Nothing about a tab's behaviour belongs in this file.
 - [x] Tinted subtitle bars under both section titles, matching between Available Build Scripts and Live Output.
 - [x] Applied the shared `SectionCard` to the remaining tabs' sections, so History, Overview and
       Settings match Build rather than each inventing their own surface.
+- [x] Centre spacing cut by 60% — 24pt of horizontal padding to 10, 12pt vertical to 5, and the
+      Build tab's split gap from 6pt to 2. The cards were floating in a moat while the scripts
+      table inside them was running out of room for its own columns. All three are named defaults
+      in `LayoutMetrics`.
 - [ ] Verify the card surface in dark mode; it has only been checked in light.
 - [ ] The container's minimum width is the main contributor to the window's 1513pt floor.
       Decide what the container should drop or reflow at narrow widths.

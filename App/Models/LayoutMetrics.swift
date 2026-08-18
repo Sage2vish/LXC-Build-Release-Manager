@@ -94,7 +94,28 @@ enum LayoutMetrics {
     /// The width of one stop on the appearance slider.
     static let appearanceStopWidth: CGFloat = 34
 
-    /// The corner radius applied to a card's **label only** — its top-left and top-right. The
-    /// panel below the label is square on all four corners.
-    static let inspectorLabelCornerRadius: CGFloat = 8
+    /// The corner radius of a Detail View card. Each section is a rounded box, and its label
+    /// carries the same radius across its top so the tint reaches the corner rather than leaving
+    /// two square shoulders inside a rounded box.
+    static let inspectorCardCornerRadius: CGFloat = 10
+
+    /// The gap between cards, and between the cards and the panel edge. Rounded boxes need it:
+    /// butted against each other they stop reading as separate sections.
+    static let inspectorCardGap: CGFloat = 10
+
+    // MARK: Centre column spacing
+
+    /// Space either side of the centre column's cards — between them and the left sidebar, and
+    /// between them and the Detail View panel.
+    ///
+    /// Reduced by 60% from the original 24pt: the cards were floating in a moat while the table
+    /// inside them was running out of room for its own columns.
+    static let centreHorizontalPadding: CGFloat = 10
+
+    /// Space above and below the centre column's cards. 60% off the original 12pt.
+    static let centreVerticalPadding: CGFloat = 5
+
+    /// The gap either side of the Build tab's draggable divider. 60% off the original 6pt, which
+    /// keeps the divider grabbable without pushing the two cards apart.
+    static let centreSplitGap: CGFloat = 2
 }

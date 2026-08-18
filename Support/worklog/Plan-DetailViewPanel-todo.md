@@ -44,10 +44,13 @@ as three unrelated widgets rather than one panel.
 - [x] Selected Script and Build Parameters moved their titles into the ribbon; Build Parameters'
       spinner and Build History's "View All" became ribbon accessories rather than title-row
       improvisations.
-- [x] **The label is a tab, and only the label is rounded**: its top-left and top-right corners
-      curve, its bottom-left and bottom-right are hard square. The panel underneath it is square
-      on all four corners — a box with a tab on it. First attempt rounded the card as well, which
-      rounded the panel; corrected.
+- [x] **Each section is a rounded box.** Tried square-with-a-tab first, at your direction, and
+      seeing it settled the question: the sections read better as rounded boxes. The label keeps
+      its square bottom edge — it is a header band across the top of the box, not a floating tab —
+      but its top corners follow the box's radius so the tint reaches the corner instead of
+      leaving two square shoulders inside a rounded card.
+- [x] Cards are separated by a gap and sit inside a margin. Rounded boxes butted together read as
+      one shape with lines drawn across it; the radius and the gap are both named defaults.
 - [x] The detail line — a script filename, a run count — sits **inside the box**, not in the
       label. The label names the section and nothing else; a filename in it made the label two
       things at once.

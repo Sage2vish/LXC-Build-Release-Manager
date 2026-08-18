@@ -22,19 +22,23 @@ struct InspectorCard<Content: View, Accessory: View>: View {
     @ViewBuilder var accessory: () -> Accessory
     @ViewBuilder var content: () -> Content
 
-    /// The rounding belongs to the **label only**.
+    /// Every section is a **rounded box**.
     ///
-    /// The label is a tab: rounded at its top-left and top-right, hard square at its bottom-left
-    /// and bottom-right. The panel underneath it is square on all four corners — it is a box, and
-    /// the tab sits on top of it.
-    private let labelCornerRadius = LayoutMetrics.inspectorLabelCornerRadius
+    /// The label keeps its square bottom edge — it is a header band across the top of the box, not
+    /// a floating tab — but its top corners follow the box's radius so the tint reaches the corner
+    /// instead of leaving two square shoulders inside a rounded card.
+    private let cornerRadius = LayoutMetrics.inspectorCardCornerRadius
+
+    private var cardShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: cornerRadius)
+    }
 
     private var labelShape: UnevenRoundedRectangle {
         UnevenRoundedRectangle(
-            topLeadingRadius: labelCornerRadius,
+            topLeadingRadius: cornerRadius,
             bottomLeadingRadius: 0,
             bottomTrailingRadius: 0,
-            topTrailingRadius: labelCornerRadius
+            topTrailingRadius: cornerRadius
         )
     }
 
@@ -55,8 +59,9 @@ struct InspectorCard<Content: View, Accessory: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
         }
-        .background(Color.inspectorCardSurface, in: Rectangle())
-        .overlay(Rectangle().stroke(Color.sectionBorder, lineWidth: 1))
+        .background(Color.inspectorCardSurface, in: cardShape)
+        .overlay(cardShape.stroke(Color.sectionBorder, lineWidth: 1))
+        .clipShape(cardShape)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(Text(title))
     }

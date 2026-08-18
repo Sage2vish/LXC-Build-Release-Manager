@@ -29,6 +29,9 @@ six tabs the container shows.
 
 - [x] Give the toolbar band the same translucent material as the header — they are now one band.
 - [x] Respect the **Reduce transparency** preference.
+- [x] The band now has a bottom edge. There was no rule under the tab picker at all, so the
+      chrome bled straight into the work area and the tabs looked like they were floating on the
+      content rather than sitting in a band above it.
 - [ ] Keep the selected segment clearly readable over the material.
 - [ ] Verify in light and dark, and at the minimum panel width where six segments are tightest.
 

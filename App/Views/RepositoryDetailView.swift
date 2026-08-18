@@ -96,6 +96,12 @@ struct RepositoryDetailView: View {
                 .pickerStyle(.segmented)
                 .labelsHidden()
                 .padding([.horizontal, .bottom])
+
+                // The rule that closes the chrome band. Without it the tabs bled straight into
+                // the work area and the band had no bottom edge at all.
+                Rectangle()
+                    .fill(Color.sectionBorder)
+                    .frame(height: 1)
             }
             .background {
                 if preferencesStore.preferences.reduceTransparency {
@@ -126,8 +132,8 @@ struct RepositoryDetailView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if selectedTab == .build {
                 buildTab
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
+                    .padding(.horizontal, LayoutMetrics.centreHorizontalPadding)
+                    .padding(.vertical, LayoutMetrics.centreVerticalPadding)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
@@ -141,7 +147,8 @@ struct RepositoryDetailView: View {
                         case .docs: EmptyView()
                         }
                     }
-                    .padding(24)
+                    .padding(.horizontal, LayoutMetrics.centreHorizontalPadding)
+                    .padding(.vertical, LayoutMetrics.centreVerticalPadding)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
@@ -202,10 +209,9 @@ struct RepositoryDetailView: View {
                 Color.inspectorPanelSurface
 
                 ScrollView {
-                    // No spacing and no padding: the cards butt against each other and against
-                    // the column edges, so the panel reads as one column divided into sections
-                    // rather than as floating tiles.
-                    VStack(alignment: .leading, spacing: 0) {
+                    // Each section is its own rounded box, so it needs a gap around it. Butted
+                    // together, rounded boxes read as one shape with lines drawn across it.
+                    VStack(alignment: .leading, spacing: LayoutMetrics.inspectorCardGap) {
                         // Parameters and the selected script's full path moved here from the
                         // centre column, so the Detail View Window carries the detail.
                         if case .success(let scripts) = scanResult,
@@ -217,6 +223,7 @@ struct RepositoryDetailView: View {
                         buildHistoryCard
                         quickActionsCard
                     }
+                    .padding(LayoutMetrics.inspectorCardGap)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .scrollContentBackground(.hidden)
@@ -484,10 +491,10 @@ struct RepositoryDetailView: View {
                     // meant the output pane was clipped rather than compressed as soon as the
                     // window got short.
                     .frame(minHeight: 110)
-                    .padding(.bottom, 6)
+                    .padding(.bottom, LayoutMetrics.centreSplitGap)
                 buildOutputPanel
                     .frame(minHeight: 120)
-                    .padding(.top, 6)
+                    .padding(.top, LayoutMetrics.centreSplitGap)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .missingBuildFolder:
