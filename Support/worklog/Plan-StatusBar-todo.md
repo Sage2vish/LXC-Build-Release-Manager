@@ -38,12 +38,16 @@ checklist and worklog.
 
 ## 01. Known gaps
 
-- [ ] Branch shows `—` for GitHub-sourced repositories, because there is no local `.git` to read.
-      Decide whether to fetch the default branch or keep it blank and say why.
-- [ ] Detached HEAD shows a short SHA rather than a branch name. Decide whether that is correct
-      or should read "detached".
-- [ ] The branch is read once and never refreshed, so switching branches outside the app leaves
-      the chip stale until the repository is reselected.
+- [x] **Decided: keep it blank, and say why.** A GitHub-sourced repository has no checkout, so
+      there is no `.git/HEAD`; fetching a default branch over the network would put a number in
+      the chip that does not describe anything on this machine. The chip now carries a tooltip
+      explaining the gap and what to do about it — add the repository as a local folder.
+- [x] **Detached HEAD reads `detached @ 1a2b3c4`** — the word first, so it is legible as a state
+      rather than as a strangely-named branch, and the short SHA after it, because that is the only
+      thing identifying where you are. The tooltip says what detached means.
+- [x] Re-reads `.git/HEAD` when the window becomes active again, and on click. Branches change
+      in a terminal while the app sits open, so the chip has to catch up at the moment attention
+      returns to the window — without polling the file on a timer.
 - [ ] Platform is hard-coded to macOS and carries no real information yet.
 
 ## 02. Possible additions
@@ -68,6 +72,6 @@ Not committed to — listed so the ideas are not lost.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 9 / 9 | Done |
-| 01 — Known gaps | 0 / 4 | Open |
+| 01 — Known gaps | 3 / 4 | Platform chip still cosmetic |
 | 02 — Possible additions | 0 / 4 | Not committed |
-| **Total** | **9 / 17** | **In progress** |
+| **Total** | **12 / 17** | **In progress** |
