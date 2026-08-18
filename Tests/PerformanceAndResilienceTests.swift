@@ -599,3 +599,108 @@ final class UpdateAndLanguageTests: XCTestCase {
 // TODO: Review for any preferences wired in UI but not covered by tests; add test coverage as new preferences are implemented.
 // TODO: Add characterization or integration tests for RepositoryDetailView split (per refactoring plan).
 
+
+// MARK: - Update check failure paths
+
+/// Canned responses for the update checker, so the failure paths can be tested without a network.
+///
+/// `URLProtocol` is the seam Foundation already provides: registering one on an ephemeral
+/// configuration intercepts the request inside `URLSession` itself, which means the code under
+/// test is the real code, unchanged.
+final class StubURLProtocol: URLProtocol {
+    nonisolated(unsafe) static var response: (Int, Data)?
+    nonisolated(unsafe) static var failure: Error?
+
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+    override func startLoading() {
+        if let failure = Self.failure {
+            client?.urlProtocol(self, didFailWithError: failure)
+            return
+        }
+        guard let (status, data) = Self.response else {
+            client?.urlProtocolDidFinishLoading(self)
+            return
+        }
+        let response = HTTPURLResponse(
+            url: request.url!,
+            statusCode: status,
+            httpVersion: "HTTP/1.1",
+            headerFields: status == 403 ? ["X-RateLimit-Remaining": "0", "X-RateLimit-Limit": "60"] : [:]
+        )!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: data)
+        client?.urlProtocolDidFinishLoading(self)
+    }
+
+    override func stopLoading() {}
+
+    static func session() -> URLSession {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [StubURLProtocol.self]
+        return URLSession(configuration: configuration)
+    }
+
+    static func reset() {
+        response = nil
+        failure = nil
+    }
+}
+
+final class UpdateCheckFailureTests: XCTestCase {
+    override func tearDown() {
+        StubURLProtocol.reset()
+        super.tearDown()
+    }
+
+    private var preferences: Preferences {
+        var value = Preferences()
+        value.gitHubRateLimitAlertThreshold = "Warn me at 20%"
+        return value
+    }
+
+    private func assertFailed(_ result: UpdateChecker.Result, containing fragment: String) {
+        guard case .failed(let reason) = result else {
+            return XCTFail("Expected a failure, got \(result). Reporting 'up to date' when the check never succeeded is the bug this guards.")
+        }
+        XCTAssertTrue(
+            reason.localizedCaseInsensitiveContains(fragment),
+            "Failure reason '\(reason)' does not mention '\(fragment)'"
+        )
+    }
+
+    func testRateLimitedResponseReportsFailureRatherThanUpToDate() async {
+        StubURLProtocol.response = (403, Data("[]".utf8))
+        let result = await UpdateChecker.check(preferences: preferences, session: StubURLProtocol.session())
+        assertFailed(result, containing: "rate limit")
+    }
+
+    func testServerErrorReportsTheStatusCode() async {
+        StubURLProtocol.response = (500, Data("[]".utf8))
+        let result = await UpdateChecker.check(preferences: preferences, session: StubURLProtocol.session())
+        assertFailed(result, containing: "500")
+    }
+
+    func testUnreachableNetworkReportsFailure() async {
+        StubURLProtocol.failure = URLError(.notConnectedToInternet)
+        let result = await UpdateChecker.check(preferences: preferences, session: StubURLProtocol.session())
+        assertFailed(result, containing: "could not reach")
+    }
+
+    func testMalformedFeedReportsFailure() async {
+        StubURLProtocol.response = (200, Data("{ not json }".utf8))
+        let result = await UpdateChecker.check(preferences: preferences, session: StubURLProtocol.session())
+        assertFailed(result, containing: "could not reach")
+    }
+
+    func testEmptyFeedReportsUpToDateRatherThanFailing() async {
+        // An empty releases feed is the honest current state of this project, and it must not
+        // read as an error.
+        StubURLProtocol.response = (200, Data("[]".utf8))
+        let result = await UpdateChecker.check(preferences: preferences, session: StubURLProtocol.session())
+        if case .failed(let reason) = result {
+            XCTFail("An empty feed should report up to date, not '\(reason)'")
+        }
+    }
+}

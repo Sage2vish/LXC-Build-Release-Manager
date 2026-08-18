@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**651 of 819 items done — 168 still pending (79%).**
+**652 of 819 items done — 167 still pending (80%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
 | The window, by region | 72 | 36 | In progress |
 | Inside the main panel | 23 | 11 | In progress |
 | The six tabs, inside the container | 267 | 14 | In progress |
-| Features | 186 | 41 | In progress |
+| Features | 187 | 40 | In progress |
 | Engineering, quality, and release | 103 | 66 | In progress |
-| **All areas** | **651** | **168** | **In progress** |
+| **All areas** | **652** | **167** | **In progress** |
 
 ## The plans, by area
 
@@ -79,10 +79,10 @@ Product behaviour that spans regions rather than living in one of them.
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
 | [Plan-PreferenceScreen-todo](Plan-PreferenceScreen-todo.md) | Preferences window — seven tabs, every field, and the wiring audit | 55 | 36 | In progress |
-| [Plan-Updates-todo](Plan-Updates-todo.md) | Update checking — GitHub Releases feed, version comparison, channels | 22 | 1 | In progress |
+| [Plan-Updates-todo](Plan-Updates-todo.md) | Update checking — GitHub Releases feed, version comparison, channels | 23 | 0 | Done ✅ |
 | [Plan-Localization-todo](Plan-Localization-todo.md) | Localization — English and Hindi, the string catalogue, switching | 19 | 4 | In progress |
 | [Plan-WindowLayout-todo](Plan-WindowLayout-todo.md) | Window layout — resizing, the View menu, panel visibility | 90 | 0 | Done ✅ |
-| **Features — subtotal** | | **186** | **41** | **In progress** |
+| **Features — subtotal** | | **187** | **40** | **In progress** |
 
 ### Engineering, quality, and release
 

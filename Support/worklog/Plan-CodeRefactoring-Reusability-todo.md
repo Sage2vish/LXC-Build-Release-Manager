@@ -136,7 +136,9 @@ section 04 below, which is where the remaining work is tracked.
 
 - [ ] Define the production composition root and name the dependency container, without changing runtime behavior.
 - [ ] Decide which boundaries need protocols and which can use injected concrete types; do not protocolize every model.
-- [ ] Inject `FileManager`, `URLSession` or a GitHub client seam, process creation, notification delivery, pasteboard, workspace opening, save panels, and clock/date behavior where tests need control.
+- [ ] Inject `FileManager`, process creation, notification delivery, pasteboard, workspace opening, save panels, and clock/date behavior
+      where tests need control. *(The network seam is done: `UpdateChecker` takes a `URLSession`,
+      and `URLProtocol` stubbing covers its failure paths without a fake client.)*
 - [ ] Keep `@MainActor` ownership explicit for observable UI stores and build lifecycle state.
 - [ ] Add characterization tests for current persistence, scanner, command, logging, cancellation, and runner behavior before moving implementation.
 - [ ] Define migration rules for existing JSON files before changing any `Codable` model or preference representation.

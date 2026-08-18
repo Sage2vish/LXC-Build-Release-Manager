@@ -65,7 +65,12 @@ and the rate-limit handling added in the preferences pass.
 - [x] Unparseable versions never report an update.
 - [x] Channel filtering picks the right release from a mixed stable/prerelease/draft feed.
 - [x] Equal versions report up to date, not an update.
-- [ ] A rate-limited or failed response reports a failure rather than a false "up to date". **Not covered: needs a `URLSession` stub, which is the injected-transport seam the refactor plan's section 02 has not reached yet.**
+- [x] A rate-limited or failed response reports a failure rather than a false "up to date".
+      Covered five ways — 403 with an exhausted quota, a 500, an unreachable network, a malformed
+      feed, and an empty feed that must still read as "up to date" rather than as an error.
+      **The seam turned out not to need the refactor plan:** `URLProtocol` on an ephemeral
+      configuration intercepts the request inside `URLSession` itself, so the code under test is
+      the real code, unchanged, and `check(preferences:session:)` already accepted a session.
 
 ## Tracking
 
@@ -74,8 +79,8 @@ and the rate-limit handling added in the preferences pass.
 | 01 — Version comparison | 5 / 5 | Done |
 | 02 — Release feed | 7 / 7 | Done |
 | 03 — Preference wiring | 6 / 6 | Done |
-| 04 — Tests | 4 / 5 | Done (network failure path untested) |
-| **Total** | **22 / 23** | **Shipped** |
+| 04 — Tests | 5 / 5 | Done |
+| **Total** | **23 / 23** | **Shipped ✅** |
 
 ## Release flow
 
