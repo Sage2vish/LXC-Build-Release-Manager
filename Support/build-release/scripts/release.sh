@@ -22,6 +22,7 @@ APP_NAME="LXC-Build-Release-Manager"
 APP_PATH="$DERIVED_DATA_DIR/Build/Products/Release/$APP_NAME.app"
 STAGING_DIR="$BUILD_RELEASE_DIR/version/staging"
 DMG_BACKGROUND="$BUILD_RELEASE_DIR/../context/concepts-designs/Back-Images/ui-back-main.png"
+DMG_VOLUME_ICON="$APP_PATH/Contents/Resources/AppIcon.icns"
 DMG_README="$BUILD_RELEASE_DIR/version/DMG-README.txt"
 
 PUBLISH=false
@@ -67,6 +68,10 @@ cp -R "$APP_PATH" "$STAGING_DIR/"
 if [ -f "$DMG_BACKGROUND" ]; then
   mkdir -p "$STAGING_DIR/.background"
   cp "$DMG_BACKGROUND" "$STAGING_DIR/.background/background.png"
+fi
+if [ -f "$DMG_VOLUME_ICON" ]; then
+  cp "$DMG_VOLUME_ICON" "$STAGING_DIR/.VolumeIcon.icns"
+  SetFile -a V "$STAGING_DIR/.VolumeIcon.icns" >/dev/null 2>&1 || true
 fi
 ln -s /Applications "$STAGING_DIR/Applications"
 cat > "$DMG_README" <<'EOF'
@@ -144,6 +149,10 @@ with DSStore.open(str(store_path), "w+", entries):
     pass
 PY
 sync
+if [ -f "$MOUNT_POINT/.VolumeIcon.icns" ]; then
+  SetFile -a C "$MOUNT_POINT" >/dev/null 2>&1 || true
+  SetFile -a V "$MOUNT_POINT/.VolumeIcon.icns" >/dev/null 2>&1 || true
+fi
 bless --folder "$MOUNT_POINT" --openfolder "$MOUNT_POINT" >/dev/null 2>&1 || true
 hdiutil detach "$MOUNT_POINT" >/dev/null
 trap - EXIT
