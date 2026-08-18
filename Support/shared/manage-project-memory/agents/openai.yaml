@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lexvora Project Management"
+  short_description: "Run Lexvora's repository-native project system"
+  default_prompt: "Use $manage-project-memory to bootstrap, operate, or audit this repository with the Lexvora Consulting Project Management System."

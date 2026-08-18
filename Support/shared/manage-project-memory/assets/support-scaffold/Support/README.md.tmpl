@@ -1,0 +1,35 @@
+# {{PROJECT_NAME}} Support
+
+This repository uses the **Lexvora Consulting Project Management System** to keep intent,
+decisions, delivery, and evidence beside the code.
+
+## Reading order
+
+1. [`context/rules.md`](context/rules.md)
+2. [`context/architecture.md`](context/architecture.md)
+3. [`context/requirements.md`](context/requirements.md)
+4. [`context/current-context.md`](context/current-context.md)
+5. [`context/decisions/`](context/decisions/)
+6. [`research/README.md`](research/README.md)
+7. [`worklog/Project-Plan.md`](worklog/Project-Plan.md)
+8. [`worklog/Verification.md`](worklog/Verification.md)
+
+## Areas
+
+| Area | Answers | Entry point |
+| --- | --- | --- |
+| Context | What is true, required, and decided? | [`context/README.md`](context/README.md) |
+| Research | What are we considering? | [`research/README.md`](research/README.md) |
+| Worklog | What is committed and what remains? | [`worklog/README.md`](worklog/README.md) |
+| Shared | Which conventions cross project areas? | [`shared/README.md`](shared/README.md) |
+
+## Maintenance
+
+Run the installed skill helper from the skill directory:
+
+```sh
+python3 scripts/project_memory.py sync --root <repository>
+python3 scripts/project_memory.py audit --root <repository>
+```
+
+Use repository-specific generators instead when this project records one.
