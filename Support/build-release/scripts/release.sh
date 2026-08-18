@@ -107,36 +107,42 @@ trap cleanup EXIT
 
 echo "Configuring Finder presentation for $TMP_DMG_PATH"
 hdiutil attach "$TMP_DMG_PATH" -mountpoint "$MOUNT_POINT" -nobrowse >/dev/null
-BACKGROUND_FILE="$MOUNT_POINT/.background/background.png"
-cat <<EOF | osascript
-tell application "Finder"
-  try
-    tell disk "$APP_NAME"
-      open
-      delay 1
-      set current view of container window to icon view
-      set toolbar visible of container window to false
-      set statusbar visible of container window to false
-      set bounds of container window to {120, 120, 1080, 760}
-      set icon size of icon view options of container window to 144
-      set arrangement of icon view options of container window to not arranged
-      set background picture of icon view options of container window to file ".background:background.png"
-      try
-        set position of item "$APP_NAME.app" of container window to {220, 250}
-      end try
-      try
-        set position of item "Applications" of container window to {700, 250}
-      end try
-      try
-        set position of item "DMG-README.txt" of container window to {460, 530}
-      end try
-      update without registering applications
-      delay 1
-      close container window
-    end tell
-  end try
-end tell
-EOF
+python3 - "$MOUNT_POINT" "$APP_NAME" <<'PY'
+from pathlib import Path
+import sys
+
+from ds_store import DSStore, DSStoreEntry
+from ds_store.store import ILocCodec, PlistCodec
+from mac_alias import Alias
+
+mount_point = Path(sys.argv[1])
+app_name = sys.argv[2]
+store_path = mount_point / ".DS_Store"
+background = mount_point / ".background" / "background.png"
+
+entries = [
+    DSStoreEntry(
+        ".",
+        "icvp",
+        PlistCodec,
+        {
+            "backgroundType": 2,
+            "backgroundImageAlias": Alias.for_file(str(background)).to_bytes(),
+            "iconSize": 144,
+            "textSize": 12,
+            "showIconPreview": False,
+            "arrangeBy": "none",
+            "viewOptionsVersion": 1,
+        },
+    ),
+    DSStoreEntry(f"{app_name}.app", "Iloc", ILocCodec, (220, 250)),
+    DSStoreEntry("Applications", "Iloc", ILocCodec, (700, 250)),
+    DSStoreEntry("DMG-README.txt", "Iloc", ILocCodec, (460, 530)),
+]
+
+with DSStore.open(str(store_path), "w+", entries):
+    pass
+PY
 sync
 bless --folder "$MOUNT_POINT" --openfolder "$MOUNT_POINT" >/dev/null 2>&1 || true
 hdiutil detach "$MOUNT_POINT" >/dev/null
