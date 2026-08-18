@@ -84,7 +84,7 @@ struct RepositoryOverviewView<StatusBadge: View>: View {
         }
     }
 
-    private func statCard(title: String, value: String) -> some View {
+    private func statCard(title: LocalizedStringKey, value: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title).font(.caption).foregroundStyle(.secondary)
             Text(value).font(.title2.weight(.semibold))
@@ -93,6 +93,6 @@ struct RepositoryOverviewView<StatusBadge: View>: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.quaternary.opacity(0.3), in: RoundedRectangle(cornerRadius: 8))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(title): \(value)")
+        .accessibilityLabel(Text(title) + Text(verbatim: ": \(value)"))
     }
 }

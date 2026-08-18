@@ -11,7 +11,7 @@ import SwiftUI
 /// a glance and every card separates the same way. The ribbon is tinted rather than plain, because
 /// the panel sits on a translucent material where a border alone does not hold the eye.
 struct InspectorCard<Content: View, Accessory: View>: View {
-    let title: String
+    let title: LocalizedStringKey
     /// A detail about what the card is showing — a script filename, a count.
     ///
     /// Rendered as the first line **inside** the box rather than in the ribbon. The ribbon names
@@ -58,7 +58,7 @@ struct InspectorCard<Content: View, Accessory: View>: View {
         .background(Color.inspectorCardSurface, in: Rectangle())
         .overlay(Rectangle().stroke(Color.sectionBorder, lineWidth: 1))
         .accessibilityElement(children: .contain)
-        .accessibilityLabel(title)
+        .accessibilityLabel(Text(title))
     }
 
     private var ribbon: some View {
@@ -85,7 +85,7 @@ struct InspectorCard<Content: View, Accessory: View>: View {
 
 extension InspectorCard where Accessory == EmptyView {
     init(
-        title: String,
+        title: LocalizedStringKey,
         subtitle: String? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) {

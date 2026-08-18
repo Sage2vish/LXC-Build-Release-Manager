@@ -103,7 +103,7 @@ struct LogPane: View {
                     Button(role: .destructive) { onStop() } label: {
                         Label("Stop", systemImage: "stop.fill")
                     }
-                    .accessibilityLabel("Stop build")
+                    .accessibilityLabel("Stop Build")
                     .accessibilityHint("Stops the active build process.")
                     .disabled(!isRunning)
                 }

@@ -35,6 +35,22 @@ settings screen must say so rather than appearing to do nothing.
 
 ## Work plan
 
+## 06. Coverage — the batch pass of 2026-08-18
+
+- [x] Catalogue grown from 133 keys to 231: 98 strings the app shows had never reached it.
+- [x] **Every translatable key now has Hindi** — 86 were missing, including whole sentences.
+- [x] Technical values marked `shouldTranslate: false` rather than left looking unfinished:
+      shell paths, `UTF-8`, timestamp formats, stream markers, system sound names, and the GitHub
+      brand name.
+- [x] `SWIFT_EMIT_LOC_STRINGS` enabled in all six configurations, so new strings are harvested
+      into the catalogue at build time instead of silently falling behind the code.
+- [x] Three tests guard the two ways this fails quietly: a translatable key with no Hindi, a
+      "translation" identical to the English, and a technical token that lost its flag.
+- [x] Two pairs of near-duplicate strings unified — one action should not have two spellings.
+      "Stop build"/"Stop Build", "Remove from list"/"Remove from List", and the two reset buttons
+      now say what they actually do: "Restore Defaults" for the draft, "Restore All Defaults" for
+      everything.
+
 ## Work Plan
 
 ### 01. Resources
@@ -73,9 +89,14 @@ settings screen must say so rather than appearing to do nothing.
 Added 2026-08-18. The language control moving into the top band changes how often the switch is
 exercised: from "once, in Preferences" to "whenever someone feels like it".
 
-- [ ] Confirm a live switch fully re-renders every visible surface, and name the ones that do not.
-- [ ] Expose the shipped localizations as data — the picker reads them, rather than a second
-      hardcoded list drifting from the string catalogue.
+- [x] **Found the reason a switch changed so little.** Every Preferences row helper took `String`
+      and passed it to `Text`, which uses the verbatim overload — so the entire Preferences window
+      could never localize whatever the catalogue said. Same for the inspector card titles, the
+      stat card titles and the status bar chip labels. All now take `LocalizedStringKey`.
+- [ ] Confirm a live switch re-renders every visible surface in the running app, and name the ones
+      that do not.
+- [x] The picker reads `AppLanguage`, which is also what the settings screen and the language
+      controller read; there is no second list to drift.
 - [ ] Verify Hindi at the narrow panel width, where longer strings meet the tightest layout.
 - [ ] Decide what happens to an in-flight build's already-emitted output on a language switch;
       log lines are the program's own words, not the app's, and should almost certainly not change.
@@ -88,7 +109,7 @@ exercised: from "once, in Preferences" to "whenever someone feels like it".
 | 02 — Language selection | 5 / 5 | Done |
 | 03 — Strings | 6 / 6 | Done (see scope note) |
 | 04 — Tests | 4 / 4 | Done |
-| 05 — Header picker | 0 / 4 | Open |
+| 05 — Header picker | 2 / 4 | In progress |
 | **Total** | **19 / 23** | **In progress** |
 
 ## Scope note on strings

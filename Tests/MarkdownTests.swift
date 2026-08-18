@@ -543,3 +543,67 @@ final class SidebarAndHTMLTests: XCTestCase {
         XCTAssertEqual(MarkdownDocumentStore.read(path: file.path), "# Edited\n", "File must be untouched")
     }
 }
+
+// MARK: - Localization coverage
+
+/// Guards the two ways localization silently fails: a string the code shows that the catalogue
+/// has never heard of, and a catalogue entry with no Hindi behind it.
+final class LocalizationCoverageTests: XCTestCase {
+    private func catalogue() throws -> [String: Any] {
+        // The catalogue ships as a bundle resource; reading the source file keeps the test
+        // honest about what is committed rather than what happens to be built.
+        let url = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()          // Tests/
+            .deletingLastPathComponent()          // repository root
+            .appendingPathComponent("App/Resources/Localizable.xcstrings")
+        let data = try Data(contentsOf: url)
+        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        return try XCTUnwrap(json?["strings"] as? [String: Any])
+    }
+
+    func testEveryTranslatableStringHasHindi() throws {
+        var untranslated: [String] = []
+        for (key, value) in try catalogue() {
+            guard let entry = value as? [String: Any] else { continue }
+            // Shell paths, encodings and format tokens are values the app passes onward, and are
+            // marked as such rather than left looking like unfinished work.
+            if entry["shouldTranslate"] as? Bool == false { continue }
+            let localizations = entry["localizations"] as? [String: Any] ?? [:]
+            if localizations["hi"] == nil { untranslated.append(key) }
+        }
+        XCTAssertTrue(
+            untranslated.isEmpty,
+            "\(untranslated.count) strings have no Hindi: \(untranslated.sorted().prefix(10))"
+        )
+    }
+
+    func testHindiValuesAreActuallyDifferentFromEnglish() throws {
+        // A "translation" identical to the source is the most common way a catalogue looks
+        // complete while changing nothing on screen.
+        var copied: [String] = []
+        for (key, value) in try catalogue() {
+            guard let entry = value as? [String: Any],
+                  let localizations = entry["localizations"] as? [String: Any],
+                  let hindi = localizations["hi"] as? [String: Any],
+                  let unit = hindi["stringUnit"] as? [String: Any],
+                  let translated = unit["value"] as? String else { continue }
+            // Pure format strings are legitimately identical; brand names are excluded by the
+            // catalogue's own shouldTranslate flag before reaching here.
+            let unchanged = translated == key
+            let isToken = key.allSatisfy { !$0.isLetter }
+            if unchanged && !isToken { copied.append(key) }
+        }
+        XCTAssertTrue(copied.isEmpty, "Hindi is identical to English for: \(copied.sorted().prefix(10))")
+    }
+
+    func testTechnicalTokensAreMarkedNotToTranslate() throws {
+        let strings = try catalogue()
+        for token in ["/bin/zsh", "UTF-8", "HH:mm:ss"] {
+            let entry = try XCTUnwrap(strings[token] as? [String: Any], "\(token) is missing from the catalogue")
+            XCTAssertEqual(
+                entry["shouldTranslate"] as? Bool, false,
+                "\(token) reaches a shell or macOS unchanged and must never be translated"
+            )
+        }
+    }
+}

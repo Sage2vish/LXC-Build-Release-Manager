@@ -43,7 +43,7 @@ struct RepositoryRow: View {
                 }
                 .buttonStyle(.borderless)
                 .foregroundStyle(.secondary)
-                .help("Remove from list")
+                .help("Remove from List")
             }
         }
         .padding(.vertical, 4)

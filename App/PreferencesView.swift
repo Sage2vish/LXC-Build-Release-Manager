@@ -175,7 +175,7 @@ struct PreferencesView: View {
                 .labelsHidden()
                 .frame(width: 200)
             }
-            pickerRow("Updates", updateStatusText) {
+            pickerRow("Updates", LocalizedStringKey(updateStatusText)) {
                 Button(isCheckingForUpdates ? "Checking…" : "Check Now") {
                     Task { await checkForUpdatesNow() }
                 }
@@ -441,7 +441,7 @@ struct PreferencesView: View {
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
-                    Button("Restore Defaults…", role: .destructive) {
+                    Button("Restore All Defaults", role: .destructive) {
                         draft = .recommendedDefaults
                     }
                 }
@@ -465,7 +465,7 @@ struct PreferencesView: View {
         NSWorkspace.shared.open(repoRoot)
     }
 
-    private func dataMaintenanceRow(_ title: String, _ subtitle: String, _ buttonTitle: String, action: @escaping () -> Void) -> some View {
+    private func dataMaintenanceRow(_ title: LocalizedStringKey, _ subtitle: LocalizedStringKey, _ buttonTitle: LocalizedStringKey, action: @escaping () -> Void) -> some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -478,7 +478,7 @@ struct PreferencesView: View {
 
     // MARK: Row helpers
 
-    private func tabHeader(_ title: String, _ subtitle: String) -> some View {
+    private func tabHeader(_ title: LocalizedStringKey, _ subtitle: LocalizedStringKey) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title).font(.title2.weight(.semibold))
             Text(subtitle).font(.callout).foregroundStyle(.secondary)
@@ -486,7 +486,7 @@ struct PreferencesView: View {
         .padding(.bottom, 6)
     }
 
-    private func toggleRow(_ title: String, _ subtitle: String, _ isOn: Binding<Bool>) -> some View {
+    private func toggleRow(_ title: LocalizedStringKey, _ subtitle: LocalizedStringKey, _ isOn: Binding<Bool>) -> some View {
         Toggle(isOn: isOn) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -495,14 +495,14 @@ struct PreferencesView: View {
         }
     }
 
-    private func stepperRow(_ title: String, _ subtitle: String, _ value: Binding<Int>, range: ClosedRange<Int>) -> some View {
+    private func stepperRow(_ title: LocalizedStringKey, _ subtitle: LocalizedStringKey, _ value: Binding<Int>, range: ClosedRange<Int>) -> some View {
         pickerRow(title, subtitle) {
             Stepper("\(value.wrappedValue)", value: value, in: range)
                 .frame(width: 100)
         }
     }
 
-    private func textFieldRow(_ title: String, _ subtitle: String, _ text: Binding<String>) -> some View {
+    private func textFieldRow(_ title: LocalizedStringKey, _ subtitle: LocalizedStringKey, _ text: Binding<String>) -> some View {
         pickerRow(title, subtitle) {
             TextField("", text: text)
                 .textFieldStyle(.roundedBorder)
@@ -510,7 +510,7 @@ struct PreferencesView: View {
         }
     }
 
-    private func pickerRow<Content: View>(_ title: String, _ subtitle: String, @ViewBuilder control: () -> Content) -> some View {
+    private func pickerRow<Content: View>(_ title: LocalizedStringKey, _ subtitle: LocalizedStringKey, @ViewBuilder control: () -> Content) -> some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)

@@ -73,11 +73,11 @@ struct StatusBar: View {
         currentBranch = GitBranchReader.currentBranch(for: repository) ?? Self.unknownValue
     }
 
-    private func statusItem(_ label: String, _ value: String, icon: String, tint: Color) -> some View {
+    private func statusItem(_ label: LocalizedStringKey, _ value: String, icon: String, tint: Color) -> some View {
         HStack(spacing: 4) {
             Image(systemName: icon)
                 .foregroundStyle(tint)
-            Text("\(label):")
+            Text(label) + Text(verbatim: ":")
                 .foregroundStyle(.secondary)
             Text(value)
                 .fontWeight(.medium)
