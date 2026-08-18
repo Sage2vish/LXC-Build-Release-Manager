@@ -54,6 +54,25 @@ struct ContentView: View {
             splitView
             if preferencesStore.preferences.showStatusBar {
                 StatusBar(repository: store.selectedRepository, preferences: preferencesStore.preferences)
+                    .background {
+                        if preferencesStore.preferences.reduceTransparency {
+                            Color(nsColor: .windowBackgroundColor)
+                        } else {
+                            ZStack {
+                                Rectangle().fill(.bar)
+                                LinearGradient(
+                                    colors: [
+                                        Color.white.opacity(0.13),
+                                        Color.white.opacity(0.04),
+                                        Color.black.opacity(0.02)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                                .blendMode(.softLight)
+                            }
+                        }
+                    }
             }
         }
         .background(AppBackground(preferences: preferencesStore.preferences))
@@ -123,6 +142,7 @@ struct ContentView: View {
                         preferencesStore.preferences.showRepositorySidebar ? "Hide Sidebar" : "Show Sidebar",
                         systemImage: "sidebar.leading"
                     )
+                    .labelStyle(.iconOnly)
                 }
                 .help(preferencesStore.preferences.showRepositorySidebar
                       ? "Hide the repository sidebar"

@@ -49,6 +49,80 @@ Point LXC Build Release Manager at a repository. It finds the build contract, pr
 
 This is not another CI platform. It is the calm, inspectable room between a repository and the person responsible for shipping it.
 
+## Vertical map
+
+Each vertical in this repository has a specific job. The README keeps that map
+visible so context is easy to recover without hunting through folders.
+
+### Product
+
+The app itself lives in the Xcode project and the `App/` and `Tests/` folders.
+It is a native macOS workspace built to discover repository build scripts, run
+them locally, record evidence, and stage release artifacts deliberately.
+
+### Build and Release
+
+`Support/build-release/` owns the packaging contract, release commands, local
+artifact staging, and the user-facing guide for how to produce a release.
+
+- Open [Support/build-release/README.md](Support/build-release/README.md) for the
+  canonical command set.
+- Open [Support/build-release/USER_GUIDE.md](Support/build-release/USER_GUIDE.md)
+  for the human workflow.
+- Open [Support/build-release/version/README.md](Support/build-release/version/README.md)
+  for the staging contract.
+
+### Context
+
+`Support/context/` is the reasoning layer. It holds the product rules,
+architecture decisions, requirements, and visual reference material used to
+understand the system before changing it.
+
+- Open [Support/context/README.md](Support/context/README.md) for the reading
+  order.
+- Open [Support/context/architecture.md](Support/context/architecture.md) for
+  the current system shape.
+- Open [Support/context/requirements.md](Support/context/requirements.md) for
+  the original requirements input.
+- Open [Support/context/decisions/](Support/context/decisions/) for dated
+  decisions.
+- Open [Support/context/concepts-designs/](Support/context/concepts-designs/)
+  for reference concepts, visual direction, and source material.
+
+### Worklog
+
+`Support/worklog/` is the delivery ledger. It tells you what is planned, what
+has shipped, what still needs verification, and where a new task belongs.
+
+- Open [Support/worklog/README.md](Support/worklog/README.md) for the working
+  rules.
+- Open [Support/worklog/BRM-Plan-todo.md](Support/worklog/BRM-Plan-todo.md) for
+  the master index.
+
+### Research
+
+`Support/research/` is the holding area for unsettled ideas. It is where open
+questions live before they become committed work.
+
+- Open [Support/research/README.md](Support/research/README.md) for the reading
+  file and research rules.
+
+### Shared and Frameworks
+
+`Support/shared/` and `Support/frameworks/` are supporting reference spaces.
+They hold reusable conventions and framework notes that support future work
+without becoming the source of truth for delivery.
+
+## Reading order by vertical
+
+If you are landing here for the first time, use this sequence:
+
+1. Read the Support Handbook.
+2. Read the Context README.
+3. Read the master Worklog index.
+4. Open the relevant plan or decision record.
+5. Review the reference concepts if the task is visual or UX-heavy.
+
 ## Product flow
 
 ```mermaid
@@ -233,7 +307,7 @@ flowchart LR
 | Area | What it owns | Open it |
 | --- | --- | --- |
 | Build and release | Commands, packaging, project mapping, logs guidance, and artifact staging. | [Support/build-release](Support/build-release/README.md) |
-| Context | Requirements, architecture, rules, decisions, and design references for humans and AI tools. | [Support/context](Support/context/README.md) |
+| Context | Requirements, architecture, rules, decisions, and concept references for humans and AI tools. | [Support/context](Support/context/README.md) |
 | Frameworks | System framework inventory and future package or adapter records. | [Support/frameworks](Support/frameworks/README.md) |
 | Shared | Reusable conventions and cross-feature ideas. | [Support/shared](Support/shared/README.md) |
 | Worklog | The plan index, one plan per area, and the verification ledger. | [Support/worklog](Support/worklog/README.md) |

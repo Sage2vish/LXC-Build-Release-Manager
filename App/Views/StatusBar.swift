@@ -28,25 +28,8 @@ struct StatusBar: View {
             .padding(.vertical, 6)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background {
-            if preferences.reduceTransparency {
-                Color(nsColor: .windowBackgroundColor)
-            } else {
-                ZStack {
-                    Rectangle().fill(.bar)
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.18),
-                            Color.white.opacity(0.06),
-                            Color.black.opacity(0.03)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .blendMode(.softLight)
-                }
-            }
-        }
+        .background(.ultraThinMaterial)
+        .clipShape(Rectangle())
     }
 
     private func statusItem(_ label: String, _ value: String, icon: String, tint: Color) -> some View {
