@@ -120,7 +120,7 @@ tell application "Finder"
       set bounds of container window to {120, 120, 1080, 760}
       set icon size of icon view options of container window to 144
       set arrangement of icon view options of container window to not arranged
-      set background picture of icon view options of container window to POSIX file "$BACKGROUND_FILE"
+      set background picture of icon view options of container window to file ".background:background.png"
       try
         set position of item "$APP_NAME.app" of container window to {220, 250}
       end try
@@ -131,11 +131,14 @@ tell application "Finder"
         set position of item "DMG-README.txt" of container window to {460, 530}
       end try
       update without registering applications
+      delay 1
+      close container window
     end tell
   end try
 end tell
 EOF
 sync
+bless --folder "$MOUNT_POINT" --openfolder "$MOUNT_POINT" >/dev/null 2>&1 || true
 hdiutil detach "$MOUNT_POINT" >/dev/null
 trap - EXIT
 rmdir "$MOUNT_POINT" >/dev/null 2>&1 || true
