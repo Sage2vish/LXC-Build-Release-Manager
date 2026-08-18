@@ -10,21 +10,24 @@ struct StatusBar: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
-            statusItem("Repository", repository?.name ?? "—", icon: "folder.fill", tint: .blue)
-            statusItem("Branch", branch, icon: "arrow.triangle.branch", tint: .orange)
-            statusItem("Platform", "macOS", icon: "desktopcomputer", tint: .indigo)
-            statusItem(
-                "Auto-detect",
-                preferences.autoDetectRepositoriesOnStartup ? "Enabled" : "Disabled",
-                icon: preferences.autoDetectRepositoriesOnStartup ? "checkmark.circle.fill" : "pause.circle.fill",
-                tint: preferences.autoDetectRepositoriesOnStartup ? .green : .secondary
-            )
-            Spacer()
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                statusItem("Repository", repository?.name ?? "—", icon: "folder.fill", tint: .blue)
+                statusItem("Branch", branch, icon: "arrow.triangle.branch", tint: .orange)
+                statusItem("Platform", "macOS", icon: "desktopcomputer", tint: .indigo)
+                statusItem(
+                    "Auto-detect",
+                    preferences.autoDetectRepositoriesOnStartup ? "Enabled" : "Disabled",
+                    icon: preferences.autoDetectRepositoriesOnStartup ? "checkmark.circle.fill" : "pause.circle.fill",
+                    tint: preferences.autoDetectRepositoriesOnStartup ? .green : .secondary
+                )
+                Spacer()
+            }
+            .font(.caption)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
         }
-        .font(.caption)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background {
             if preferences.reduceTransparency {
                 Color(nsColor: .windowBackgroundColor)
@@ -44,7 +47,6 @@ struct StatusBar: View {
                 }
             }
         }
-        .overlay(alignment: .top) { Divider() }
     }
 
     private func statusItem(_ label: String, _ value: String, icon: String, tint: Color) -> some View {

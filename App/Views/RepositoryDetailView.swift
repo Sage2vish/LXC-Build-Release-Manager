@@ -106,9 +106,6 @@ struct RepositoryDetailView: View {
                 }
             }
 
-            // One rule, not a box: the tabs read as a header for whatever is below them.
-            Divider()
-
             // Docs manages its own split panes and scrolling, so it sits outside the shared
             // tab ScrollView; nesting them would break its sizing.
             // Docs and Build both manage their own panes and height, so they sit outside the
@@ -155,18 +152,40 @@ struct RepositoryDetailView: View {
                 selectedTab = .history
             }
         }
+        .toolbar {
+            ToolbarItem {
+                Button {
+                    Task { await scan() }
+                } label: {
+                    Label("Rescan", systemImage: "arrow.clockwise")
+                }
+                .disabled(isScanning || runner.isRunning)
+                .keyboardShortcut("r", modifiers: [.command])
+            }
+            ToolbarItem {
+                Button {
+                    showInspector.wrappedValue.toggle()
+                } label: {
+                    Label("Toggle Detail View", systemImage: "sidebar.right")
+                }
+            }
+        }
+        .overlay(alignment: .trailing) {
+            Divider()
+                .opacity(preferencesStore.preferences.reduceTransparency ? 0.75 : 0.9)
+        }
         .inspector(isPresented: showInspector) {
             ZStack(alignment: .top) {
                 if preferencesStore.preferences.reduceTransparency {
-                    Color(nsColor: .windowBackgroundColor)
+                    Color.clear
                 } else {
                     ZStack {
-                        Rectangle().fill(.regularMaterial)
+                        Rectangle().fill(.ultraThinMaterial)
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(0.20),
-                                Color.white.opacity(0.05),
-                                Color.black.opacity(0.02)
+                                Color.white.opacity(0.12),
+                                Color.white.opacity(0.04),
+                                Color.black.opacity(0.01)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -190,15 +209,13 @@ struct RepositoryDetailView: View {
                     }
                     .padding(16)
                 }
+                .scrollContentBackground(.hidden)
             }
             .overlay(alignment: .leading) {
                 Divider()
-                    .opacity(preferencesStore.preferences.reduceTransparency ? 0.7 : 0.95)
+                    .opacity(preferencesStore.preferences.reduceTransparency ? 0.8 : 1)
             }
-            .overlay(alignment: .top) {
-                Divider()
-                    .opacity(preferencesStore.preferences.reduceTransparency ? 1 : 0.55)
-            }
+            .clipShape(Rectangle())
             // Wide enough to host parameter controls and a wrapped command preview.
             // These minimums add straight into the window's own minimum width. Kept low
             // enough that opening the panel cannot pin the window — measured before this
@@ -360,20 +377,6 @@ struct RepositoryDetailView: View {
                     .font(.system(size: 24, weight: .semibold))
                 statusBadge
                 Spacer()
-                Button { Task { await scan() } } label: {
-                    Label("Refresh Scripts", systemImage: "arrow.clockwise")
-                }
-                .accessibilityLabel("Refresh build scripts")
-                .disabled(isScanning || runner.isRunning)
-                Button {
-                    showInspector.wrappedValue.toggle()
-                } label: {
-                    Label(
-                        showInspector.wrappedValue ? "Hide Right Panel" : "Show Right Panel",
-                        systemImage: "sidebar.trailing"
-                    )
-                }
-                .accessibilityLabel(showInspector.wrappedValue ? "Hide right panel" : "Show right panel")
                 Button { revealInFinder() } label: {
                     Label("Reveal in Finder", systemImage: "folder")
                 }
