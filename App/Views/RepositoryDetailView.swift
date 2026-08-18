@@ -725,10 +725,6 @@ struct RepositoryDetailView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Spacer(minLength: 0)
-                    if false {
-                        ProgressView().controlSize(.small)
-                        Text("Starting…").font(.caption).foregroundStyle(.secondary)
-                    }
                     Button { run(script) } label: {
                         Label(runner.isRunning ? "Build Running" : "Run Build", systemImage: "play.fill")
                     }

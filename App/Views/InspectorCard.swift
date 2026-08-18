@@ -12,56 +12,79 @@ import SwiftUI
 /// the panel sits on a translucent material where a border alone does not hold the eye.
 struct InspectorCard<Content: View, Accessory: View>: View {
     let title: String
-    /// Optional second line in the ribbon — a script filename, a count — kept small and secondary
-    /// so the title stays the thing you read first.
+    /// A detail about what the card is showing — a script filename, a count.
+    ///
+    /// Rendered as the first line **inside** the box rather than in the ribbon. The ribbon names
+    /// the section and nothing else; a filename sitting in it made the label two things at once
+    /// and pushed the title off its own line.
     var subtitle: String?
     /// Optional trailing control in the ribbon: a spinner, a "View All" button.
     @ViewBuilder var accessory: () -> Accessory
     @ViewBuilder var content: () -> Content
 
-    /// Square. The panel is a single column of stacked cards, and rounded corners inside a
-    /// square column read as widgets floating in a container rather than as one surface divided
-    /// into sections.
-    private let cornerRadius: CGFloat = 0
+    /// Rounded at the top, square at the bottom.
+    ///
+    /// The ribbon reads as a tab sitting on its content: the curve at the top separates one card
+    /// from the one above it, while the flat base keeps the card sitting squarely on the column
+    /// rather than floating in it.
+    private let topCornerRadius: CGFloat = 8
+
+    private var cardShape: UnevenRoundedRectangle {
+        UnevenRoundedRectangle(
+            topLeadingRadius: topCornerRadius,
+            bottomLeadingRadius: 0,
+            bottomTrailingRadius: 0,
+            topTrailingRadius: topCornerRadius
+        )
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ribbon
             VStack(alignment: .leading, spacing: 8) {
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .textSelection(.enabled)
+                }
                 content()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
         }
-        .background(Color.inspectorCardSurface, in: Rectangle())
-        .overlay(Rectangle().stroke(Color.sectionBorder, lineWidth: 1))
-        .clipShape(Rectangle())
+        .background(Color.inspectorCardSurface, in: cardShape)
+        .overlay(cardShape.stroke(Color.sectionBorder, lineWidth: 1))
+        .clipShape(cardShape)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(title)
     }
 
     private var ribbon: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
-            VStack(alignment: .leading, spacing: 1) {
-                Text(title)
-                    .font(.caption.weight(.semibold))
-                    .textCase(.uppercase)
-                    .kerning(0.4)
-                if let subtitle {
-                    Text(subtitle)
-                        .font(.caption2.monospaced())
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                }
-            }
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .textCase(.uppercase)
+                .kerning(0.4)
             Spacer(minLength: 8)
             accessory()
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.inspectorRibbon)
+        // The ribbon carries the same rounded top as the card, so the tint reaches the corner
+        // instead of leaving two square shoulders above it.
+        .background(
+            UnevenRoundedRectangle(
+                topLeadingRadius: topCornerRadius,
+                bottomLeadingRadius: 0,
+                bottomTrailingRadius: 0,
+                topTrailingRadius: topCornerRadius
+            )
+            .fill(Color.inspectorRibbon)
+        )
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.sectionBorder)

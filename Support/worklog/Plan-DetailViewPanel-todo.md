@@ -44,8 +44,13 @@ as three unrelated widgets rather than one panel.
 - [x] Selected Script and Build Parameters moved their titles into the ribbon; Build Parameters'
       spinner and Build History's "View All" became ribbon accessories rather than title-row
       improvisations.
-- [x] **Square corners**, inside and out. Rounded corners within a square column read as tiles
-      floating in a container; the panel is one surface divided into sections.
+- [x] **The label is a tab**: rounded at its top-left and top-right, square at its bottom-left and
+      bottom-right, so it sits on its content rather than floating above it. The card carries the
+      same shape, so the tint reaches the corner instead of leaving two square shoulders. Every
+      other corner in the panel is square.
+- [x] The detail line — a script filename, a run count — sits **inside the box**, not in the
+      label. The label names the section and nothing else; a filename in it made the label two
+      things at once.
 - [x] **Matte, not glass.** The translucent material pulled the desktop through the one column
       whose job is to be read, and its softLight sheen made the top brighter than the bottom. The
       cards are a bright flat surface on a slightly darker panel, so the seams stay visible.
@@ -103,10 +108,10 @@ even though nothing is explicitly locked.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 7 / 7 | Done |
-| 00 — One column, one card language | 5 / 6 | Needs an accent check |
+| 00 — One column, one card language | 7 / 8 | Needs an accent check |
 | 01 — Window resize bug | 5 / 9 | Improved 1853 → 1513; verification open |
 | 02 — Follow-ups | 0 / 2 | Open |
-| **Total** | **17 / 24** | **In progress** |
+| **Total** | **19 / 26** | **In progress** |
 
 ## Measured result
 
