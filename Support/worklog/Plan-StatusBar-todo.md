@@ -52,21 +52,22 @@ checklist and worklog.
       returns to the window — without polling the file on a timer.
 - [ ] Platform is hard-coded to macOS and carries no real information yet.
 
-## 03. Where the strip stops, and what it is made of
+## 03. Where the strip starts and stops, and what it is made of
 
 The strip used to run the full width of the window as a sibling stacked under everything. That cut
-the right panel short: the panel ended on a shelf instead of running the height of the window the
-way a macOS sidebar does.
+both side columns short: each ended on a shelf instead of running the height of the window the way
+a macOS sidebar does.
 
 - [x] The strip is laid **over** the bottom of the window rather than stacked beneath it.
-- [x] It runs from the window's left edge and **stops at the right panel's leading edge** — the
-      same width the top bar spans above it. The panel runs past it, top to bottom.
-- [x] The panel's live width is measured by the panel and reported up, so a dragged panel keeps
-      the strip's end against it. Whole points only, and never a transient zero: the report
-      changes the shell, the shell rebuilds the panel, and a number that flickers is a layout loop
+- [x] **It belongs to the middle column.** It begins where the sidebar ends and stops at the right
+      panel's leading edge — the same span the bar above it has. Both side columns run past it to
+      the bottom edge of the window, which is how a Mac window's columns behave.
+- [x] With the sidebar hidden it starts at the window's left edge, again like the bar above it.
+- [x] Each side column measures its own live width and reports it up, so dragging either one moves
+      where the strip starts or stops. Whole points only, and never a transient zero: the report
+      changes the shell, the shell rebuilds the column, and a number that flickers is a layout loop
       that pins the CPU and never draws a window.
-- [x] The sidebar and the centre column each reserve the strip's height in their own safe area, so
-      nothing — the sidebar footer least of all — ends up under the glass.
+- [x] Only the centre column reserves the strip's height, in its own safe area.
 - [x] Smudged glass, not flat material: a translucent base, a soft smear of light across it, and a
       lit hairline on the edge that faces the content. Shared with the top bar and the right panel
       through `GlassSurface`, so the window has one glass and not three.
@@ -97,6 +98,6 @@ Not committed to — listed so the ideas are not lost.
 | --- | --- | --- |
 | Already shipped | 9 / 9 | Done |
 | 01 — Known gaps | 3 / 4 | Platform chip still cosmetic |
-| 03 — Where the strip stops | 7 / 7 | Done |
+| 03 — Where the strip starts and stops | 8 / 8 | Done |
 | 02 — Possible additions | 0 / 4 | Not committed |
-| **Total** | **19 / 24** | **In progress** |
+| **Total** | **20 / 25** | **In progress** |

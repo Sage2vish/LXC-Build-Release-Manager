@@ -76,9 +76,6 @@ struct ListBoxRowBackground: View {
     /// border so the two cannot drift apart.
     static let cornerRadius: CGFloat = 8
 
-    /// How far the hairline between rows is inset, so it reads as a rule inside the box rather than
-    /// as the box being cut in half.
-    private static let separatorInset: CGFloat = 10
 
     /// The box's margin from the panel's edges. Applied here rather than by the row, because a
     /// list row's background fills the whole row — insets set on the row move its *content*, not
@@ -95,10 +92,12 @@ struct ListBoxRowBackground: View {
             .overlay { ListBoxBorder(position: position).stroke(Color.sectionBorder, lineWidth: 1) }
             .overlay(alignment: .bottom) {
                 if !position.isLast {
+                    // Border to border. Inset at one end only, the rule stopped short of the left
+                    // side and ran into the right one, which reads as a mistake rather than as a
+                    // margin.
                     Rectangle()
                         .fill(Color.sectionBorder)
                         .frame(height: 1)
-                        .padding(.leading, Self.separatorInset)
                 }
             }
     }

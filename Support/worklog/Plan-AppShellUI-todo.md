@@ -52,8 +52,10 @@ Glass is currently requested per region. Deciding it once here stops three diffe
       strip across the bottom, and the right panel.
 - [x] It honours **Reduce transparency** in one place — inside `GlassSurface` — instead of each
       caller remembering to.
-- [ ] Apply it to the remaining ad-hoc frostings: the sidebar's own background and footer, and the
-      centre column's header band, still build their own material and sheen inline.
+- [x] The sidebar's background and its footer use it now, so the column and the strip above it
+      cannot frost differently.
+- [ ] Apply it to the last ad-hoc frosting: the centre column's header band still builds its own
+      material and sheen inline.
 - [ ] Re-check contrast over the background image, not over a flat colour.
 
 ## 06. The window's chrome bands
@@ -61,8 +63,9 @@ Glass is currently requested per region. Deciding it once here stops three diffe
 macOS draws the toolbar's background across the whole window and gives no way to make it stop at a
 column. That is what kept the right panel from reaching the top of the window.
 
-- [x] The toolbar's own background is hidden; the app paints the band itself (`WindowTopChrome`) —
-      glass over the sidebar and the centre, the panel's glass over the panel.
+- [x] The toolbar's own background is hidden; the app paints the strip itself (`WindowTopChrome`),
+      one segment per column — the sidebar's glass, the bar over the centre, the panel's glass —
+      each carrying its own edge hairline up through the strip.
 - [x] The title bar is made transparent once, from AppKit, when the window first appears. Doing it
       on every pass invalidates the layout from inside the layout it caused: the app spins at 100%
       CPU and never draws a window.
@@ -137,9 +140,9 @@ so they are reachable from every tab and present even with no repository open.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | 01 — Window background | 0 / 8 | Open |
-| 02 — Material and glass language | 3 / 5 | Named and applied to the three chrome surfaces |
+| 02 — Material and glass language | 4 / 6 | Applied to every chrome surface but the centre header |
 | 03 — Theme and accent | 0 / 3 | Open |
 | 04 — App icon | 0 / 7 | Open |
 | 05 — Top-bar controls | 8 / 10 | Built; needs a GUI pass |
 | 06 — The window's chrome bands | 4 / 5 | Built; control placement open |
-| **Total** | **15 / 38** | **In progress** |
+| **Total** | **16 / 39** | **In progress** |

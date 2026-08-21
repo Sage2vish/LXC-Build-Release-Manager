@@ -110,7 +110,7 @@ struct GlassSurface: View {
     /// The edge that faces content, and therefore carries the hairline. `nil` for a surface whose
     /// edge is drawn by whatever contains it.
     enum Hairline {
-        case top, bottom, leading
+        case top, bottom, leading, trailing
     }
 
     let material: Material
@@ -174,6 +174,7 @@ struct GlassSurface: View {
         case .top: return .top
         case .bottom: return .bottom
         case .leading: return .leading
+        case .trailing: return .trailing
         case nil: return .center
         }
     }
@@ -198,6 +199,11 @@ struct GlassSurface: View {
                 separator(width: 1, height: nil)
                 highlight(width: 1, height: nil)
             }
+        case .trailing:
+            HStack(spacing: 0) {
+                highlight(width: 1, height: nil)
+                separator(width: 1, height: nil)
+            }
         case nil:
             EmptyView()
         }
@@ -220,18 +226,25 @@ struct GlassSurface: View {
 /// The strip of window level with the title bar, painted by the app.
 ///
 /// macOS draws the toolbar's background across the whole window; it cannot be told to stop at a
-/// column. So it is hidden, and this stands in for it: glass over the sidebar and the centre, and
-/// the right panel's own glass over the panel, with the panel's edge hairline carried up through
-/// it. The result is a panel that runs from the top of the window to the bottom in one straight
-/// line, and a top bar that ends where the panel begins.
+/// column. So it is hidden, and this stands in for it, one segment per column: the sidebar's glass
+/// on the left, the bar itself over the centre, and the right panel's glass on the right, each
+/// carrying its own edge hairline up through the strip.
+///
+/// The result is the arrangement a Mac window has — two columns running the full height of the
+/// window, and a bar that belongs to the middle, beginning where the sidebar ends and ending where
+/// the panel begins. The status strip follows the same rule along the bottom.
 ///
 /// The toolbar's buttons are unaffected — macOS still draws them on top. Only the background moved.
 struct WindowTopChrome: View {
     /// The title bar's height, measured once from the window. `0` until that measurement lands, at
     /// which point the safe area is used instead — whichever of the two actually knows.
     let height: CGFloat
-    /// The live width of the right panel, or `0` when it is hidden — in which case the band simply
-    /// runs the whole way across.
+    /// The live width of the left sidebar, or `0` when it is hidden. The sidebar's own glass
+    /// continues up through this strip, which is what makes it a column and not a panel that starts
+    /// under the title bar.
+    let sidebarWidth: CGFloat
+    /// The live width of the right panel, or `0` when it is hidden — in which case the bar simply
+    /// runs to the window's right edge.
     let panelWidth: CGFloat
     let reduceTransparency: Bool
 
@@ -243,6 +256,11 @@ struct WindowTopChrome: View {
         GeometryReader { proxy in
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
+                    if sidebarWidth > 0 {
+                        GlassSurface(.ultraThin, hairline: .trailing, reduceTransparency: reduceTransparency)
+                            .frame(width: sidebarWidth)
+                    }
+
                     GlassSurface(.ultraThin, hairline: .bottom, reduceTransparency: reduceTransparency)
 
                     if panelWidth > 0 {

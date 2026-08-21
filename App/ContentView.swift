@@ -38,12 +38,26 @@ struct ContentView: View {
         preferencesStore.save(updated)
     }
 
+    /// The live width of the left sidebar, measured by the sidebar itself.
+    ///
+    /// The two bands begin where it ends, so a dragged sidebar moves both. Same rules as the right
+    /// panel's width: whole points, never a transient zero, or the report and the layout it causes
+    /// chase each other forever.
+    @State private var sidebarWidth: CGFloat = 0
+
     /// The height of the window's title bar, measured once from the window itself.
     ///
     /// The app draws that strip now, so it has to know how tall macOS made it: the height changes
     /// with the toolbar style and with the system's own settings, and a guessed number leaves
     /// either a seam above the content or a band the toolbar buttons hang out of.
     @State private var titleBarHeight: CGFloat = 0
+
+    /// Where the sidebar ends, and therefore where the top bar and the status strip begin. Zero
+    /// when the sidebar is hidden, which is the shell's own preference rather than anything the
+    /// sidebar reports.
+    private var sidebarInset: CGFloat {
+        preferencesStore.preferences.showRepositorySidebar ? sidebarWidth : 0
+    }
 
     /// Where the right panel starts, as a distance from the window's right edge — and therefore
     /// where the top bar and the status strip both have to stop. Zero when the panel is hidden,
@@ -76,17 +90,17 @@ struct ContentView: View {
     @State private var detailPanelWidth: CGFloat = 0
 
     var body: some View {
-        // The strip lies **over** the bottom of the window rather than being stacked beneath it.
+        // The strip belongs to the middle column, and is laid **over** the bottom of it rather
+        // than stacked beneath everything.
         //
-        // Stacked, it cut every column short — including the right panel, which then ended on a
-        // shelf instead of running the height of the window the way a macOS sidebar does. Laid
-        // over the bottom and stopped at the panel's leading edge, the panel runs top to bottom in
-        // one straight line and the strip spans the same width the title bar spans above it.
+        // Stacked, it cut all three columns short, and the two side columns ended on a shelf
+        // instead of running the height of the window the way a Mac window's columns do. It now
+        // begins where the sidebar ends and stops where the right panel begins — the same span the
+        // bar above it has — and both side columns run past it to the window's bottom edge.
         //
-        // The sidebar and the centre column each reserve the strip's height in their own safe
-        // area. An inset on the split view itself does not reach the sidebar column — that is what
-        // clipped the sidebar's "Open Repository…" / "Preferences" footer the last time this was
-        // tried.
+        // Only the centre column reserves the strip's height, in its own safe area. An inset on the
+        // split view itself does not reach the sidebar column, which is what clipped the sidebar's
+        // "Open Repository…" / "Preferences" footer the last time this was tried.
         splitView
         .overlay(alignment: .bottomLeading) {
             if preferencesStore.preferences.showStatusBar {
@@ -94,6 +108,7 @@ struct ContentView: View {
                     repository: store.selectedRepository,
                     preferences: preferencesStore.preferences
                 )
+                .padding(.leading, sidebarInset)
                 .padding(.trailing, detailPanelInset)
             }
         }
@@ -111,6 +126,7 @@ struct ContentView: View {
         .background(
             WindowTopChrome(
                 height: titleBarHeight,
+                sidebarWidth: sidebarInset,
                 panelWidth: detailPanelInset,
                 reduceTransparency: preferencesStore.preferences.reduceTransparency
             )
@@ -545,6 +561,10 @@ struct ContentView: View {
             // background, so the list brings none of its own.
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            // The list's section rules land directly on top of the box the rows are drawn in, so
+            // the box and the header above it read as one welded shape. The header's own spacing
+            // separates them instead.
+            .listSectionSeparator(.hidden)
             .environment(\.defaultMinListRowHeight, 0)
             .navigationTitle("Build Manager")
             // The single-value form pins the column and removes the drag handle. min/ideal/max
@@ -570,7 +590,6 @@ struct ContentView: View {
 
             // Screenshot UI Parity: Sidebar - Footer with separated buttons and pastel styling
             VStack(spacing: 8) {
-                Divider()
                 Button {
                     if let path = presentLocalFolderPickerPath() {
                         store.addLocalRepository(path: path)
@@ -600,32 +619,29 @@ struct ContentView: View {
                 .accessibilityHint("Open application preferences")
             }
             .padding(.horizontal, 10)
-            .padding(.vertical, 12)
-            .background {
-                if preferencesStore.preferences.reduceTransparency {
-                    Color(nsColor: .windowBackgroundColor)
-                } else {
-                    ZStack {
-                        Rectangle().fill(.bar)
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.18),
-                                Color.white.opacity(0.06),
-                                Color.black.opacity(0.03)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                        .blendMode(.softLight)
-                    }
-                }
-            }
+            .padding(.top, 12)
+            .padding(.bottom, 14)
+            // The same glass as everything else, and the rule above it is that glass's own top
+            // edge rather than a `Divider` stacked on the list — which is what made the footer and
+            // the box above it look welded together.
+            .background(
+                GlassSurface(
+                    .ultraThin,
+                    hairline: .top,
+                    reduceTransparency: preferencesStore.preferences.reduceTransparency
+                )
+            )
         }
-        // The strip is drawn over the window, so the column has to keep its own hands clear of
-        // it: the reserved band keeps the footer buttons above the glass while the sidebar's
-        // material still runs all the way down behind it.
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            Color.clear.frame(height: statusBarInset)
+        // The strip begins where this column ends, so there is nothing to keep clear of: the
+        // sidebar runs from the top of the window to the bottom, footer included.
+        //
+        // Its width is what both bands start at, so it has to be reported. Whole points, never a
+        // transient zero — a number that flickers is a layout loop.
+        .onGeometryChange(for: CGFloat.self) { geometry in
+            geometry.size.width.rounded()
+        } action: { width in
+            guard width > 0 else { return }
+            sidebarWidth = width
         }
         .overlay {
             if store.repositories.isEmpty {
@@ -636,24 +652,14 @@ struct ContentView: View {
                 )
             }
         }
-        .background {
-            if preferencesStore.preferences.reduceTransparency {
-                Color(nsColor: .windowBackgroundColor)
-            } else {
-                ZStack {
-                    Rectangle().fill(AppearanceSettings.sidebarMaterial(preferencesStore.preferences))
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.28),
-                            Color.white.opacity(0.08),
-                            Color.black.opacity(0.03)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .blendMode(.softLight)
-                }
-            }
-        }
+        // One glass for the whole column, and the same one the strip above it is painted with, so
+        // the sidebar reads as a single surface running from the top of the window to the bottom
+        // rather than as a panel with a differently-frosted cap.
+        .background(
+            GlassSurface(
+                .ultraThin,
+                reduceTransparency: preferencesStore.preferences.reduceTransparency
+            )
+        )
     }
 }

@@ -125,6 +125,22 @@ list of one kind of thing.
       contents.
 - [ ] Check the box at the minimum and maximum sidebar width, and in dark mode.
 
+## 05. A full-height column
+
+- [x] The panel runs from the **top edge of the window to the bottom edge**, footer included: its
+      glass continues up through the title bar strip, so the traffic lights sit on the sidebar the
+      way they do in Finder or Mail.
+- [x] The status strip starts where this column ends rather than crossing under it, so the column
+      no longer has to keep a band clear at its bottom.
+- [x] One glass for the whole column — the shared `GlassSurface` — instead of a material and sheen
+      mixed in place, so the column and the strip above it cannot frost differently.
+- [x] The footer's rule is that glass's own top edge rather than a `Divider` stacked on the list,
+      and it has room above and below it: the box of rows and the footer were welded together.
+- [x] The rules between rows run border to border. Inset at one end only, a rule stopped short of
+      the left side and ran into the right one, which reads as a mistake rather than as a margin.
+- [x] The list's own section rules are hidden — they landed directly on the box beneath them.
+- [ ] Check the full-height column in dark mode and with **Reduce transparency** on.
+
 ## Non-Goals
 
 - No drag-to-reorder of repositories; ordering is pinned-then-recent by design.
@@ -141,4 +157,5 @@ list of one kind of thing.
 | 02 — Consolidation carried over | 0 / 1 | Open |
 | 03 — Repository input and multi-repository | 8 / 8 | Done |
 | 04 — One box around the list | 5 / 6 | Built; widths and dark mode unchecked |
-| **Total** | **38 / 41** | **In progress** |
+| 05 — A full-height column | 6 / 7 | Built; dark mode unchecked |
+| **Total** | **44 / 48** | **In progress** |
