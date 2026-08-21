@@ -76,7 +76,10 @@ struct StatusBar: View {
         HStack(spacing: 4) {
             Image(systemName: icon)
                 .foregroundStyle(tint)
-            Text(label) + Text(verbatim: ":")
+            // Parenthesised deliberately. Without them `.foregroundStyle` binds to the colon
+            // alone, leaving the label at full strength where it was meant to recede behind the
+            // tinted value beside it.
+            (Text(label) + Text(verbatim: ":"))
                 .foregroundStyle(.secondary)
             Text(value)
                 .fontWeight(.medium)

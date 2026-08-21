@@ -102,12 +102,17 @@ struct ListBoxRowBackground: View {
             }
     }
 
+    /// `.circular` is stated rather than defaulted. `UnevenRoundedRectangle` uses `.continuous`
+    /// when no style is given, and the border beside it is an open path built from circular arcs —
+    /// two different curves at the same nominal radius, which is a corner that can never line up.
+    /// Both are circular now, so the fill and its outline share one geometry.
     private var shape: UnevenRoundedRectangle {
         UnevenRoundedRectangle(
             topLeadingRadius: position.isFirst ? Self.cornerRadius : 0,
             bottomLeadingRadius: position.isLast ? Self.cornerRadius : 0,
             bottomTrailingRadius: position.isLast ? Self.cornerRadius : 0,
-            topTrailingRadius: position.isFirst ? Self.cornerRadius : 0
+            topTrailingRadius: position.isFirst ? Self.cornerRadius : 0,
+            style: .circular
         )
     }
 }
@@ -124,36 +129,47 @@ struct ListBoxBorder: Shape {
         var path = Path()
         let radius = min(ListBoxRowBackground.cornerRadius, rect.height / 2)
 
+        // Where this row's straight sides stop. A row that owns the bottom corners has to hand the
+        // last `radius` of each side over to the curve: running the side all the way to `maxY` drew
+        // a square corner straight over the rounded one, which is what made the box read as barely
+        // rounded at all.
+        let sideBottom = position.isLast ? rect.maxY - radius : rect.maxY
+
+        path.move(to: CGPoint(x: rect.minX, y: sideBottom))
+
         if position.isFirst {
-            path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + radius))
-            path.addQuadCurve(
-                to: CGPoint(x: rect.minX + radius, y: rect.minY),
-                control: CGPoint(x: rect.minX, y: rect.minY)
+            // Leading side, both top corners, and back down the trailing side, in one run.
+            // `addArc(tangent1End:tangent2End:radius:)` is a true circular arc, so it matches the
+            // `.circular` fill underneath exactly — a quadratic curve through the corner sits
+            // noticeably inside that arc and leaves a sliver of fill outside the stroke.
+            path.addArc(
+                tangent1End: CGPoint(x: rect.minX, y: rect.minY),
+                tangent2End: CGPoint(x: rect.maxX, y: rect.minY),
+                radius: radius
             )
-            path.addLine(to: CGPoint(x: rect.maxX - radius, y: rect.minY))
-            path.addQuadCurve(
-                to: CGPoint(x: rect.maxX, y: rect.minY + radius),
-                control: CGPoint(x: rect.maxX, y: rect.minY)
+            path.addArc(
+                tangent1End: CGPoint(x: rect.maxX, y: rect.minY),
+                tangent2End: CGPoint(x: rect.maxX, y: rect.maxY),
+                radius: radius
             )
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+            path.addLine(to: CGPoint(x: rect.maxX, y: sideBottom))
         } else {
-            path.move(to: CGPoint(x: rect.minX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+            path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
             path.move(to: CGPoint(x: rect.maxX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+            path.addLine(to: CGPoint(x: rect.maxX, y: sideBottom))
         }
 
         if position.isLast {
             path.move(to: CGPoint(x: rect.minX, y: rect.maxY - radius))
-            path.addQuadCurve(
-                to: CGPoint(x: rect.minX + radius, y: rect.maxY),
-                control: CGPoint(x: rect.minX, y: rect.maxY)
+            path.addArc(
+                tangent1End: CGPoint(x: rect.minX, y: rect.maxY),
+                tangent2End: CGPoint(x: rect.maxX, y: rect.maxY),
+                radius: radius
             )
-            path.addLine(to: CGPoint(x: rect.maxX - radius, y: rect.maxY))
-            path.addQuadCurve(
-                to: CGPoint(x: rect.maxX, y: rect.maxY - radius),
-                control: CGPoint(x: rect.maxX, y: rect.maxY)
+            path.addArc(
+                tangent1End: CGPoint(x: rect.maxX, y: rect.maxY),
+                tangent2End: CGPoint(x: rect.maxX, y: rect.maxY - radius),
+                radius: radius
             )
         }
 
