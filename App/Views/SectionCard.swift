@@ -93,3 +93,170 @@ struct AppBackground: View {
         let overlayOpacity: Double
     }
 }
+
+/// The app's glass, in one place.
+///
+/// Three surfaces are made of it — the bar across the top of the window, the status strip across
+/// the bottom, and the right panel — and they have to be the same material or the window reads as
+/// three separate ideas. Each is a translucent base with a soft smear of light drawn over it and,
+/// where it meets content, a lit hairline along that edge.
+///
+/// The smudge is the point. Flat material reads as another opaque panel butted against the rest;
+/// the smear of light is what makes it read as glass laid over the window.
+///
+/// With **Reduce transparency** on there is no glass to smudge: it falls back to the window's own
+/// surface, keeping the hairline so the surface still has an edge.
+struct GlassSurface: View {
+    /// The edge that faces content, and therefore carries the hairline. `nil` for a surface whose
+    /// edge is drawn by whatever contains it.
+    enum Hairline {
+        case top, bottom, leading
+    }
+
+    let material: Material
+    let hairline: Hairline?
+    let reduceTransparency: Bool
+
+    init(_ material: Material = .ultraThin, hairline: Hairline? = nil, reduceTransparency: Bool) {
+        self.material = material
+        self.hairline = hairline
+        self.reduceTransparency = reduceTransparency
+    }
+
+    var body: some View {
+        ZStack {
+            if reduceTransparency {
+                Color(nsColor: .windowBackgroundColor)
+            } else {
+                Rectangle().fill(material)
+                smudge
+            }
+        }
+        .overlay(alignment: hairlineAlignment) { hairlineRule }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    /// Two soft pools of light and a diagonal wash. Every size is a fraction of the surface, so the
+    /// same smudge works on a 33-point strip and on a column the height of the window, and both are
+    /// blurred well past their own edges — a smudge has no outline.
+    private var smudge: some View {
+        GeometryReader { proxy in
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(0.20),
+                        Color.white.opacity(0.05),
+                        Color.black.opacity(0.04)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+
+                Ellipse()
+                    .fill(Color.white.opacity(0.30))
+                    .frame(width: proxy.size.width * 0.55, height: proxy.size.height * 0.80)
+                    .blur(radius: 30)
+                    .offset(x: -proxy.size.width * 0.10, y: -proxy.size.height * 0.25)
+
+                Ellipse()
+                    .fill(Color.white.opacity(0.18))
+                    .frame(width: proxy.size.width * 0.40, height: proxy.size.height * 0.60)
+                    .blur(radius: 34)
+                    .offset(x: proxy.size.width * 0.55, y: proxy.size.height * 0.35)
+            }
+            .blendMode(.softLight)
+        }
+    }
+
+    private var hairlineAlignment: Alignment {
+        switch hairline {
+        case .top: return .top
+        case .bottom: return .bottom
+        case .leading: return .leading
+        case nil: return .center
+        }
+    }
+
+    /// A separator with a thin highlight on the content side of it, so the glass has a lit edge
+    /// rather than simply stopping.
+    @ViewBuilder
+    private var hairlineRule: some View {
+        switch hairline {
+        case .top:
+            VStack(spacing: 0) {
+                separator(width: nil, height: 1)
+                highlight(width: nil, height: 1)
+            }
+        case .bottom:
+            VStack(spacing: 0) {
+                highlight(width: nil, height: 1)
+                separator(width: nil, height: 1)
+            }
+        case .leading:
+            HStack(spacing: 0) {
+                separator(width: 1, height: nil)
+                highlight(width: 1, height: nil)
+            }
+        case nil:
+            EmptyView()
+        }
+    }
+
+    private func separator(width: CGFloat?, height: CGFloat?) -> some View {
+        Rectangle()
+            .fill(Color(nsColor: .separatorColor))
+            .frame(width: width, height: height)
+    }
+
+    private func highlight(width: CGFloat?, height: CGFloat?) -> some View {
+        Rectangle()
+            .fill(Color.white.opacity(reduceTransparency ? 0 : 0.35))
+            .frame(width: width, height: height)
+            .blendMode(.plusLighter)
+    }
+}
+
+/// The strip of window level with the title bar, painted by the app.
+///
+/// macOS draws the toolbar's background across the whole window; it cannot be told to stop at a
+/// column. So it is hidden, and this stands in for it: glass over the sidebar and the centre, and
+/// the right panel's own glass over the panel, with the panel's edge hairline carried up through
+/// it. The result is a panel that runs from the top of the window to the bottom in one straight
+/// line, and a top bar that ends where the panel begins.
+///
+/// The toolbar's buttons are unaffected — macOS still draws them on top. Only the background moved.
+struct WindowTopChrome: View {
+    /// The title bar's height, measured once from the window. `0` until that measurement lands, at
+    /// which point the safe area is used instead — whichever of the two actually knows.
+    let height: CGFloat
+    /// The live width of the right panel, or `0` when it is hidden — in which case the band simply
+    /// runs the whole way across.
+    let panelWidth: CGFloat
+    let reduceTransparency: Bool
+
+    var body: some View {
+        // Drawn under the safe area, and measuring it from there: a view that has expanded past the
+        // safe area is told how far in the safe area starts, which is exactly the height of the
+        // title bar. Asking AppKit for the same number means reading a window mid-layout and
+        // feeding the answer back into it, which is a loop the window never survives.
+        GeometryReader { proxy in
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    GlassSurface(.ultraThin, hairline: .bottom, reduceTransparency: reduceTransparency)
+
+                    if panelWidth > 0 {
+                        GlassSurface(.regular, hairline: .leading, reduceTransparency: reduceTransparency)
+                            .frame(width: panelWidth)
+                    }
+                }
+                .frame(height: max(height, proxy.safeAreaInsets.top))
+
+                Spacer(minLength: 0)
+            }
+        }
+        .ignoresSafeArea()
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}

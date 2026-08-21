@@ -35,6 +35,19 @@ six tabs the container shows.
 - [ ] Keep the selected segment clearly readable over the material.
 - [ ] Verify in light and dark, and at the minimum panel width where six segments are tightest.
 
+## 03. What the tabs are called, and in what order
+
+- [x] **Build is now Scripts.** The tab lists a repository's scripts; *build* and *release* mean
+      something narrower in this project and those words are kept for the work that carries them.
+- [x] Order is **Overview · Scripts · Logs · History · Docs · Settings**. Overview first: it answers
+      "what is this repository?", which is the question you have before running anything.
+- [x] One place names them — `RepositoryDetailView.DetailTab.title`. The tab picker and the
+      "default launch tab" preference both read it, so a rename cannot go half-applied.
+- [x] The stored preference values are untouched, so an existing `preferences.json` still decodes;
+      only what a person reads changed.
+- [ ] The names are `LocalizedStringKey`s; **Scripts** and **Docs** still need catalogue entries in
+      the non-English languages.
+
 ## 02. Open items
 
 - [ ] Six segments is close to the practical limit for a segmented control at narrow widths.
@@ -47,5 +60,6 @@ six tabs the container shows.
 | --- | --- | --- |
 | Already shipped | 5 / 5 | Done |
 | 01 — Glass effect | 2 / 4 | In progress |
+| 03 — Tab names and order | 4 / 5 | Built; translations open |
 | 02 — Open items | 0 / 2 | Open |
-| **Total** | **7 / 11** | **In progress** |
+| **Total** | **11 / 16** | **In progress** |

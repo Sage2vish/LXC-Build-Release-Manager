@@ -12,26 +12,25 @@ struct StatusBar: View {
     static let unknownValue = "—"
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                statusItem("Repository", repository?.name ?? Self.unknownValue, icon: "folder.fill", tint: .blue)
-                branchItem
-                statusItem("Platform", "macOS", icon: "desktopcomputer", tint: .indigo)
-                statusItem(
-                    "Auto-detect",
-                    preferences.autoDetectRepositoriesOnStartup ? "Enabled" : "Disabled",
-                    icon: preferences.autoDetectRepositoriesOnStartup ? "checkmark.circle.fill" : "pause.circle.fill",
-                    tint: preferences.autoDetectRepositoriesOnStartup ? .green : .secondary
-                )
-                Spacer()
-            }
-            .font(.caption)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .padding(.top, 1)
+        HStack(spacing: 12) {
+            statusItem("Repository", repository?.name ?? Self.unknownValue, icon: "folder.fill", tint: .blue)
+            branchItem
+            statusItem("Platform", "macOS", icon: "desktopcomputer", tint: .indigo)
+            statusItem(
+                "Auto-detect",
+                preferences.autoDetectRepositoriesOnStartup ? "Enabled" : "Disabled",
+                icon: preferences.autoDetectRepositoriesOnStartup ? "checkmark.circle.fill" : "pause.circle.fill",
+                tint: preferences.autoDetectRepositoriesOnStartup ? .green : .secondary
+            )
+            Spacer(minLength: 0)
         }
+        .font(.caption)
+        .padding(.horizontal, 12)
+        // One height, named once. The sidebar and the centre column reserve the same number at
+        // their bottom, so the strip lies over glass rather than pushing anything around.
+        .frame(height: LayoutMetrics.statusBarHeight)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.ultraThinMaterial)
+        .background(GlassSurface(.ultraThin, hairline: .top, reduceTransparency: preferences.reduceTransparency))
         .task(id: repository?.id) { refreshBranch() }
         // The branch is a file on disk that other tools change while the app is open. Re-reading
         // when the window comes back to the front is enough to keep the chip honest without

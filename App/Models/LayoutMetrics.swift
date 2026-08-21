@@ -83,6 +83,17 @@ enum LayoutMetrics {
 
     // MARK: Detail View panel
 
+    // MARK: Status bar
+
+    /// The height of the bottom status strip.
+    ///
+    /// Named here because three places need to agree on it: the strip draws itself this tall, and
+    /// the sidebar and the centre column each reserve exactly this much at their bottom so the
+    /// glass never covers a control. The right panel deliberately does **not** reserve it — it runs
+    /// past the strip to the bottom of the window, which is the whole point of the strip stopping
+    /// at the panel's edge.
+    static let statusBarHeight: CGFloat = 33
+
     // MARK: Top bar
 
     /// The height of every control in the window's top bar.

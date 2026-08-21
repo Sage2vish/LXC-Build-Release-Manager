@@ -61,6 +61,26 @@ as three unrelated widgets rather than one panel.
 - [ ] Check the ribbon tint against a custom accent colour: it is derived from the accent, and a
       saturated accent could make five stacked ribbons loud.
 
+## 03. A full-height column, in glass
+
+The panel used to sit inside the centre column: it began under the title bar and ended above the
+status strip, so it read as a card parked on the right rather than as a column of the window.
+
+- [x] The panel's surface runs from the **top edge of the window to the bottom edge** — up through
+      the title bar strip, and down past the status strip, in one straight line.
+- [x] The title bar is transparent, so what shows through at the top right is the panel itself. The
+      band the user still sees over the sidebar and the centre is drawn by the app
+      (`WindowTopChrome`) and stops at the panel's edge.
+- [x] The status strip stops at the panel's leading edge too, for the same reason. See
+      [`Plan-StatusBar-todo.md`](Plan-StatusBar-todo.md) section 03.
+- [x] The panel's leading hairline runs the full height of that column, title bar included.
+- [x] **Glass, not a white card.** The same `GlassSurface` as the two chrome bands, in its denser
+      material: the panel is a column of text and has to stay readable, so it is only a little
+      translucent — enough to belong to the window rather than sit on top of it.
+- [x] The panel reports its live width up to the shell, so dragging it wider moves where the two
+      bands stop. Whole points, never a transient zero — a flickering number is a layout loop.
+- [ ] Check the full-height column in dark mode and against the **Reduce transparency** fallback.
+
 ## 01. The window will not resize while the panel is open — BUG
 
 Reported: with the Detail View panel open, the **whole application window** cannot be resized.
@@ -112,9 +132,10 @@ even though nothing is explicitly locked.
 | --- | --- | --- |
 | Already shipped | 7 / 7 | Done |
 | 00 — One column, one card language | 7 / 8 | Needs an accent check |
+| 03 — Full-height column, in glass | 6 / 7 | Built; dark mode unchecked |
 | 01 — Window resize bug | 5 / 9 | Improved 1853 → 1513; verification open |
 | 02 — Follow-ups | 0 / 2 | Open |
-| **Total** | **19 / 26** | **In progress** |
+| **Total** | **25 / 33** | **In progress** |
 
 ## Measured result
 

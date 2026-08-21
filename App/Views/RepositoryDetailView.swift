@@ -21,6 +21,10 @@ struct RepositoryDetailView: View {
     @ObservedObject var runners: BuildRunnerRegistry
     @ObservedObject var runner: BuildRunner
 
+    /// Reported back to the app shell on every layout pass, so the status strip knows where the
+    /// right panel starts and can stop there. Written by the panel, read by nothing in this view.
+    @Binding var panelWidth: CGFloat
+
     @State private var selectedTab: DetailTab
     @State private var scanResult: BuildScanResult?
     @State private var isScanning = false
@@ -45,7 +49,8 @@ struct RepositoryDetailView: View {
         preferencesStore: PreferencesStore,
         runners: BuildRunnerRegistry,
         runner: BuildRunner,
-        initialTab: DetailTab = .build
+        initialTab: DetailTab = .build,
+        panelWidth: Binding<CGFloat> = .constant(0)
     ) {
         self.windowWidth = windowWidth
         self.seedWidth = seedWidth
@@ -56,17 +61,42 @@ struct RepositoryDetailView: View {
         self._preferencesStore = ObservedObject(wrappedValue: preferencesStore)
         self._runners = ObservedObject(wrappedValue: runners)
         self.runner = runner
+        self._panelWidth = panelWidth
         self._selectedTab = State(initialValue: initialTab)
     }
 
+    /// The six tabs, in the order they appear, and the one place their names are written.
+    ///
+    /// A case is the tab's identity; `title` is what a person reads, and the two are deliberately
+    /// allowed to differ. The `build` tab is named **Scripts** because that is what it lists — a
+    /// repository's scripts. *Build* and *release* mean something narrower in this project, and
+    /// those words are being kept for the work that actually carries them.
+    ///
+    /// Overview comes first: it answers "what is this repository?", which is the question you have
+    /// before you run anything.
+    ///
+    /// Every surface that names a tab reads it from here — the tab picker, and the "default launch
+    /// tab" preference through `init(_:)` — so a rename happens once and cannot go half-applied.
     enum DetailTab: String, CaseIterable, Identifiable {
-        case build = "Build"
-        case logs = "Logs"
-        case history = "History"
-        case overview = "Overview"
-        case docs = "Docs"
-        case settings = "Settings"
+        case overview
+        case build
+        case logs
+        case history
+        case docs
+        case settings
+
         var id: String { rawValue }
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .overview: return "Overview"
+            case .build: return "Scripts"
+            case .logs: return "Logs"
+            case .history: return "History"
+            case .docs: return "Docs"
+            case .settings: return "Settings"
+            }
+        }
 
         init(_ launchTab: DefaultLaunchTab) {
             switch launchTab {
@@ -76,6 +106,12 @@ struct RepositoryDetailView: View {
             case .overview: self = .overview
             }
         }
+    }
+
+    /// How much of the centre column's bottom the status strip covers, and therefore how much the
+    /// column keeps clear. Zero when the strip is hidden.
+    private var statusBarInset: CGFloat {
+        preferencesStore.preferences.showStatusBar ? LayoutMetrics.statusBarHeight : 0
     }
 
     private var records: [BuildRecord] { historyStore.records(for: repository.id) }
@@ -90,7 +126,7 @@ struct RepositoryDetailView: View {
                 header
                 Picker("", selection: $selectedTab) {
                     ForEach(DetailTab.allCases) { tab in
-                        Text(tab.rawValue).tag(tab)
+                        Text(tab.title).tag(tab)
                     }
                 }
                 .pickerStyle(.segmented)
@@ -153,6 +189,12 @@ struct RepositoryDetailView: View {
                 }
             }
         }
+        // The centre column stops above the status strip. The right panel below deliberately does
+        // not: it runs past the strip to the bottom of the window, which is why the strip stops at
+        // the panel's edge rather than crossing it.
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            Color.clear.frame(height: statusBarInset)
+        }
         .sheet(isPresented: $isAutoFindingScripts) {
             if let rootPath = repository.localPath {
                 AutoFindScriptsSheet(
@@ -203,10 +245,14 @@ struct RepositoryDetailView: View {
         }
         .inspector(isPresented: showInspector) {
             ZStack(alignment: .top) {
-                // Matte, not glass. A translucent inspector pulled the desktop and the window
-                // background through the one column whose job is to be read, and the softLight
-                // sheen it carried made the top of the column brighter than the bottom.
-                Color.inspectorPanelSurface
+                // The same glass as the two chrome bands, in its denser material: the panel is a
+                // column of text and has to stay readable, so it is only a little translucent —
+                // enough to belong to the window rather than sit on it as a white card.
+                //
+                // The strip of glass above this column, level with the title bar, is painted by
+                // the app shell rather than here: a view inside the inspector that reaches up into
+                // the safe area feeds its own layout back into the window's and spins.
+                GlassSurface(.regular, reduceTransparency: preferencesStore.preferences.reduceTransparency)
 
                 ScrollView {
                     // Each section is its own rounded box, so it needs a gap around it. Butted
@@ -232,6 +278,20 @@ struct RepositoryDetailView: View {
                 edgeSeparator(opacity: preferencesStore.preferences.reduceTransparency ? 0.8 : 1)
             }
             .clipShape(Rectangle())
+            // The panel is draggable, so its width is a fact only it knows. Reporting it up is
+            // what lets the status strip end exactly at this edge instead of guessing.
+            //
+            // Only ever a real width, and only in whole points. The report changes the shell, the
+            // shell rebuilds this column, and the column reports again — so anything that makes
+            // the number flicker, a transient zero on rebuild or a sub-point wobble, becomes a
+            // layout loop that pins the CPU and never draws a window. Whether the panel is on at
+            // all is the shell's own preference to read; it is not news from down here.
+            .onGeometryChange(for: CGFloat.self) { proxy in
+                proxy.size.width.rounded()
+            } action: { width in
+                guard width > 0 else { return }
+                panelWidth = width
+            }
             // A proportion of the window — 15% — rather than a fixed band, with clamps so a
             // drag stays sane at both extremes. Every number comes from `LayoutMetrics`.
             // 15% is where the panel starts, not where it is held. The ideal is seeded once so a

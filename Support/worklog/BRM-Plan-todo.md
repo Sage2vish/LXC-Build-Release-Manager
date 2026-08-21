@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**681 of 849 items done — 168 still pending (80%).**
+**710 of 880 items done — 170 still pending (81%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
-| The window, by region | 78 | 36 | In progress |
-| Inside the main panel | 25 | 11 | In progress |
+| The window, by region | 103 | 37 | In progress |
+| Inside the main panel | 29 | 12 | In progress |
 | The six tabs, inside the container | 272 | 15 | In progress |
 | Features | 203 | 40 | In progress |
 | Engineering, quality, and release | 103 | 66 | In progress |
-| **All areas** | **681** | **168** | **In progress** |
+| **All areas** | **710** | **170** | **In progress** |
 
 ## The plans, by area
 
@@ -40,12 +40,12 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
-| [Plan-AppShellUI-todo](Plan-AppShellUI-todo.md) | Whole window — background, material and glass language, theme and accent | 13 | 21 | In progress |
-| [Plan-LeftSidebar-todo](Plan-LeftSidebar-todo.md) | Left sidebar — repositories, recents, add/remove, the footer buttons | 33 | 2 | In progress |
+| [Plan-AppShellUI-todo](Plan-AppShellUI-todo.md) | Whole window — background, material and glass language, theme and accent | 20 | 20 | In progress |
+| [Plan-LeftSidebar-todo](Plan-LeftSidebar-todo.md) | Left sidebar — repositories, recents, add/remove, the footer buttons | 38 | 3 | In progress |
 | [Plan-MainPanel-todo](Plan-MainPanel-todo.md) | Main panel — index over the three bands and six tabs below | — | — | Index only |
-| [Plan-DetailViewPanel-todo](Plan-DetailViewPanel-todo.md) | Detail View panel — the right inspector and its cards | 20 | 8 | In progress |
-| [Plan-StatusBar-todo](Plan-StatusBar-todo.md) | Status bar — repository, branch, platform, auto-detect chips | 12 | 5 | In progress |
-| **The window, by region — subtotal** | | **78** | **36** | **In progress** |
+| [Plan-DetailViewPanel-todo](Plan-DetailViewPanel-todo.md) | Detail View panel — the right inspector and its cards | 26 | 9 | In progress |
+| [Plan-StatusBar-todo](Plan-StatusBar-todo.md) | Status bar — repository, branch, platform, auto-detect chips | 19 | 5 | In progress |
+| **The window, by region — subtotal** | | **103** | **37** | **In progress** |
 
 ### Inside the main panel
 
@@ -54,9 +54,9 @@ The centre column is three stacked bands, each with its own plan.
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
 | [Plan-MainPanel-Header-todo](Plan-MainPanel-Header-todo.md) | Header — repository name, badge, path lines, Reveal / Terminal / Copy | 10 | 5 | In progress |
-| [Plan-MainPanel-Toolbar-todo](Plan-MainPanel-Toolbar-todo.md) | Toolbar — the six-tab picker and the rule beneath it | 8 | 4 | In progress |
+| [Plan-MainPanel-Toolbar-todo](Plan-MainPanel-Toolbar-todo.md) | Toolbar — the six-tab picker and the rule beneath it | 12 | 5 | In progress |
 | [Plan-MainPanel-Container-todo](Plan-MainPanel-Container-todo.md) | Container — work-area surface, padding, scrolling, card treatment | 7 | 2 | In progress |
-| **Inside the main panel — subtotal** | | **25** | **11** | **In progress** |
+| **Inside the main panel — subtotal** | | **29** | **12** | **In progress** |
 
 ### The six tabs, inside the container
 

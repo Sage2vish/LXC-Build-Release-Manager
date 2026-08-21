@@ -38,6 +38,27 @@ struct ContentView: View {
         preferencesStore.save(updated)
     }
 
+    /// The height of the window's title bar, measured once from the window itself.
+    ///
+    /// The app draws that strip now, so it has to know how tall macOS made it: the height changes
+    /// with the toolbar style and with the system's own settings, and a guessed number leaves
+    /// either a seam above the content or a band the toolbar buttons hang out of.
+    @State private var titleBarHeight: CGFloat = 0
+
+    /// Where the right panel starts, as a distance from the window's right edge — and therefore
+    /// where the top bar and the status strip both have to stop. Zero when the panel is hidden,
+    /// which is the shell's own preference rather than anything the panel reports.
+    private var detailPanelInset: CGFloat {
+        guard preferencesStore.preferences.showDetailInspector, store.selectedRepository != nil else { return 0 }
+        return detailPanelWidth
+    }
+
+    /// How much of the bottom of a column the status strip covers, and therefore how much that
+    /// column has to keep clear. Zero when the strip is hidden, so hiding it hands the space back.
+    private var statusBarInset: CGFloat {
+        preferencesStore.preferences.showStatusBar ? LayoutMetrics.statusBarHeight : 0
+    }
+
     private var preferredColorScheme: ColorScheme? {
         switch preferencesStore.preferences.theme {
         case .light: return .light
@@ -46,35 +67,55 @@ struct ContentView: View {
         }
     }
 
+    /// The live width of the right panel, measured by the panel itself.
+    ///
+    /// The status strip needs it: the strip runs from the window's left edge and stops where the
+    /// panel begins, exactly like the title bar above it. The panel is draggable, so the number
+    /// cannot be a constant — it is reported back on every layout, and is `0` whenever the panel
+    /// is hidden or no repository is open.
+    @State private var detailPanelWidth: CGFloat = 0
+
     var body: some View {
-        // The status bar is a sibling below the split view, not a `safeAreaInset` on it.
-        // An inset does not propagate into the sidebar column's own safe area, which let the
-        // status bar clip the sidebar's "Open Repository…" / "Preferences" footer.
-        VStack(spacing: 0) {
-            splitView
+        // The strip lies **over** the bottom of the window rather than being stacked beneath it.
+        //
+        // Stacked, it cut every column short — including the right panel, which then ended on a
+        // shelf instead of running the height of the window the way a macOS sidebar does. Laid
+        // over the bottom and stopped at the panel's leading edge, the panel runs top to bottom in
+        // one straight line and the strip spans the same width the title bar spans above it.
+        //
+        // The sidebar and the centre column each reserve the strip's height in their own safe
+        // area. An inset on the split view itself does not reach the sidebar column — that is what
+        // clipped the sidebar's "Open Repository…" / "Preferences" footer the last time this was
+        // tried.
+        splitView
+        .overlay(alignment: .bottomLeading) {
             if preferencesStore.preferences.showStatusBar {
-                StatusBar(repository: store.selectedRepository, preferences: preferencesStore.preferences)
-                    .background {
-                        if preferencesStore.preferences.reduceTransparency {
-                            Color(nsColor: .windowBackgroundColor)
-                        } else {
-                            ZStack {
-                                Rectangle().fill(.bar)
-                                LinearGradient(
-                                    colors: [
-                                        Color.white.opacity(0.13),
-                                        Color.white.opacity(0.04),
-                                        Color.black.opacity(0.02)
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                                .blendMode(.softLight)
-                            }
-                        }
-                    }
+                StatusBar(
+                    repository: store.selectedRepository,
+                    preferences: preferencesStore.preferences
+                )
+                .padding(.trailing, detailPanelInset)
             }
         }
+        // The strip level with the title bar, painted by the app rather than by the toolbar.
+        //
+        // macOS draws the toolbar's own background across the whole window and nothing can make it
+        // stop short of a column, so it is hidden and this takes its place: glass over the sidebar
+        // and the centre, the right panel's own surface over the panel. That is what makes the
+        // panel read as one column from the top of the window to the bottom, with the top bar
+        // ending at its edge — the same rule the status strip follows along the bottom.
+        //
+        // It is painted from the background layer, which already sits outside the safe area. A
+        // view that reaches *up* into the safe area from inside the content feeds its own layout
+        // back into the window's, and the two never settle.
+        .background(
+            WindowTopChrome(
+                height: titleBarHeight,
+                panelWidth: detailPanelInset,
+                reduceTransparency: preferencesStore.preferences.reduceTransparency
+            )
+        )
+        .background(WindowChrome(titleBarHeight: $titleBarHeight))
         .modifier(LanguageChangeHandler(pending: $pendingLanguageRelaunch))
         .background(AppBackground(preferences: preferencesStore.preferences))
         .preferredColorScheme(preferredColorScheme)
@@ -170,7 +211,8 @@ struct ContentView: View {
                     preferencesStore: preferencesStore,
                     runners: runners,
                     runner: runners.runner(for: repository.id),
-                    initialTab: RepositoryDetailView.DetailTab(preferencesStore.preferences.defaultLaunchTab)
+                    initialTab: RepositoryDetailView.DetailTab(preferencesStore.preferences.defaultLaunchTab),
+                    panelWidth: $detailPanelWidth
                 )
                 .id(repository.id)
             } else {
@@ -180,8 +222,16 @@ struct ContentView: View {
                     description: Text("Choose a repository from the sidebar, or add one to begin.")
                 )
                 .background(.background)
+                // No repository, no right panel — so the strip runs the full width of the window.
+                .onAppear { detailPanelWidth = 0 }
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    Color.clear.frame(height: statusBarInset)
+                }
             }
         }
+        // The app draws the top band itself; macOS's own toolbar background cannot be told to
+        // stop at the panel, so it is hidden and the band takes its place.
+        .toolbarBackground(.hidden, for: .windowToolbar)
         .toolbar {
             ToolbarItem(placement: .navigation) {
                 Button(action: toggleSidebar) {
@@ -210,6 +260,59 @@ struct ContentView: View {
     ///
     /// This clears the autosave, deletes the stored frames, and sets the divider once per launch.
     /// Once. After that the drag is the user's, and nothing snaps back.
+    /// Turns the title bar into a transparent strip over the window instead of a band drawn across
+    /// the top of it.
+    ///
+    /// With the bar transparent, whatever sits under it shows through — which is how the right
+    /// panel reaches the top of the window and reads as one column from the top edge to the
+    /// bottom, the way a full-height sidebar does in any macOS app. The band the user still sees
+    /// over the sidebar and the centre is drawn by `WindowTopChrome`, which is what lets it stop at
+    /// the panel's edge.
+    ///
+    /// Applied once. Touching the title bar invalidates the window's layout, and a change made on
+    /// every pass invalidates it again from inside the pass it caused — the app then spins at 100%
+    /// CPU and never shows a window at all.
+    private struct WindowChrome: NSViewRepresentable {
+        @Binding var titleBarHeight: CGFloat
+
+        /// A view that says when it has a window.
+        ///
+        /// `updateNSView` is the wrong place to ask: on the first pass the view is not in a window
+        /// yet, and SwiftUI has no reason to call it again just because one arrived. AppKit does
+        /// say so, exactly once, and that is the moment the window can be read and changed.
+        final class ProbeView: NSView {
+            var onWindow: ((NSWindow) -> Void)?
+
+            override func viewDidMoveToWindow() {
+                super.viewDidMoveToWindow()
+                guard let window else { return }
+                // Deferred: at this moment the window is mid-layout and reports the frame it had
+                // before this pass. A turn later it reports the one it has.
+                DispatchQueue.main.async { [weak window] in
+                    guard let window else { return }
+                    self.onWindow?(window)
+                }
+            }
+        }
+
+        func makeNSView(context: Context) -> NSView {
+            let view = ProbeView(frame: .zero)
+            view.onWindow = { window in
+                window.titlebarAppearsTransparent = true
+                // The strip macOS reserves for the title bar and toolbar together, which is
+                // exactly the strip the app now draws. Anything absurd is ignored rather than
+                // painted.
+                let measured = window.frame.height - window.contentLayoutRect.height
+                guard measured > 0, measured < 200 else { return }
+                titleBarHeight = measured
+            }
+            return view
+        }
+
+        func updateNSView(_ nsView: NSView, context: Context) {}
+
+    }
+
     private struct SidebarWidthEnforcer: NSViewRepresentable {
         let targetWidth: CGFloat
 
@@ -263,6 +366,18 @@ struct ContentView: View {
         return Array(store.repositories.sorted { $0.lastAccessed > $1.lastAccessed }.prefix(cap))
     }
 
+    /// Which piece of the surrounding box a row is responsible for, and whether it is the selected
+    /// one. Looked up rather than zipped in, so the rows keep the identity the list already knows
+    /// them by — pairing each row with an index changes that identity, and two sections listing the
+    /// same repositories then draw each other's rows.
+    private func boxBackground(for repository: Repository, in group: [Repository]) -> ListBoxRowBackground {
+        let index = group.firstIndex(of: repository) ?? 0
+        return ListBoxRowBackground(
+            position: .init(index: index, count: group.count),
+            isSelected: store.selectedRepositoryID == repository.id
+        )
+    }
+
     /// Extracted from the `sidebar` body: inline, the row plus its context menu and
     /// accessibility modifiers made the surrounding `List` too large for the type checker.
     private func repositorySidebarRow(_ repository: Repository) -> some View {
@@ -271,7 +386,12 @@ struct ContentView: View {
             store: store,
             showsPath: preferencesStore.preferences.showRepositoryPathInSidebar
         )
-            .tag(repository.id)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 2)
+            .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
+            .listRowSeparator(.hidden)
+            .contentShape(Rectangle())
+            .onTapGesture { store.select(repository) }
             .contextMenu { // Screenshot UI Parity: Sidebar - Context menu actions for repository row
                 Button("Reveal in Finder") {
                     guard repository.source.isLocal else { return }
@@ -320,6 +440,10 @@ struct ContentView: View {
                     .accessibilityLabel("Selected")
             }
         }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
+        .listRowSeparator(.hidden)
         .contentShape(Rectangle())
         .onTapGesture { store.select(repository) }
         .contextMenu { // Screenshot UI Parity: Sidebar - Context menu for recent repository row
@@ -349,20 +473,17 @@ struct ContentView: View {
 
     private func sidebar(windowWidth: CGFloat) -> some View {
         VStack(spacing: 0) {
-            List(
-                selection: Binding(
-                    get: { store.selectedRepositoryID },
-                    set: { newValue in
-                        if let id = newValue, let repository = store.repositories.first(where: { $0.id == id }) {
-                            store.select(repository)
-                        }
-                    }
-                )
-            ) {
+            // No selection binding: the list's own highlight is a full-width bar that cuts
+            // straight through the box the rows are drawn in. Selection is a tap on the row and a
+            // tint inside the box instead, which is what the recents rows already did.
+            List {
                 // Screenshot UI Parity: Sidebar - Repositories header with minimalistic styling
                 Section {
+                    // One box around the whole list, not one per row: the rows are separated by
+                    // hairlines inside it, and the box's own outline is drawn by its end rows.
                     ForEach(sortedRepositories) { repository in
                         repositorySidebarRow(repository)
+                            .listRowBackground(boxBackground(for: repository, in: sortedRepositories))
                     }
                 } header: {
                     // Screenshot UI Parity: Sidebar - Clean section header for Repositories
@@ -388,14 +509,24 @@ struct ContentView: View {
                                             : "Show repository paths")
                     }
                     .padding(.leading, 4)
-                    .padding(.vertical, 4)
+                    .padding(.top, 4)
+                    .padding(.bottom, 6)
                 }
 
                 // Screenshot UI Parity: Sidebar - Recent Repositories section with header and icons for each
                 if !recentRepositories.isEmpty {
                     Section {
-                        ForEach(recentRepositories) { repository in
+                        // Identified by position, not by repository: these are the same
+                        // repositories the section above lists, and two rows in one list carrying
+                        // the same identity end up drawing each other's contents.
+                        ForEach(Array(recentRepositories.enumerated()), id: \.offset) { index, repository in
                             recentRepositorySidebarRow(repository)
+                                .listRowBackground(
+                                    ListBoxRowBackground(
+                                        position: .init(index: index, count: recentRepositories.count),
+                                        isSelected: store.selectedRepositoryID == repository.id
+                                    )
+                                )
                         }
                     } header: {
                         Text("Recent repositories")
@@ -403,12 +534,18 @@ struct ContentView: View {
                             .foregroundColor(.primary)
                             .textCase(nil)
                             .padding(.leading, 4)
-                            .padding(.vertical, 4)
+                            .padding(.top, 10)
+                            .padding(.bottom, 6)
                             .accessibilityAddTraits(.isHeader)
                     }
                 }
             }
-            .listStyle(.sidebar)
+            // Plain, not `.sidebar`: the sidebar style insets and rounds every row on its own,
+            // which fights a box drawn around the whole group. The panel's glass is its
+            // background, so the list brings none of its own.
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .environment(\.defaultMinListRowHeight, 0)
             .navigationTitle("Build Manager")
             // The single-value form pins the column and removes the drag handle. min/ideal/max
             // keeps it draggable, and every number is a fraction of the window from
@@ -483,6 +620,12 @@ struct ContentView: View {
                     }
                 }
             }
+        }
+        // The strip is drawn over the window, so the column has to keep its own hands clear of
+        // it: the reserved band keeps the footer buttons above the glass while the sidebar's
+        // material still runs all the way down behind it.
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            Color.clear.frame(height: statusBarInset)
         }
         .overlay {
             if store.repositories.isEmpty {

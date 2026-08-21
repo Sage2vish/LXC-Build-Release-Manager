@@ -157,7 +157,8 @@ struct PreferencesView: View {
             toggleRow("Restore last opened repository on launch", "Open the last repository you were working with.", $draft.restoreLastOpenedRepository)
             pickerRow("Default tab on launch", "Select which tab to show when Build Manager starts.") {
                 Picker("", selection: $draft.defaultLaunchTab) {
-                    ForEach(DefaultLaunchTab.allCases) { Text($0.rawValue).tag($0) }
+                    // Named by the tab itself, so this list cannot drift from the tab bar.
+                    ForEach(DefaultLaunchTab.allCases) { Text(RepositoryDetailView.DetailTab($0).title).tag($0) }
                 }
                 .labelsHidden()
                 .frame(width: 160)

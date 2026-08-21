@@ -45,10 +45,33 @@ Concepts live in `Support/context/concepts-designs/`:
 
 Glass is currently requested per region. Deciding it once here stops three different frostings.
 
-- [ ] Define one material scale — chrome, raised surface, recessed surface — and name it.
-- [ ] Apply it through the shared `SectionCard` and the header/toolbar bands rather than ad hoc.
-- [ ] Make every material honour **Reduce transparency** in one place.
+- [x] **Named once: `GlassSurface`.** A translucent base, a soft smear of light over it, and a lit
+      hairline on the edge that faces content. Two weights in use — `.ultraThin` for the two chrome
+      bands, `.regular` for the right panel, which carries text and has to stay readable.
+- [x] The three surfaces the window is read by are made of it: the band across the top, the status
+      strip across the bottom, and the right panel.
+- [x] It honours **Reduce transparency** in one place — inside `GlassSurface` — instead of each
+      caller remembering to.
+- [ ] Apply it to the remaining ad-hoc frostings: the sidebar's own background and footer, and the
+      centre column's header band, still build their own material and sheen inline.
 - [ ] Re-check contrast over the background image, not over a flat colour.
+
+## 06. The window's chrome bands
+
+macOS draws the toolbar's background across the whole window and gives no way to make it stop at a
+column. That is what kept the right panel from reaching the top of the window.
+
+- [x] The toolbar's own background is hidden; the app paints the band itself (`WindowTopChrome`) —
+      glass over the sidebar and the centre, the panel's glass over the panel.
+- [x] The title bar is made transparent once, from AppKit, when the window first appears. Doing it
+      on every pass invalidates the layout from inside the layout it caused: the app spins at 100%
+      CPU and never draws a window.
+- [x] The band's height is the strip macOS reserves for title bar and toolbar, measured from the
+      window rather than guessed.
+- [x] The toolbar's buttons are untouched — macOS still draws them on top. Only the background
+      moved.
+- [ ] Decide where the appearance and language controls belong now that the strip they sit at the
+      end of stops at the panel: they currently float above the panel's own glass.
 
 ## 03. Theme and accent
 
@@ -114,8 +137,9 @@ so they are reachable from every tab and present even with no repository open.
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | 01 — Window background | 0 / 8 | Open |
-| 02 — Material and glass language | 0 / 4 | Open |
+| 02 — Material and glass language | 3 / 5 | Named and applied to the three chrome surfaces |
 | 03 — Theme and accent | 0 / 3 | Open |
 | 04 — App icon | 0 / 7 | Open |
 | 05 — Top-bar controls | 8 / 10 | Built; needs a GUI pass |
-| **Total** | **8 / 32** | **In progress** |
+| 06 — The window's chrome bands | 4 / 5 | Built; control placement open |
+| **Total** | **15 / 38** | **In progress** |

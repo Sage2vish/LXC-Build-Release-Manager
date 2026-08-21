@@ -13,11 +13,16 @@ enum AppTheme: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+/// Which tab a repository opens on.
+///
+/// The raw values are what is already written in `preferences.json` and stay as they are; what a
+/// person *reads* comes from `RepositoryDetailView.DetailTab.title`, so this list and the tab bar
+/// can never disagree about what a tab is called. Listed in the order the tabs appear.
 enum DefaultLaunchTab: String, Codable, CaseIterable, Identifiable {
+    case overview = "Overview"
     case build = "Build"
     case logs = "Logs"
     case history = "History"
-    case overview = "Overview"
     var id: String { rawValue }
 }
 

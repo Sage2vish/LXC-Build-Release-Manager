@@ -103,6 +103,28 @@ Anything about *what a preference does* goes there, not here.
 - [x] Cmd+, opens the same window.
 - [ ] Everything else about Preferences → see `Plan-PreferenceScreen-todo.md`.
 
+## 04. One box around the list
+
+Each row used to be its own surface. The panel read as a stack of loose cards rather than as a
+list of one kind of thing.
+
+- [x] **One rounded, outlined box per group** — all the repositories in one, all the recents in
+      another — with a hairline between rows inside it, and nothing drawn around a row on its own.
+- [x] Drawn by the rows themselves (`ListBoxRowBackground`): every row paints the box's sides, the
+      end rows paint the top and bottom and round their corners, and every row but the last draws
+      the rule beneath it. A `List` gives no way to put a box around a section, and a hand-built
+      stack of rows would have given up the list's scrolling and reuse.
+- [x] The box is inset from the panel's edges by the background, not by the row: a list row's
+      insets move its *content*, and a box drawn without that runs off both sides of the panel.
+- [x] Selection is a tint inside the box. **The list's own selection binding is gone**: its
+      highlight is a full-width bar that cuts straight through the box. Rows select on tap, which
+      is what the recents rows already did — the cost is that arrow-key navigation of the list goes
+      with it, and that is worth re-checking with someone who works keyboard-first.
+- [x] Recents rows are identified by position, not by repository: they list the same repositories
+      as the section above, and two rows in one list carrying the same identity draw each other's
+      contents.
+- [ ] Check the box at the minimum and maximum sidebar width, and in dark mode.
+
 ## Non-Goals
 
 - No drag-to-reorder of repositories; ordering is pinned-then-recent by design.
@@ -118,4 +140,5 @@ Anything about *what a preference does* goes there, not here.
 | 01 — Name and path visibility | 12 / 12 | Done |
 | 02 — Consolidation carried over | 0 / 1 | Open |
 | 03 — Repository input and multi-repository | 8 / 8 | Done |
-| **Total** | **33 / 35** | **In progress** |
+| 04 — One box around the list | 5 / 6 | Built; widths and dark mode unchecked |
+| **Total** | **38 / 41** | **In progress** |

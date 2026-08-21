@@ -19,8 +19,6 @@
 		39CE00E6F4CF48A0A7E35A17 /* RepositoryHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150D246C10354CBCA409B7A7 /* RepositoryHistoryView.swift */; };
 		42D194CFA8AD45AFBF28FC0E /* LogPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A00E28C35B04C4B9585B095 /* LogPresentation.swift */; };
 		4B5590D2F6DE9F6ACEEB834A /* BuildRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42A86DDBD972CFA5981609E /* BuildRecord.swift */; };
-		F5AC10000000000000000008 /* LayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000007 /* LayoutMetrics.swift */; };
-		F5AC10000000000000000004 /* HistoryFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000003 /* HistoryFilter.swift */; };
 		4C6B8D1F2A3E4C5D6F708192 /* BuildNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */; };
 		50CC22F6B112137092256122 /* BuildHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */; };
 		5248C1C125D21068689EBB27 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376C275B291A8197FDA9F65B /* AppDelegate.swift */; };
@@ -49,8 +47,6 @@
 		A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9911BF5D489D90AE02811CB3 /* LogFileService.swift */; };
 		B9F71155AD8444DEA9DC2D4A /* MarkdownBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2135B85648764E8FB1F5480E /* MarkdownBlock.swift */; };
 		BDCB0E0C538C4EC2943A822F /* SectionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFAC8A705C4215BFE88FC2 /* SectionCard.swift */; };
-		F5AC10000000000000000006 /* InspectorCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000005 /* InspectorCard.swift */; };
-		F5AC10000000000000000002 /* AppearanceAndLanguageControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000001 /* AppearanceAndLanguageControls.swift */; };
 		BED536027379480A9D9E44D8 /* BuildCommandBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B47C22892D497FB697C5D8 /* BuildCommandBuilder.swift */; };
 		C3A1B2C3D4E5F60718293847 /* BuildWorkspaceStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A1B2C3D4E5F60718293846 /* BuildWorkspaceStateStore.swift */; };
 		C9169590718841339F33A00B /* MarkdownSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB8E3851E9A840398C7745D8 /* MarkdownSourceView.swift */; };
@@ -63,6 +59,10 @@
 		F50575ED30318AE800601A4A /* RepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EC30318AE800601A4A /* RepositoryRow.swift */; };
 		F50575EF30318AEB00601A4A /* RecentRepositoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575EE30318AEB00601A4A /* RecentRepositoryRow.swift */; };
 		F50575F130318AEE00601A4A /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50575F030318AEE00601A4A /* StatusBar.swift */; };
+		F5AC10000000000000000002 /* AppearanceAndLanguageControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000001 /* AppearanceAndLanguageControls.swift */; };
+		F5AC10000000000000000004 /* HistoryFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000003 /* HistoryFilter.swift */; };
+		F5AC10000000000000000006 /* InspectorCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000005 /* InspectorCard.swift */; };
+		F5AC10000000000000000008 /* LayoutMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AC10000000000000000007 /* LayoutMetrics.swift */; };
 		F72BE43DFB94459A9184A8D2 /* RepositoryOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F688A5AC1A2B40178A7C72FD /* RepositoryOverviewView.swift */; };
 		FEEDFCE5AA26DC939D4E44DE /* RepositoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F0A7F761D84D0548A244BA /* RepositoryStore.swift */; };
 		FF6F8795A85A4918A8E87F60 /* MarkdownParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CBBA8C125D48F897441F4F /* MarkdownParser.swift */; };
@@ -119,8 +119,6 @@
 		C3A1B2C3D4E5F60718293846 /* BuildWorkspaceStateStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildWorkspaceStateStore.swift; path = App/Services/BuildWorkspaceStateStore.swift; sourceTree = "<group>"; };
 		D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GitBranchReader.swift; path = App/Services/GitBranchReader.swift; sourceTree = "<group>"; };
 		D42A86DDBD972CFA5981609E /* BuildRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRecord.swift; path = App/Models/BuildRecord.swift; sourceTree = "<group>"; };
-		F5AC10000000000000000007 /* LayoutMetrics.swift */ = {isa = PBXFileReference; name = LayoutMetrics.swift; lastKnownFileType = sourcecode.swift; path = App/Models/LayoutMetrics.swift; sourceTree = "<group>"; };
-		F5AC10000000000000000003 /* HistoryFilter.swift */ = {isa = PBXFileReference; name = HistoryFilter.swift; lastKnownFileType = sourcecode.swift; path = App/Models/HistoryFilter.swift; sourceTree = "<group>"; };
 		D58F8A9711954FC4A3BC8983 /* AppearanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppearanceSettings.swift; path = App/Models/AppearanceSettings.swift; sourceTree = "<group>"; };
 		D9F2EA63DB8D411B8E3A239A /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppLanguage.swift; path = App/Services/AppLanguage.swift; sourceTree = "<group>"; };
 		E1244FF58E6B406CBF6C437A /* RepositoryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RepositoryDetailView.swift; path = App/Views/RepositoryDetailView.swift; sourceTree = "<group>"; };
@@ -132,13 +130,15 @@
 		F03524C05A4A03E1B04E2FC0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		F28AAA8F0F60490DBC0C6686 /* BuildPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BuildPresentation.swift; path = App/Models/BuildPresentation.swift; sourceTree = "<group>"; };
 		F3CFAC8A705C4215BFE88FC2 /* SectionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SectionCard.swift; path = App/Views/SectionCard.swift; sourceTree = "<group>"; };
-		F5AC10000000000000000005 /* InspectorCard.swift */ = {isa = PBXFileReference; name = InspectorCard.swift; lastKnownFileType = sourcecode.swift; path = App/Views/InspectorCard.swift; sourceTree = "<group>"; };
-		F5AC10000000000000000001 /* AppearanceAndLanguageControls.swift */ = {isa = PBXFileReference; name = AppearanceAndLanguageControls.swift; lastKnownFileType = sourcecode.swift; path = App/Views/AppearanceAndLanguageControls.swift; sourceTree = "<group>"; };
 		F50575EA30318AE700601A4A /* AddRepositorySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AddRepositorySheet.swift; path = App/Views/AddRepositorySheet.swift; sourceTree = "<group>"; };
 		F50575EC30318AE800601A4A /* RepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RepositoryRow.swift; path = App/Views/RepositoryRow.swift; sourceTree = "<group>"; };
 		F50575EE30318AEB00601A4A /* RecentRepositoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RecentRepositoryRow.swift; path = App/Views/RecentRepositoryRow.swift; sourceTree = "<group>"; };
 		F50575F030318AEE00601A4A /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StatusBar.swift; path = App/Views/StatusBar.swift; sourceTree = "<group>"; };
 		F5533C433033D75D00922244 /* LXC-Build-Release-Manager-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "LXC-Build-Release-Manager-Info.plist"; sourceTree = "<group>"; };
+		F5AC10000000000000000001 /* AppearanceAndLanguageControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppearanceAndLanguageControls.swift; path = App/Views/AppearanceAndLanguageControls.swift; sourceTree = "<group>"; };
+		F5AC10000000000000000003 /* HistoryFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HistoryFilter.swift; path = App/Models/HistoryFilter.swift; sourceTree = "<group>"; };
+		F5AC10000000000000000005 /* InspectorCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InspectorCard.swift; path = App/Views/InspectorCard.swift; sourceTree = "<group>"; };
+		F5AC10000000000000000007 /* LayoutMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LayoutMetrics.swift; path = App/Models/LayoutMetrics.swift; sourceTree = "<group>"; };
 		F688A5AC1A2B40178A7C72FD /* RepositoryOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RepositoryOverviewView.swift; path = App/Views/RepositoryOverviewView.swift; sourceTree = "<group>"; };
 		F7C44FFF40214773A687078E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = Localizable.xcstrings; path = App/Resources/Localizable.xcstrings; sourceTree = "<group>"; };
 		F9B47C22892D497FB697C5D8 /* BuildCommandBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BuildCommandBuilder.swift; path = App/Models/BuildCommandBuilder.swift; sourceTree = "<group>"; };
@@ -583,8 +583,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
@@ -717,8 +717,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
