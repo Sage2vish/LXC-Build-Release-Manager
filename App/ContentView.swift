@@ -108,6 +108,16 @@ struct ContentView: View {
                     repository: store.selectedRepository,
                     preferences: preferencesStore.preferences
                 )
+                // The same vertical edge the top bar has where it meets the sidebar. Without it
+                // the strip runs into the column and the two bars stop matching.
+                .overlay(alignment: .leading) {
+                    if sidebarInset > 0 {
+                        Rectangle()
+                            .fill(Color(nsColor: .separatorColor))
+                            .frame(width: 1)
+                            .opacity(preferencesStore.preferences.reduceTransparency ? 0.8 : 1)
+                    }
+                }
                 .padding(.leading, sidebarInset)
                 .padding(.trailing, detailPanelInset)
             }
@@ -561,10 +571,11 @@ struct ContentView: View {
             // background, so the list brings none of its own.
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            // The list's section rules land directly on top of the box the rows are drawn in, so
-            // the box and the header above it read as one welded shape. The header's own spacing
-            // separates them instead.
-            .listSectionSeparator(.hidden)
+            // Every rule the list would draw of its own lands on the box the rows are drawn in —
+            // under the header, and under the last row of each group — so the box comes out with a
+            // second line across its corners. The box draws its own edges; the list draws none.
+            .listSectionSeparator(.hidden, edges: .all)
+            .listRowSeparator(.hidden, edges: .all)
             .environment(\.defaultMinListRowHeight, 0)
             .navigationTitle("Build Manager")
             // The single-value form pins the column and removes the drag handle. min/ideal/max
@@ -655,11 +666,16 @@ struct ContentView: View {
         // One glass for the whole column, and the same one the strip above it is painted with, so
         // the sidebar reads as a single surface running from the top of the window to the bottom
         // rather than as a panel with a differently-frosted cap.
+        //
+        // The negative padding is for the bottom: SwiftUI lays a split view's sidebar out in a
+        // pane inset from the window's bottom edge, and glass that stops where the pane stops
+        // leaves a band of bare window under the column and a rounded corner floating above it.
         .background(
             GlassSurface(
                 .ultraThin,
                 reduceTransparency: preferencesStore.preferences.reduceTransparency
             )
+            .padding(.bottom, -24)
         )
     }
 }
