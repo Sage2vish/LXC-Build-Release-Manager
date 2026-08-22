@@ -54,6 +54,68 @@ final class BuildWorkspaceTests: XCTestCase {
         XCTAssertEqual(discovered.parameters.first?.kind, .choice)
     }
 
+    func testRepositoryIdentityScanCountsScriptsLogsAndMarkdown() async throws {
+        let repositoryURL = temporaryDirectory.appendingPathComponent("IdentityRepo", isDirectory: true)
+        let scriptsDirectory = repositoryURL.appendingPathComponent("build/scripts", isDirectory: true)
+        let logsDirectory = repositoryURL.appendingPathComponent("build/logs", isDirectory: true)
+        let docsDirectory = repositoryURL.appendingPathComponent("Docs", isDirectory: true)
+        let skippedDirectory = repositoryURL.appendingPathComponent("node_modules", isDirectory: true)
+
+        try FileManager.default.createDirectory(at: scriptsDirectory, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: logsDirectory, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: docsDirectory, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: skippedDirectory, withIntermediateDirectories: true)
+
+        try "#!/bin/zsh\necho build\n".write(
+            to: scriptsDirectory.appendingPathComponent("build-ios.sh"),
+            atomically: true,
+            encoding: .utf8
+        )
+        try "log\n".write(
+            to: logsDirectory.appendingPathComponent("build-2026-08-22-10-00-00.log"),
+            atomically: true,
+            encoding: .utf8
+        )
+        try "ignore\n".write(
+            to: logsDirectory.appendingPathComponent("notes.txt"),
+            atomically: true,
+            encoding: .utf8
+        )
+        try "# Read Me\n".write(
+            to: repositoryURL.appendingPathComponent("README.md"),
+            atomically: true,
+            encoding: .utf8
+        )
+        try "# Guide\n".write(
+            to: docsDirectory.appendingPathComponent("Guide.markdown"),
+            atomically: true,
+            encoding: .utf8
+        )
+        try "# Dependency\n".write(
+            to: skippedDirectory.appendingPathComponent("README.md"),
+            atomically: true,
+            encoding: .utf8
+        )
+
+        let repository = Repository(name: "IdentityRepo", source: .local(path: repositoryURL.path))
+        let result = await RepositoryIdentityScanner.scan(
+            repository: repository,
+            preferences: .recommendedDefaults,
+            additionalScriptPaths: []
+        ) { _ in }
+
+        XCTAssertEqual(result[.scripts].count, 1)
+        XCTAssertEqual(result[.logs].count, 1)
+        XCTAssertEqual(result[.logs].skippedCount, 1)
+        XCTAssertEqual(result[.markdown].count, 2)
+        XCTAssertEqual(result[.markdown].skippedCount, 1)
+        XCTAssertTrue(result.isFinished)
+        guard case .success(let scripts) = result.buildScanResult else {
+            return XCTFail("Expected the build scan result to be cached")
+        }
+        XCTAssertEqual(scripts.map(\.fileName), ["build-ios.sh"])
+    }
+
     func testCommandBuilderValidatesAndBuildsArgumentsOnce() throws {
         let script = BuildScript(
             fileName: "release.sh",

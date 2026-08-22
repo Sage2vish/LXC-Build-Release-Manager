@@ -7,8 +7,12 @@ struct ContentView: View {
     @StateObject private var workspaceStateStore = BuildWorkspaceStateStore.shared
     @StateObject private var runners = BuildRunnerRegistry.shared
     @StateObject private var preferencesStore = PreferencesStore.shared
+    @StateObject private var identityScanStore = RepositoryIdentityScanStore.shared
     @State private var isAddingRepository = false
-    @Environment(\.openSettings) private var openSettings
+    @State private var isIdentityScanPromptPresented = false
+    @State private var pendingIdentityScanRepository: Repository?
+    @State private var identityScanRepository: Repository?
+    @State private var forceIdentityRescan = false
 
     /// One-way: the preference decides whether the sidebar is showing, and nothing the split
     /// view reports back can change it.
@@ -24,12 +28,6 @@ struct ContentView: View {
             get: { preferencesStore.preferences.showRepositorySidebar ? .all : .detailOnly },
             set: { _ in }
         )
-    }
-
-    private func toggleSidebarPaths() {
-        var updated = preferencesStore.preferences
-        updated.showRepositoryPathInSidebar.toggle()
-        preferencesStore.save(updated)
     }
 
     private func toggleSidebar() {
@@ -156,6 +154,39 @@ struct ContentView: View {
         .sheet(isPresented: $isAddingRepository) {
             AddRepositorySheet(store: store, isPresented: $isAddingRepository)
         }
+        .alert("Scan Repository?", isPresented: $isIdentityScanPromptPresented) {
+            Button("Skip", role: .cancel) {
+                pendingIdentityScanRepository = nil
+            }
+            Button("Scan Now") {
+                let repository = pendingIdentityScanRepository
+                pendingIdentityScanRepository = nil
+                forceIdentityRescan = false
+                DispatchQueue.main.async {
+                    identityScanRepository = repository
+                }
+            }
+        } message: {
+            Text("Self-identify build scripts, saved logs, and Markdown documents before opening the workspace.")
+        }
+        .sheet(item: $identityScanRepository) { repository in
+            RepositoryIdentityScanSheet(
+                repository: repository,
+                preferences: preferencesStore.preferences,
+                additionalScriptPaths: workspaceStateStore.state(for: repository.id).addedScriptPaths,
+                forceRescan: forceIdentityRescan,
+                scanStore: identityScanStore,
+                onClose: {
+                    identityScanRepository = nil
+                    forceIdentityRescan = false
+                }
+            )
+        }
+        .onChange(of: store.selectedRepositoryID) { _, selectedID in
+            guard let selectedID,
+                  let repository = store.repositories.first(where: { $0.id == selectedID }) else { return }
+            promptIdentityScanIfNeeded(for: repository)
+        }
         .onAppear {
             let delegate = NSApp.delegate as? AppDelegate
             delegate?.runners = runners
@@ -235,8 +266,13 @@ struct ContentView: View {
                     historyStore: historyStore,
                     workspaceStateStore: workspaceStateStore,
                     preferencesStore: preferencesStore,
+                    identityScanStore: identityScanStore,
                     runners: runners,
                     runner: runners.runner(for: repository.id),
+                    onScanRepository: { repository in
+                        forceIdentityRescan = true
+                        identityScanRepository = repository
+                    },
                     initialTab: RepositoryDetailView.DetailTab(preferencesStore.preferences.defaultLaunchTab),
                     panelWidth: $detailPanelWidth
                 )
@@ -339,343 +375,29 @@ struct ContentView: View {
 
     }
 
-    private struct SidebarWidthEnforcer: NSViewRepresentable {
-        let targetWidth: CGFloat
-
-        final class Coordinator {
-            var applied = false
-        }
-
-        func makeCoordinator() -> Coordinator { Coordinator() }
-        func makeNSView(context: Context) -> NSView { NSView(frame: .zero) }
-
-        func updateNSView(_ nsView: NSView, context: Context) {
-            guard !context.coordinator.applied, targetWidth > 0 else { return }
-            DispatchQueue.main.async {
-                var view: NSView? = nsView
-                while let current = view {
-                    guard let splitView = current as? NSSplitView else {
-                        view = current.superview
-                        continue
-                    }
-                    Self.forgetStoredFrames(named: splitView.autosaveName)
-                    splitView.autosaveName = nil
-                    guard splitView.arrangedSubviews.count > 1 else { return }
-                    splitView.setPosition(targetWidth, ofDividerAt: 0)
-                    context.coordinator.applied = true
-                    return
-                }
-            }
-        }
-
-        /// AppKit writes divider positions into user defaults; leaving them behind means the old
-        /// width returns the moment this enforcement is removed.
-        private static func forgetStoredFrames(named autosaveName: NSSplitView.AutosaveName?) {
-            let defaults = UserDefaults.standard
-            var keys = ["NSSplitView Subview Frames \(autosaveName ?? "")"]
-            keys += defaults.dictionaryRepresentation().keys.filter {
-                $0.hasPrefix("NSSplitView Subview Frames")
-            }
-            for key in Set(keys) { defaults.removeObject(forKey: key) }
-        }
-    }
-
-    private var sortedRepositories: [Repository] {
-        store.repositories.sorted { lhs, rhs in
-            if lhs.isPinned != rhs.isPinned { return lhs.isPinned && !rhs.isPinned }
-            return lhs.lastAccessed > rhs.lastAccessed
-        }
-    }
-
-    private var recentRepositories: [Repository] {
-        let cap = max(0, preferencesStore.preferences.maxRecentRepositories)
-        return Array(store.repositories.sorted { $0.lastAccessed > $1.lastAccessed }.prefix(cap))
-    }
-
-    /// Which piece of the surrounding box a row is responsible for, and whether it is the selected
-    /// one. Looked up rather than zipped in, so the rows keep the identity the list already knows
-    /// them by — pairing each row with an index changes that identity, and two sections listing the
-    /// same repositories then draw each other's rows.
-    private func boxBackground(for repository: Repository, in group: [Repository]) -> ListBoxRowBackground {
-        let index = group.firstIndex(of: repository) ?? 0
-        return ListBoxRowBackground(
-            position: .init(index: index, count: group.count),
-            isSelected: store.selectedRepositoryID == repository.id
-        )
-    }
-
-    /// Extracted from the `sidebar` body: inline, the row plus its context menu and
-    /// accessibility modifiers made the surrounding `List` too large for the type checker.
-    private func repositorySidebarRow(_ repository: Repository) -> some View {
-        RepositoryRow(
-            repository: repository,
-            store: store,
-            showsPath: preferencesStore.preferences.showRepositoryPathInSidebar
-        )
-            .padding(.horizontal, 10)
-            .padding(.vertical, 2)
-            .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
-            .listRowSeparator(.hidden)
-            .contentShape(Rectangle())
-            .onTapGesture { store.select(repository) }
-            .contextMenu { // Screenshot UI Parity: Sidebar - Context menu actions for repository row
-                Button("Reveal in Finder") {
-                    guard repository.source.isLocal else { return }
-                    NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: repository.source.displayPath)])
-                }
-                .disabled(!repository.source.isLocal)
-
-                Button("Open in Terminal") {
-                    guard repository.source.isLocal else { return }
-                    let process = Process()
-                    process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
-                    process.arguments = ["-a", "Terminal", repository.source.displayPath]
-                    try? process.run()
-                }
-                .disabled(!repository.source.isLocal)
-
-                Button("Copy Path") {
-                    NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(repository.source.displayPath, forType: .string)
-                }
-            }
-            // The path stays in the accessible description even when hidden visually.
-            .accessibilityLabel("\(repository.name), \(repository.source.displayPath)")
-            .accessibilityHint("Select repository \(repository.name)")
-    }
-
-    /// Extracted for the same reason as `repositorySidebarRow`.
-    private func recentRepositorySidebarRow(_ repository: Repository) -> some View {
-        // Selection is tracked by the store, not on the model.
-        let isSelected = store.selectedRepositoryID == repository.id
-        return HStack(spacing: 8) {
-            Image(systemName: "clock.arrow.circlepath")
-                .foregroundStyle(.secondary)
-            Text(repository.name)
-                .lineLimit(1)
-                .truncationMode(.tail)
-            Spacer()
-            if repository.isPinned {
-                Image(systemName: "pin.fill")
-                    .foregroundStyle(.yellow)
-                    .accessibilityLabel("Pinned")
-            }
-            if isSelected {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(.tint)
-                    .accessibilityLabel("Selected")
-            }
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
-        .listRowSeparator(.hidden)
-        .contentShape(Rectangle())
-        .onTapGesture { store.select(repository) }
-        .contextMenu { // Screenshot UI Parity: Sidebar - Context menu for recent repository row
-            Button("Reveal in Finder") {
-                guard repository.source.isLocal else { return }
-                NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: repository.source.displayPath)])
-            }
-            .disabled(!repository.source.isLocal)
-
-            Button("Open in Terminal") {
-                guard repository.source.isLocal else { return }
-                let process = Process()
-                process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
-                process.arguments = ["-a", "Terminal", repository.source.displayPath]
-                try? process.run()
-            }
-            .disabled(!repository.source.isLocal)
-
-            Button("Copy Path") {
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(repository.source.displayPath, forType: .string)
-            }
-        }
-        .accessibilityLabel("\(repository.name), \(repository.source.displayPath), recent repository")
-        .accessibilityHint("Select recent repository \(repository.name)")
-    }
-
     private func sidebar(windowWidth: CGFloat) -> some View {
-        VStack(spacing: 0) {
-            // No selection binding: the list's own highlight is a full-width bar that cuts
-            // straight through the box the rows are drawn in. Selection is a tap on the row and a
-            // tint inside the box instead, which is what the recents rows already did.
-            List {
-                // Screenshot UI Parity: Sidebar - Repositories header with minimalistic styling
-                Section {
-                    // One box around the whole list, not one per row: the rows are separated by
-                    // hairlines inside it, and the box's own outline is drawn by its end rows.
-                    ForEach(sortedRepositories) { repository in
-                        repositorySidebarRow(repository)
-                            .listRowBackground(boxBackground(for: repository, in: sortedRepositories))
-                    }
-                } header: {
-                    // Screenshot UI Parity: Sidebar - Clean section header for Repositories
-                    HStack(spacing: 6) {
-                        Text("Repositories")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                            .textCase(nil)
-                            .accessibilityAddTraits(.isHeader)
-                        Spacer()
-                        // The name is identity and always shows; only the path is optional.
-                        Button(action: toggleSidebarPaths) {
-                            Image(systemName: preferencesStore.preferences.showRepositoryPathInSidebar
-                                  ? "text.alignleft"
-                                  : "text.justify.left")
-                        }
-                        .buttonStyle(.borderless)
-                        .help(preferencesStore.preferences.showRepositoryPathInSidebar
-                              ? "Hide repository paths"
-                              : "Show repository paths")
-                        .accessibilityLabel(preferencesStore.preferences.showRepositoryPathInSidebar
-                                            ? "Hide repository paths"
-                                            : "Show repository paths")
-                    }
-                    .padding(.leading, 4)
-                    .padding(.top, 4)
-                    .padding(.bottom, 6)
-                }
-
-                // Screenshot UI Parity: Sidebar - Recent Repositories section with header and icons for each
-                if !recentRepositories.isEmpty {
-                    Section {
-                        // Identified by position, not by repository: these are the same
-                        // repositories the section above lists, and two rows in one list carrying
-                        // the same identity end up drawing each other's contents.
-                        ForEach(Array(recentRepositories.enumerated()), id: \.offset) { index, repository in
-                            recentRepositorySidebarRow(repository)
-                                .listRowBackground(
-                                    ListBoxRowBackground(
-                                        position: .init(index: index, count: recentRepositories.count),
-                                        isSelected: store.selectedRepositoryID == repository.id
-                                    )
-                                )
-                        }
-                    } header: {
-                        Text("Recent repositories")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                            .textCase(nil)
-                            .padding(.leading, 4)
-                            .padding(.top, 10)
-                            .padding(.bottom, 6)
-                            .accessibilityAddTraits(.isHeader)
-                    }
-                }
+        RepositorySidebarView(
+            windowWidth: windowWidth,
+            seedWidth: seedWidth,
+            sidebarWidth: $sidebarWidth,
+            store: store,
+            preferencesStore: preferencesStore,
+            onSelectRepository: { repository in
+                store.select(repository)
+                promptIdentityScanIfNeeded(for: repository)
+            },
+            onOpenLocalRepository: { repository in
+                promptIdentityScanIfNeeded(for: repository)
             }
-            // Plain, not `.sidebar`: the sidebar style insets and rounds every row on its own,
-            // which fights a box drawn around the whole group. The panel's glass is its
-            // background, so the list brings none of its own.
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            // Every rule the list would draw of its own lands on the box the rows are drawn in —
-            // under the header, and under the last row of each group — so the box comes out with a
-            // second line across its corners. The box draws its own edges; the list draws none.
-            .listSectionSeparator(.hidden, edges: .all)
-            .listRowSeparator(.hidden, edges: .all)
-            .environment(\.defaultMinListRowHeight, 0)
-            .navigationTitle("Build Manager")
-            // The single-value form pins the column and removes the drag handle. min/ideal/max
-            // keeps it draggable, and every number is a fraction of the window from
-            // `LayoutMetrics` — the sidebar starts at 20%.
-            .navigationSplitViewColumnWidth(
-                min: LayoutMetrics.sidebarColumn(for: windowWidth).min,
-                // Seeded once. A live ideal would drag the column back under the pointer.
-                ideal: LayoutMetrics.sidebarColumn(for: seedWidth ?? windowWidth).ideal,
-                max: LayoutMetrics.sidebarColumn(for: windowWidth).max
-            )
-            // Clears the divider position AppKit restored from an earlier session and applies
-            // the proportional width once, so 20% is what actually appears.
-            .background(
-                SidebarWidthEnforcer(
-                    targetWidth: LayoutMetrics.sidebarColumn(for: seedWidth ?? windowWidth).ideal
-                )
-            )
-            // SwiftUI's built-in toggle writes through the visibility binding, which we ignore,
-            // so it would look broken. The replacement lives on the split view, where it stays
-            // reachable once the sidebar is hidden.
-            .toolbar(removing: .sidebarToggle)
-
-            // Screenshot UI Parity: Sidebar - Footer with separated buttons and pastel styling
-            VStack(spacing: 8) {
-                Button {
-                    if let path = presentLocalFolderPickerPath() {
-                        store.addLocalRepository(path: path)
-                    }
-                } label: {
-                    Label("Open Repository…", systemImage: "folder")
-                        .frame(maxWidth: .infinity)
-                        .frame(minHeight: 34)
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .help("Add a local repository folder")
-                .accessibilityLabel("Open Repository")
-                .accessibilityHint("Choose a local folder to add as a repository")
-
-                Button {
-                    openSettings()
-                } label: {
-                    Label("Preferences", systemImage: "gearshape")
-                        .frame(maxWidth: .infinity)
-                        .frame(minHeight: 34)
-                }
-                .buttonStyle(.borderless)
-                .foregroundStyle(.secondary)
-                .help("Open application preferences")
-                .accessibilityLabel("Preferences")
-                .accessibilityHint("Open application preferences")
-            }
-            .padding(.horizontal, 10)
-            .padding(.top, 12)
-            .padding(.bottom, 14)
-            // The same glass as everything else, and the rule above it is that glass's own top
-            // edge rather than a `Divider` stacked on the list — which is what made the footer and
-            // the box above it look welded together.
-            .background(
-                GlassSurface(
-                    .ultraThin,
-                    hairline: .top,
-                    reduceTransparency: preferencesStore.preferences.reduceTransparency
-                )
-            )
-        }
-        // The strip begins where this column ends, so there is nothing to keep clear of: the
-        // sidebar runs from the top of the window to the bottom, footer included.
-        //
-        // Its width is what both bands start at, so it has to be reported. Whole points, never a
-        // transient zero — a number that flickers is a layout loop.
-        .onGeometryChange(for: CGFloat.self) { geometry in
-            geometry.size.width.rounded()
-        } action: { width in
-            guard width > 0 else { return }
-            sidebarWidth = width
-        }
-        .overlay {
-            if store.repositories.isEmpty {
-                ContentUnavailableView(
-                    "No Repositories",
-                    systemImage: "folder.badge.plus",
-                    description: Text("Add a local folder or GitHub URL to get started.")
-                )
-            }
-        }
-        // One glass for the whole column, and the same one the strip above it is painted with, so
-        // the sidebar reads as a single surface running from the top of the window to the bottom
-        // rather than as a panel with a differently-frosted cap.
-        //
-        // The negative padding is for the bottom: SwiftUI lays a split view's sidebar out in a
-        // pane inset from the window's bottom edge, and glass that stops where the pane stops
-        // leaves a band of bare window under the column and a rounded corner floating above it.
-        .background(
-            GlassSurface(
-                .ultraThin,
-                reduceTransparency: preferencesStore.preferences.reduceTransparency
-            )
-            .padding(.bottom, -24)
         )
+    }
+
+    private func promptIdentityScanIfNeeded(for repository: Repository) {
+        guard repository.source.isLocal else { return }
+        guard !identityScanStore.hasCompletedResult(for: repository.id) else { return }
+        guard !isIdentityScanPromptPresented else { return }
+        guard identityScanRepository?.id != repository.id else { return }
+        pendingIdentityScanRepository = repository
+        isIdentityScanPromptPresented = true
     }
 }

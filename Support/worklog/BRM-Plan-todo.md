@@ -21,16 +21,16 @@ work there. Do not add task detail to this file — it is an index and a map, no
 
 ## Where the work stands
 
-**718 of 889 items done — 171 still pending (81%).**
+**734 of 901 items done — 167 still pending (81%).**
 
 | Area | Done | Pending | Status |
 | --- | ---: | ---: | --- |
-| The window, by region | 111 | 38 | In progress |
-| Inside the main panel | 29 | 12 | In progress |
+| The window, by region | 125 | 34 | In progress |
+| Inside the main panel | 30 | 12 | In progress |
 | The six tabs, inside the container | 272 | 15 | In progress |
 | Features | 203 | 40 | In progress |
-| Engineering, quality, and release | 103 | 66 | In progress |
-| **All areas** | **718** | **171** | **In progress** |
+| Engineering, quality, and release | 104 | 66 | In progress |
+| **All areas** | **734** | **167** | **In progress** |
 
 ## The plans, by area
 
@@ -41,11 +41,11 @@ The app is four regions. Each owns its own plan, so a change has exactly one hom
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
 | [Plan-AppShellUI-todo](Plan-AppShellUI-todo.md) | Whole window — background, material and glass language, theme and accent | 21 | 20 | In progress |
-| [Plan-LeftSidebar-todo](Plan-LeftSidebar-todo.md) | Left sidebar — repositories, recents, add/remove, the footer buttons | 44 | 4 | In progress |
+| [Plan-LeftSidebar-todo](Plan-LeftSidebar-todo.md) | Left sidebar — repositories, recents, add/remove, the footer buttons | 58 | 0 | Done ✅ |
 | [Plan-MainPanel-todo](Plan-MainPanel-todo.md) | Main panel — index over the three bands and six tabs below | — | — | Index only |
 | [Plan-DetailViewPanel-todo](Plan-DetailViewPanel-todo.md) | Detail View panel — the right inspector and its cards | 26 | 9 | In progress |
 | [Plan-StatusBar-todo](Plan-StatusBar-todo.md) | Status bar — repository, branch, platform, auto-detect chips | 20 | 5 | In progress |
-| **The window, by region — subtotal** | | **111** | **38** | **In progress** |
+| **The window, by region — subtotal** | | **125** | **34** | **In progress** |
 
 ### Inside the main panel
 
@@ -53,10 +53,10 @@ The centre column is three stacked bands, each with its own plan.
 
 | Plan | What it owns | Done | Pending | Status |
 | --- | --- | ---: | ---: | --- |
-| [Plan-MainPanel-Header-todo](Plan-MainPanel-Header-todo.md) | Header — repository name, badge, path lines, Reveal / Terminal / Copy | 10 | 5 | In progress |
+| [Plan-MainPanel-Header-todo](Plan-MainPanel-Header-todo.md) | Header — repository name, badge, path lines, Reveal / Terminal / Copy | 11 | 5 | In progress |
 | [Plan-MainPanel-Toolbar-todo](Plan-MainPanel-Toolbar-todo.md) | Toolbar — the six-tab picker and the rule beneath it | 12 | 5 | In progress |
 | [Plan-MainPanel-Container-todo](Plan-MainPanel-Container-todo.md) | Container — work-area surface, padding, scrolling, card treatment | 7 | 2 | In progress |
-| **Inside the main panel — subtotal** | | **29** | **12** | **In progress** |
+| **Inside the main panel — subtotal** | | **30** | **12** | **In progress** |
 
 ### The six tabs, inside the container
 
@@ -92,10 +92,10 @@ Work that has no visible surface of its own, but decides whether the visible one
 | --- | --- | ---: | ---: | --- |
 | [Plan-CodeRefactoring-Reusability-todo](Plan-CodeRefactoring-Reusability-todo.md) | Feature extraction, dependency seams, reuse — behaviour preserving | 31 | 38 | In progress |
 | [Plan-XcodeProject-todo](Plan-XcodeProject-todo.md) | Target membership, build settings, schemes, project-file hygiene | 13 | 12 | In progress |
-| [Plan-QualityVerification-todo](Plan-QualityVerification-todo.md) | Non-functional targets, tests, GUI coverage, the evidence ledger | 19 | 6 | In progress |
+| [Plan-QualityVerification-todo](Plan-QualityVerification-todo.md) | Non-functional targets, tests, GUI coverage, the evidence ledger | 20 | 6 | In progress |
 | [Plan-ReleasePackaging-todo](Plan-ReleasePackaging-todo.md) | Release script, staging, the `.dmg`, tags, signing, publication | 15 | 10 | In progress |
 | [Plan-ContextArchitectureVisuals-todo](Plan-ContextArchitectureVisuals-todo.md) | The SVG diagram set and its documentation wiring | 25 | 0 | Done ✅ |
-| **Engineering, quality, and release — subtotal** | | **103** | **66** | **In progress** |
+| **Engineering, quality, and release — subtotal** | | **104** | **66** | **In progress** |
 
 <!-- plan-index:end -->
 

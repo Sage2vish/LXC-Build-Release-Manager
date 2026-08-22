@@ -20,6 +20,9 @@ The key boundary is intentional: GitHub URLs can be inspected through the Conten
 - The Xcode project lives at the repository root and targets macOS 15 or later.
 - The app shell uses a `NavigationSplitView` with a repository sidebar, repository detail workspace, and optional right-side inspector.
 - The detail workspace owns Build, Logs, History, Overview, and Settings surfaces for the selected repository.
+- Repository open/selection can start a self-identification scan that counts build scripts, saved
+  logs, and Markdown documents in one progress sheet before handing the session result to the
+  repository workspace.
 - The app has no third-party package dependency; local files and Apple system frameworks are the baseline.
 
 ## Runtime responsibilities
@@ -27,6 +30,7 @@ The key boundary is intentional: GitHub URLs can be inspected through the Conten
 | Responsibility | Main implementation area | Persistent result |
 | --- | --- | --- |
 | Repository input and recent list | `App/Services/RepositoryStore.swift` | `~/Library/Application Support/LXC-Build-Release-Manager/projects.json` |
+| Repository self-identification | `App/Services/RepositoryIdentityScanStore.swift`, `App/Views/RepositoryIdentityScanSheet.swift` | Session cache only; no persistent file |
 | Script discovery and path safety | `App/Services/BuildScriptScanner.swift` and `DeepScriptSearch.swift` | In-memory scan result plus workspace selections |
 | Build execution | `App/Services/BuildRunner.swift` | Live output and a `BuildRecord` |
 | History and statistics | `App/Services/BuildHistoryStore.swift` | `~/Library/Application Support/LXC-Build-Release-Manager/build-history.json` |
@@ -41,6 +45,7 @@ The key boundary is intentional: GitHub URLs can be inspected through the Conten
 | GitHub discovery | `BuildScriptScanner` can inspect a GitHub Contents API response and represent remote scripts as metadata. | `App/Services/BuildScriptScanner.swift` |
 | Local execution | `BuildRunner` launches a configured local shell process; remote script metadata is not executable. | `App/Services/BuildRunner.swift` |
 | Build evidence | `BuildHistoryStore` records results and `LogFileService` writes repository-local log files. | `App/Services/BuildHistoryStore.swift`, `App/Services/LogFileService.swift` |
+| Repository identity scan | Local repository selection offers a scan dialog with separate progress for scripts, logs, and Markdown; the result is cached for the session and surfaced in Build, Docs, and Overview. | `App/Services/RepositoryIdentityScanStore.swift`, `App/Views/RepositoryIdentityScanSheet.swift` |
 | Release packaging | `release.sh` builds a Release app, stages the `.app`, and creates a dated DMG under `version/`. | `Support/build-release/scripts/release.sh` |
 | GitHub distribution | A tag or release can be a later handoff after local verification; it is not presented as the local build executor. | Release workflow documentation |
 

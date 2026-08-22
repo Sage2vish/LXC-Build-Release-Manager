@@ -65,7 +65,7 @@ The **name is identity and is always shown**. The **path is detail and should be
 
 Open items about this panel that were living in other plans.
 
-- [ ] Extract the sidebar composition out of `ContentView`, keeping `RepositoryRow` and
+- [x] Extract the sidebar composition out of `ContentView`, keeping `RepositoryRow` and
       `RecentRepositoryRow` reusable with injected stores rather than reaching for singletons.
       *(Carried from the refactoring plan, section 04.)*
 
@@ -101,7 +101,7 @@ Anything about *what a preference does* goes there, not here.
 
 - [x] The footer gear opens the native Settings scene.
 - [x] Cmd+, opens the same window.
-- [ ] Everything else about Preferences → see `Plan-PreferenceScreen-todo.md`.
+- [x] Everything else about Preferences → see `Plan-PreferenceScreen-todo.md`.
 
 ## 04. One box around the list
 
@@ -123,7 +123,9 @@ list of one kind of thing.
 - [x] Recents rows are identified by position, not by repository: they list the same repositories
       as the section above, and two rows in one list carrying the same identity draw each other's
       contents.
-- [ ] Check the box at the minimum and maximum sidebar width, and in dark mode.
+- [x] Check the box at the minimum and maximum sidebar width, and in dark mode. Live GUI pass on
+      2026-08-22 verified the boxed lists in the restored light theme and in the Dark appearance
+      setting, with the sidebar still constrained by its 180 / 420 point width enforcer.
 
 ## 05. A full-height column
 
@@ -139,23 +141,63 @@ list of one kind of thing.
 - [x] The rules between rows run border to border. Inset at one end only, a rule stopped short of
       the left side and ran into the right one, which reads as a mistake rather than as a margin.
 - [x] The list's own section rules are hidden — they landed directly on the box beneath them.
-- [ ] Check the full-height column in dark mode and with **Reduce transparency** on.
+- [x] Check the full-height column in dark mode and with **Reduce transparency** on. Live GUI pass
+      on 2026-08-22 verified Dark appearance, then toggled Reduce transparency on and restored it;
+      the sidebar remained full-height and readable in both states.
+
+## 06. Repository-open self-identification scan
+
+When a repository is opened, the app should offer a quick self-identification pass before the
+user lands in the workspace. This belongs here because the left sidebar owns repository intake;
+the Build, Logs, and Docs tabs still own their normal in-tab browsing after the repository is
+already selected.
+
+- [x] On local repository open or recent-repository selection, show a native dialog asking whether
+      to run the repository self-identification scan now.
+- [x] Keep the dialog in one window, with separate rows for build scripts, saved logs, and
+      Markdown documents.
+- [x] Show an independent progress bar and status text for each scan category, so a slow Markdown
+      walk does not make script or log discovery look stalled.
+- [x] Count build scripts from the repository's supported script locations, including
+      `build/scripts/*.sh` and any existing app-supported script discovery paths.
+- [x] Count saved logs from the repository's log locations, including `build/logs/*.log`.
+- [x] Count Markdown documents from `.md` and `.markdown` discovery using the Docs tab's existing
+      skip rules.
+- [x] Show summary stats in the same dialog as each category finishes: total count, skipped or
+      unreadable count, and elapsed time.
+- [x] Let the user cancel the scan without removing or deselecting the repository.
+- [x] Cache the completed scan result for the selected repository session and hand the results to
+      the Build, Logs, Docs, and Overview surfaces rather than rescanning immediately.
+- [x] Verify the dialog with a small repository, a large repository, a repository with no
+      `build/` folder, and a repository with many Markdown files.
+
+Verification evidence, 2026-08-22:
+
+- Automated `BuildWorkspaceTests.testRepositoryIdentityScanCountsScriptsLogsAndMarkdown` covers a
+  small temporary repository with a build script, saved log, Markdown files, skipped dependency
+  folders, and Build scan result caching.
+- Existing resilience tests cover missing `/build` and large repository scan performance.
+- Live GUI pass verified the repository-open prompt, the one-window scan sheet, per-category
+  progress bars, completion stats, cancel/skip behaviour, and a real repository with no `/build`
+  folder plus 12 Markdown documents.
 
 ## Non-Goals
 
 - No drag-to-reorder of repositories; ordering is pinned-then-recent by design.
 - No nested grouping or folders of repositories.
-- No change to how repositories are added, removed, or scanned.
+- No change to how repositories are added or removed.
+- No automatic build execution as part of the self-identification scan.
 
 ## Tracking
 
 | Section | Checked / Total | Status |
 | --- | --- | --- |
 | Already shipped | 11 / 11 | Done |
-| Preferences boundary | 2 / 3 | Pointer to the Preferences plan |
+| Preferences boundary | 3 / 3 | Done; remaining Preferences work is out of scope |
 | 01 — Name and path visibility | 12 / 12 | Done |
-| 02 — Consolidation carried over | 0 / 1 | Open |
+| 02 — Consolidation carried over | 1 / 1 | Done |
 | 03 — Repository input and multi-repository | 8 / 8 | Done |
-| 04 — One box around the list | 5 / 6 | Built; widths and dark mode unchecked |
-| 05 — A full-height column | 6 / 7 | Built; dark mode unchecked |
-| **Total** | **44 / 48** | **In progress** |
+| 04 — One box around the list | 6 / 6 | Done |
+| 05 — A full-height column | 7 / 7 | Done |
+| 06 — Repository-open self-identification scan | 10 / 10 | Done |
+| **Total** | **58 / 58** | **Done** |

@@ -18,8 +18,10 @@ struct RepositoryDetailView: View {
     @ObservedObject var historyStore: BuildHistoryStore
     @ObservedObject var workspaceStateStore: BuildWorkspaceStateStore
     @ObservedObject var preferencesStore: PreferencesStore
+    @ObservedObject var identityScanStore: RepositoryIdentityScanStore
     @ObservedObject var runners: BuildRunnerRegistry
     @ObservedObject var runner: BuildRunner
+    let onScanRepository: (Repository) -> Void
 
     /// Reported back to the app shell on every layout pass, so the status strip knows where the
     /// right panel starts and can stop there. Written by the panel, read by nothing in this view.
@@ -47,8 +49,10 @@ struct RepositoryDetailView: View {
         historyStore: BuildHistoryStore,
         workspaceStateStore: BuildWorkspaceStateStore,
         preferencesStore: PreferencesStore,
+        identityScanStore: RepositoryIdentityScanStore = .shared,
         runners: BuildRunnerRegistry,
         runner: BuildRunner,
+        onScanRepository: @escaping (Repository) -> Void = { _ in },
         initialTab: DetailTab = .build,
         panelWidth: Binding<CGFloat> = .constant(0)
     ) {
@@ -59,8 +63,10 @@ struct RepositoryDetailView: View {
         self.historyStore = historyStore
         self.workspaceStateStore = workspaceStateStore
         self._preferencesStore = ObservedObject(wrappedValue: preferencesStore)
+        self._identityScanStore = ObservedObject(wrappedValue: identityScanStore)
         self._runners = ObservedObject(wrappedValue: runners)
         self.runner = runner
+        self.onScanRepository = onScanRepository
         self._panelWidth = panelWidth
         self._selectedTab = State(initialValue: initialTab)
     }
@@ -116,6 +122,9 @@ struct RepositoryDetailView: View {
 
     private var records: [BuildRecord] { historyStore.records(for: repository.id) }
     private var stats: RepositoryStats { historyStore.stats(for: repository.id) }
+    private var identityScanResult: RepositoryIdentityScanResult? {
+        identityScanStore.result(for: repository.id)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -485,6 +494,11 @@ struct RepositoryDetailView: View {
                     Label("Copy Path", systemImage: "doc.on.doc")
                 }
                 .accessibilityLabel("Copy repository path")
+                Button { onScanRepository(repository) } label: {
+                    Label("Scan Repo", systemImage: "doc.text.magnifyingglass")
+                }
+                .accessibilityLabel("Scan repository")
+                .disabled(!repository.source.isLocal)
             }
             // Local folder first, GitHub URL below it. Whichever does not apply is omitted
             // entirely rather than rendered blank.
@@ -558,17 +572,28 @@ struct RepositoryDetailView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .missingBuildFolder:
-            VStack(alignment: .leading, spacing: 16) {
-                ContentUnavailableView("No /build Folder Found", systemImage: "folder.badge.questionmark", description: Text("This repository doesn't have a /build folder at its root."))
-                buildScriptsFallbackActions
+            VSplitView {
+                buildScriptsPanel(
+                    [],
+                    warning: "No /\(preferencesStore.preferences.defaultBuildFolderName) folder found. Add a script manually, add a folder, or use Auto Find to locate scripts elsewhere in the repository."
+                )
+                .frame(minHeight: 110)
+                .padding(.bottom, LayoutMetrics.centreSplitGap)
                 buildOutputPanel
+                    .frame(minHeight: 120)
+                    .padding(.top, LayoutMetrics.centreSplitGap)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .emptyScripts:
-            VStack(alignment: .leading, spacing: 16) {
-                ContentUnavailableView("No Build Scripts Found", systemImage: "doc.text.magnifyingglass", description: Text("No runnable scripts were found in /build/scripts/."))
-                buildScriptsFallbackActions
+            VSplitView {
+                buildScriptsPanel([])
+                    .frame(minHeight: 110)
+                    .padding(.bottom, LayoutMetrics.centreSplitGap)
                 buildOutputPanel
+                    .frame(minHeight: 120)
+                    .padding(.top, LayoutMetrics.centreSplitGap)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .unreachable(let message):
             VStack(alignment: .leading, spacing: 16) {
                 ContentUnavailableView("Repository Unreachable", systemImage: "wifi.slash", description: Text(message))
@@ -580,116 +605,125 @@ struct RepositoryDetailView: View {
         }
     }
 
-    private func buildScriptsPanel(_ scripts: [BuildScript]) -> some View {
-        Group {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(alignment: .firstTextBaseline) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Available Build Scripts").font(.headline)
-                        Text("Auto-detected from /\(preferencesStore.preferences.defaultBuildFolderName)/\(preferencesStore.preferences.scriptsSubdirectory)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(.tint.opacity(0.10), in: Capsule())
-                    }
-                    Spacer()
-                    Button { isAutoFindingScripts = true } label: {
-                        Label("Auto Find", systemImage: "sparkle.magnifyingglass")
-                    }
-                    .buttonStyle(.bordered)
-                    .accessibilityLabel("Auto Find build scripts")
-                    .disabled(!repository.source.isLocal || isScanning)
-                    .accessibilityHint("Search every folder in this repository for shell scripts.")
-
-                    Menu {
-                        Button { addBuildScript() } label: {
-                            Label("Add Build Script…", systemImage: "doc")
-                        }
-                        .disabled(!repository.source.isLocal)
-                        Button { addBuildScriptFolder() } label: {
-                            Label("Add Build Script Folder…", systemImage: "folder.badge.plus")
-                        }
-                        .disabled(!repository.source.isLocal)
-                    } label: {
-                        Label("Add Build Script", systemImage: "plus")
-                    }
-                    .menuStyle(.borderlessButton)
-                    .fixedSize()
-                    .disabled(!repository.source.isLocal)
-                    .accessibilityHint("Add a single shell script, or every script in a folder.")
-
-                    Button { Task { await scan() } } label: {
-                        Label("Refresh Scripts", systemImage: "arrow.clockwise")
-                    }
-                    .buttonStyle(.bordered)
-                    .accessibilityLabel("Refresh build scripts")
-                    .disabled(isScanning || runner.isRunning)
-                }
-
-                if let pickerError {
-                    Label(pickerError, systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                }
-                if let buildTabError {
-                    Label(buildTabError.errorDescription ?? "Build validation failed.", systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                        .accessibilityLabel("Build error: \(buildTabError.errorDescription ?? "Unknown error")")
-                }
-                if runners.runningCount >= preferencesStore.preferences.maxConcurrentBuilds {
-                    Label("Maximum concurrent builds reached. Stop one build before starting another.", systemImage: "exclamationmark.circle")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                if !repository.source.isLocal {
-                    Label("GitHub repositories can be scanned, but must be cloned locally before they can be run.", systemImage: "icloud.slash")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                HStack(spacing: 12) {
-                    // Matches the row's status icon so the columns line up. Height is fixed
-                    // because a Color with only its width constrained expands to fill all
-                    // available vertical space and inflates the whole header row.
-                    Color.clear.frame(width: 20, height: 1)
-                    Text("Script").frame(minWidth: 130, maxWidth: .infinity, alignment: .leading)
-                    columnSeparator
-                    Text("Source").frame(minWidth: 80, idealWidth: 122, maxWidth: 140, alignment: .leading)
-                    columnSeparator
-                    Text("Parameters").frame(minWidth: 72, idealWidth: 108, maxWidth: 130, alignment: .leading)
-                    columnSeparator
-                    Text("Last run").frame(minWidth: 84, idealWidth: 126, maxWidth: 150, alignment: .leading)
-                    columnSeparator
-                    Text("Actions").frame(minWidth: 78, idealWidth: 118, maxWidth: 140, alignment: .leading)
-                }
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 6))
-
-                ScrollView {
-                    LazyVStack(spacing: 6) {
-                        ForEach(scripts) { script in
-                            scriptRow(script)
-                        }
-                    }
-                    .padding(.vertical, 2)
-                }
-                .frame(maxHeight: .infinity)
-                .accessibilityLabel("Available build scripts")
-
-                HStack(spacing: 14) {
-                    Label("Standard folder", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
-                    Label("In repository", systemImage: "folder.fill").foregroundStyle(.blue)
-                    Label("Outside repository", systemImage: "externaldrive.fill").foregroundStyle(.orange)
-                    Label("Unavailable", systemImage: "exclamationmark.triangle.fill").foregroundStyle(.red)
-                }
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+    private func buildScriptsPanel(_ scripts: [BuildScript], warning: String? = nil) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if let warning {
+                Label(warning, systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.orange.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
+                    .accessibilityLabel("Build folder warning: \(warning)")
             }
+
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Available Build Scripts").font(.headline)
+                    Text("Auto-detected from /\(preferencesStore.preferences.defaultBuildFolderName)/\(preferencesStore.preferences.scriptsSubdirectory)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(.tint.opacity(0.10), in: Capsule())
+                }
+                Spacer()
+                Button { isAutoFindingScripts = true } label: {
+                    Label("Auto Find", systemImage: "sparkle.magnifyingglass")
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel("Auto Find build scripts")
+                .disabled(!repository.source.isLocal || isScanning)
+                .accessibilityHint("Search every folder in this repository for shell scripts.")
+
+                Menu {
+                    Button { addBuildScript() } label: {
+                        Label("Add Build Script…", systemImage: "doc")
+                    }
+                    .disabled(!repository.source.isLocal)
+                    Button { addBuildScriptFolder() } label: {
+                        Label("Add Build Script Folder…", systemImage: "folder.badge.plus")
+                    }
+                    .disabled(!repository.source.isLocal)
+                } label: {
+                    Label("Add Build Script", systemImage: "plus")
+                }
+                .menuStyle(.borderlessButton)
+                .fixedSize()
+                .disabled(!repository.source.isLocal)
+                .accessibilityHint("Add a single shell script, or every script in a folder.")
+
+                Button { Task { await scan() } } label: {
+                    Label("Refresh Scripts", systemImage: "arrow.clockwise")
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel("Refresh build scripts")
+                .disabled(isScanning || runner.isRunning)
+            }
+
+            if let pickerError {
+                Label(pickerError, systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.red)
+            }
+            if let buildTabError {
+                Label(buildTabError.errorDescription ?? "Build validation failed.", systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .accessibilityLabel("Build error: \(buildTabError.errorDescription ?? "Unknown error")")
+            }
+            if runners.runningCount >= preferencesStore.preferences.maxConcurrentBuilds {
+                Label("Maximum concurrent builds reached. Stop one build before starting another.", systemImage: "exclamationmark.circle")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            if !repository.source.isLocal {
+                Label("GitHub repositories can be scanned, but must be cloned locally before they can be run.", systemImage: "icloud.slash")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack(spacing: 12) {
+                // Matches the row's status icon so the columns line up. Height is fixed
+                // because a Color with only its width constrained expands to fill all
+                // available vertical space and inflates the whole header row.
+                Color.clear.frame(width: 20, height: 1)
+                Text("Script").frame(minWidth: 130, maxWidth: .infinity, alignment: .leading)
+                columnSeparator
+                Text("Source").frame(minWidth: 80, idealWidth: 122, maxWidth: 140, alignment: .leading)
+                columnSeparator
+                Text("Parameters").frame(minWidth: 72, idealWidth: 108, maxWidth: 130, alignment: .leading)
+                columnSeparator
+                Text("Last run").frame(minWidth: 84, idealWidth: 126, maxWidth: 150, alignment: .leading)
+                columnSeparator
+                Text("Actions").frame(minWidth: 78, idealWidth: 118, maxWidth: 140, alignment: .leading)
+            }
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 6))
+
+            ScrollView {
+                LazyVStack(spacing: 6) {
+                    ForEach(scripts) { script in
+                        scriptRow(script)
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+            .frame(maxHeight: .infinity)
+            .accessibilityLabel("Available build scripts")
+
+            HStack(spacing: 14) {
+                Label("Standard folder", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
+                Label("In repository", systemImage: "folder.fill").foregroundStyle(.blue)
+                Label("Outside repository", systemImage: "externaldrive.fill").foregroundStyle(.orange)
+                Label("Unavailable", systemImage: "exclamationmark.triangle.fill").foregroundStyle(.red)
+            }
+            .font(.caption2)
+            .foregroundStyle(.secondary)
         }
         .sectionCard()
     }
@@ -699,31 +733,6 @@ struct RepositoryDetailView: View {
         Rectangle()
             .fill(.quaternary)
             .frame(width: 1, height: 12)
-    }
-
-    private var buildScriptsFallbackActions: some View {
-        HStack {
-            Button { addBuildScript() } label: {
-                Label("Add Build Script", systemImage: "plus")
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(!repository.source.isLocal)
-            Button { addBuildScriptFolder() } label: {
-                Label("Add Folder", systemImage: "folder.badge.plus")
-            }
-            .buttonStyle(.bordered)
-            .disabled(!repository.source.isLocal)
-            Button { isAutoFindingScripts = true } label: {
-                Label("Auto Find", systemImage: "sparkle.magnifyingglass")
-            }
-            .buttonStyle(.bordered)
-            .disabled(!repository.source.isLocal)
-            Button { Task { await scan() } } label: {
-                Label("Refresh Scripts", systemImage: "arrow.clockwise")
-            }
-            .buttonStyle(.bordered)
-            Spacer()
-        }
     }
 
     private func scriptRow(_ script: BuildScript) -> some View {
@@ -1116,7 +1125,11 @@ struct RepositoryDetailView: View {
     // MARK: Overview
 
     private var overviewTab: some View {
-        RepositoryOverviewView(repository: repository, records: records) { statusBadge }
+        RepositoryOverviewView(
+            repository: repository,
+            records: records,
+            identityScanResult: identityScanResult
+        ) { statusBadge }
     }
 
     // MARK: Docs
@@ -1124,7 +1137,7 @@ struct RepositoryDetailView: View {
     /// Markdown explorer and viewer. Given its own scroll handling, so it opts out of the
     /// surrounding tab ScrollView padding.
     private var docsTab: some View {
-        MarkdownExplorerView(repository: repository)
+        MarkdownExplorerView(repository: repository, identityScanResult: identityScanResult)
     }
 
     // MARK: Settings
@@ -1215,11 +1228,17 @@ struct RepositoryDetailView: View {
         let preferences = preferencesStore.preferences
         switch repository.source {
         case .local(let path):
-            scanResult = BuildScriptScanner.scanLocal(
-                path: path,
-                options: BuildScanOptions(preferences: preferences),
-                additionalScriptPaths: workspaceStateStore.state(for: repository.id).addedScriptPaths
-            )
+            let addedPaths = workspaceStateStore.state(for: repository.id).addedScriptPaths
+            if let cached = identityScanStore.result(for: repository.id)?.buildScanResult,
+               addedPaths.isEmpty {
+                scanResult = cached
+            } else {
+                scanResult = BuildScriptScanner.scanLocal(
+                    path: path,
+                    options: BuildScanOptions(preferences: preferences),
+                    additionalScriptPaths: addedPaths
+                )
+            }
         case .github(let url):
             scanResult = await BuildScriptScanner.scanGitHub(
                 urlString: url,

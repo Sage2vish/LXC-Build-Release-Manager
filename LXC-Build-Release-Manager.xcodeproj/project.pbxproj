@@ -30,6 +30,7 @@
 		5D97B5F6FBFEF4DFB4D2AFE8 /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C39837CDF536B7DA795EDC /* PreferencesStore.swift */; };
 		6768B6C99A3D4C2A91B2E4E1 /* AppDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DED576C4C74FAEB9764CBE /* AppDataStore.swift */; };
 		690F46128E344F69AEC9E870 /* RepositoryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1244FF58E6B406CBF6C437A /* RepositoryDetailView.swift */; };
+		6A1111111111111111111101 /* RepositoryIdentityScanStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1111111111111111111104 /* RepositoryIdentityScanStore.swift */; };
 		6C53F9FD7E64459199CD6FA6 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06AE7FC5855549EA9655D7D6 /* UpdateChecker.swift */; };
 		746AB1ECFEFE48D2A9EAE9B1 /* BuildScriptTableRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D44A67D24CE4638B3DBF3B8 /* BuildScriptTableRow.swift */; };
 		77A36FA1949672DEBF61E3DB /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BE8CB1B631110E0A535F54 /* PreferencesView.swift */; };
@@ -40,6 +41,7 @@
 		877258AE8BF84E3E8A947999 /* LogPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBF3180683E24138A37766D6 /* LogPane.swift */; };
 		8A0B88E86C774770A10B0AEC /* BuildScriptFolderImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543DCCF6EF334013B8B54853 /* BuildScriptFolderImport.swift */; };
 		9C2A7EF640374F2AB326DC49 /* DeepScriptSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE0D1DE81E304C1E9B2771ED /* DeepScriptSearch.swift */; };
+		9D2222222222222222222201 /* RepositoryIdentityScanSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2222222222222222222204 /* RepositoryIdentityScanSheet.swift */; };
 		9DD375B6E51F32764D466AAF /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B97018D171778322754574B /* Repository.swift */; };
 		A11E00000000000000000001 /* BuildWorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E00000000000000000003 /* BuildWorkspaceTests.swift */; };
 		A11E0000000000000000000F /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11E0000000000000000000E /* XCTest.framework */; };
@@ -49,6 +51,7 @@
 		BDCB0E0C538C4EC2943A822F /* SectionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CFAC8A705C4215BFE88FC2 /* SectionCard.swift */; };
 		BED536027379480A9D9E44D8 /* BuildCommandBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B47C22892D497FB697C5D8 /* BuildCommandBuilder.swift */; };
 		C3A1B2C3D4E5F60718293847 /* BuildWorkspaceStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A1B2C3D4E5F60718293846 /* BuildWorkspaceStateStore.swift */; };
+		C43333333333333333333301 /* RepositorySidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43333333333333333333304 /* RepositorySidebarView.swift */; };
 		C9169590718841339F33A00B /* MarkdownSourceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB8E3851E9A840398C7745D8 /* MarkdownSourceView.swift */; };
 		CAA9465E4934471685850294 /* AppearanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58F8A9711954FC4A3BC8983 /* AppearanceSettings.swift */; };
 		DF274260DB774D35BB57B4B0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51977CC4D41C9D8BB3B28C4D /* ContentView.swift */; };
@@ -100,6 +103,7 @@
 		530D82D215D5463E8AACEC56 /* AutoFindScriptsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AutoFindScriptsSheet.swift; path = App/Views/AutoFindScriptsSheet.swift; sourceTree = "<group>"; };
 		543DCCF6EF334013B8B54853 /* BuildScriptFolderImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BuildScriptFolderImport.swift; path = App/Services/BuildScriptFolderImport.swift; sourceTree = "<group>"; };
 		6683F8665B8D25C1EEDBA90A /* BuildHistoryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildHistoryStore.swift; path = App/Services/BuildHistoryStore.swift; sourceTree = "<group>"; };
+		6A1111111111111111111104 /* RepositoryIdentityScanStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RepositoryIdentityScanStore.swift; path = App/Services/RepositoryIdentityScanStore.swift; sourceTree = "<group>"; };
 		7A00E28C35B04C4B9585B095 /* LogPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LogPresentation.swift; path = App/Models/LogPresentation.swift; sourceTree = "<group>"; };
 		7F1A2B3C4D5E6F708192A0B0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = App/Resources/Assets.xcassets; sourceTree = "<group>"; };
 		80C39837CDF536B7DA795EDC /* PreferencesStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferencesStore.swift; path = App/Services/PreferencesStore.swift; sourceTree = "<group>"; };
@@ -108,6 +112,7 @@
 		8D44A67D24CE4638B3DBF3B8 /* BuildScriptTableRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BuildScriptTableRow.swift; path = App/Views/BuildScriptTableRow.swift; sourceTree = "<group>"; };
 		925160EB5C5E561373968382 /* BuildScript.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildScript.swift; path = App/Models/BuildScript.swift; sourceTree = "<group>"; };
 		9911BF5D489D90AE02811CB3 /* LogFileService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogFileService.swift; path = App/Services/LogFileService.swift; sourceTree = "<group>"; };
+		9D2222222222222222222204 /* RepositoryIdentityScanSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RepositoryIdentityScanSheet.swift; path = App/Views/RepositoryIdentityScanSheet.swift; sourceTree = "<group>"; };
 		9ABC2F1F39F8FB25110771D4 /* Preferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = App/Models/Preferences.swift; sourceTree = "<group>"; };
 		A11E00000000000000000002 /* LXC-Build-Release-ManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "LXC-Build-Release-ManagerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A11E00000000000000000003 /* BuildWorkspaceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BuildWorkspaceTests.swift; sourceTree = "<group>"; };
@@ -117,6 +122,7 @@
 		BE0D1DE81E304C1E9B2771ED /* DeepScriptSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DeepScriptSearch.swift; path = App/Services/DeepScriptSearch.swift; sourceTree = "<group>"; };
 		C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildNotificationService.swift; path = App/Services/BuildNotificationService.swift; sourceTree = "<group>"; };
 		C3A1B2C3D4E5F60718293846 /* BuildWorkspaceStateStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildWorkspaceStateStore.swift; path = App/Services/BuildWorkspaceStateStore.swift; sourceTree = "<group>"; };
+		C43333333333333333333304 /* RepositorySidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RepositorySidebarView.swift; path = App/Views/RepositorySidebarView.swift; sourceTree = "<group>"; };
 		D3D277B8B5BEBF1A5B27C374 /* GitBranchReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GitBranchReader.swift; path = App/Services/GitBranchReader.swift; sourceTree = "<group>"; };
 		D42A86DDBD972CFA5981609E /* BuildRecord.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BuildRecord.swift; path = App/Models/BuildRecord.swift; sourceTree = "<group>"; };
 		D58F8A9711954FC4A3BC8983 /* AppearanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppearanceSettings.swift; path = App/Models/AppearanceSettings.swift; sourceTree = "<group>"; };
@@ -271,6 +277,7 @@
 				23505507A719409CB1BEF33C /* MarkdownFileTree.swift */,
 				06AE7FC5855549EA9655D7D6 /* UpdateChecker.swift */,
 				16F0A7F761D84D0548A244BA /* RepositoryStore.swift */,
+				6A1111111111111111111104 /* RepositoryIdentityScanStore.swift */,
 				E59CC9C6651B79AE5067698B /* BuildScriptScanner.swift */,
 				1A3DA0FF6648759940B42148 /* BuildRunner.swift */,
 				C1D2E3F40123456789ABCDEF /* BuildNotificationService.swift */,
@@ -296,8 +303,10 @@
 				F50575EE30318AEB00601A4A /* RecentRepositoryRow.swift */,
 				E1244FF58E6B406CBF6C437A /* RepositoryDetailView.swift */,
 				150D246C10354CBCA409B7A7 /* RepositoryHistoryView.swift */,
+				9D2222222222222222222204 /* RepositoryIdentityScanSheet.swift */,
 				F688A5AC1A2B40178A7C72FD /* RepositoryOverviewView.swift */,
 				F50575EC30318AE800601A4A /* RepositoryRow.swift */,
+				C43333333333333333333304 /* RepositorySidebarView.swift */,
 				F3CFAC8A705C4215BFE88FC2 /* SectionCard.swift */,
 				F5AC10000000000000000005 /* InspectorCard.swift */,
 				F5AC10000000000000000001 /* AppearanceAndLanguageControls.swift */,
@@ -420,6 +429,7 @@
 				CAA9465E4934471685850294 /* AppearanceSettings.swift in Sources */,
 				F72BE43DFB94459A9184A8D2 /* RepositoryOverviewView.swift in Sources */,
 				39CE00E6F4CF48A0A7E35A17 /* RepositoryHistoryView.swift in Sources */,
+				6A1111111111111111111101 /* RepositoryIdentityScanStore.swift in Sources */,
 				7D48811E21C84684A81E3F27 /* BuildScreenRules.swift in Sources */,
 				690F46128E344F69AEC9E870 /* RepositoryDetailView.swift in Sources */,
 				80CBEB839C5A4A5EB2125C68 /* BuildPresentation.swift in Sources */,
@@ -427,6 +437,7 @@
 				6768B6C99A3D4C2A91B2E4E1 /* AppDataStore.swift in Sources */,
 				746AB1ECFEFE48D2A9EAE9B1 /* BuildScriptTableRow.swift in Sources */,
 				877258AE8BF84E3E8A947999 /* LogPane.swift in Sources */,
+				9D2222222222222222222201 /* RepositoryIdentityScanSheet.swift in Sources */,
 				42D194CFA8AD45AFBF28FC0E /* LogPresentation.swift in Sources */,
 				5BA86873F58547929F408FEE /* AutoFindScriptsSheet.swift in Sources */,
 				9C2A7EF640374F2AB326DC49 /* DeepScriptSearch.swift in Sources */,
@@ -441,6 +452,7 @@
 				F5AC10000000000000000004 /* HistoryFilter.swift in Sources */,
 				4C6B8D1F2A3E4C5D6F708192 /* BuildNotificationService.swift in Sources */,
 				C3A1B2C3D4E5F60718293847 /* BuildWorkspaceStateStore.swift in Sources */,
+				C43333333333333333333301 /* RepositorySidebarView.swift in Sources */,
 				A8F89DB9400C95547D9CE6F9 /* LogFileService.swift in Sources */,
 				50CC22F6B112137092256122 /* BuildHistoryStore.swift in Sources */,
 				F50575EF30318AEB00601A4A /* RecentRepositoryRow.swift in Sources */,

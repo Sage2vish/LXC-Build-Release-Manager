@@ -60,10 +60,12 @@ Adversarial cases covered by tests rather than assumed, in `PerformanceAndResili
 
 - [x] Unit coverage exists for repository persistence, build-script scanning, and log parsing.
 - [x] Four suites in the target: `BuildWorkspaceTests`, `BuildScreenTests`, `MarkdownTests`,
-      `PerformanceAndResilienceTests` — **80 test functions** on the current tree.
-- [x] Record a fresh full-suite run. **80 tests, 0 failures**, run on 2026-08-18 after the
-      workspace flatten and the codename rename. The earlier figures — 14 at the refactor
-      baseline, 21 after the persistence pass, 35 after the preferences audit — were all stale.
+      `PerformanceAndResilienceTests` — plus focused extension suites — **124 test functions** on
+      the current tree.
+- [x] Record a fresh full-suite run. **124 tests, 0 failures**, run on 2026-08-22 after the
+      repository self-identification scan and sidebar extraction. Earlier figures — 14 at the
+      refactor baseline, 21 after the persistence pass, 35 after the preferences audit, and 80
+      after the workspace flatten — are historical baselines only.
 - [ ] Add a UI-test target. It is the blocker on `performAccessibilityAudit()` and on any real
       automated click-through. *(Owned by [`Plan-XcodeProject-todo.md`](Plan-XcodeProject-todo.md)
       section 03 — tracked here because it gates this plan.)*
@@ -83,6 +85,9 @@ app.
 - [x] The Docs tab — file discovery, Preview/Source modes and editing — exercised in the app.
 - [x] Window resize measurements taken from the live window: 1853pt → 1513pt minimum with the
       Detail View panel open.
+- [x] Repository self-identification prompt and scan sheet: prompt on repository selection,
+      one-window scan progress for build scripts / logs / Markdown, completion stats, Skip,
+      Dark appearance, and Reduce transparency fallback.
 
 **Not click-tested yet**
 
@@ -131,6 +136,9 @@ Dated evidence, kept so a claim can be traced back to the run that produced it.
 | 2026-08-18 | `release.sh` end to end | `LXC-Build-Release-Manager-0.1.2.dmg` staged under `version/` |
 | 2026-08-18 | The repository's own `build/scripts/build-debug.sh` and `run-tests.sh` | `BUILD SUCCEEDED`; 80 tests, 0 failures |
 | 2026-08-18 | Full suite after the diagnostics log filename change | 80 tests, 0 failures |
+| 2026-08-22 | Full suite after repository self-identification scan and sidebar extraction | `TEST SUCCEEDED`, **124 tests, 0 failures** |
+| 2026-08-22 | Repository self-identification scanner against a temporary repository with scripts, logs, Markdown, and skipped dependency folders | Counts scripts/logs/Markdown correctly and caches the Build scan result |
+| 2026-08-22 | Live GUI pass for the left sidebar and repository self-identification dialog | Prompt, Scan Now, Skip, one-window progress sheet, Dark appearance, and Reduce transparency fallback verified |
 
 The canonical commands:
 
@@ -154,7 +162,7 @@ xcodebuild -project LXC-Build-Release-Manager.xcodeproj -scheme LXC-Build-Releas
 | --- | --- | --- |
 | 01 — Non-functional targets | 6 / 6 | Met and measured |
 | 02 — Resilience coverage | 6 / 6 | Covered by tests |
-| 03 — Test suite state | 3 / 4 | 80 tests green; UI-test target still open |
-| 04 — GUI click-through | 4 / 8 | Half the app is still compile-and-trace only |
+| 03 — Test suite state | 3 / 4 | 124 tests green; UI-test target still open |
+| 04 — GUI click-through | 5 / 9 | Left sidebar scan flow is click-tested; other workflows remain |
 | 06 — Verification ledger | 0 / 1 | Ongoing |
-| **Total** | **19 / 25** | **In progress** |
+| **Total** | **20 / 26** | **In progress** |

@@ -1,11 +1,11 @@
 # Plan — Main panel: Header (top)
 
-> **Owns:** the top band of the centre column: repository identity, path lines, the three repo-wide actions, and the appearance and language controls.
+> **Owns:** the top band of the centre column: repository identity, path lines, the repo-wide actions, and the appearance and language controls.
 >
 > The top band of the [main panel](Plan-MainPanel-todo.md). Siblings:
 > [Toolbar](Plan-MainPanel-Toolbar-todo.md) · [Container](Plan-MainPanel-Container-todo.md)
 
-The identity band for whatever repository is open: what it is, where it lives, and the three
+The identity band for whatever repository is open: what it is, where it lives, and the
 actions that act on the repository as a whole.
 
 ## What it contains
@@ -16,7 +16,7 @@ actions that act on the repository as a whole.
 | Connection badge | Connected / No /build folder / No scripts found / Unreachable / scanning |
 | Local folder | Labelled path line, middle-truncated |
 | GitHub | Labelled origin line, shown only when the repository has one |
-| Actions | Reveal in Finder · Open in Terminal · Copy Path |
+| Actions | Reveal in Finder · Open in Terminal · Copy Path · Scan Repo |
 
 ## Work plan
 
@@ -26,7 +26,9 @@ actions that act on the repository as a whole.
 - [x] Labelled `Local folder:` line.
 - [x] Labelled `GitHub:` line, hidden when the repository has no origin.
 - [x] Reveal in Finder, Open in Terminal, Copy Path, each disabled when not applicable.
-- [x] Accessibility labels on all three actions.
+- [x] Scan Repo button beside Copy Path opens the repository self-identification scan sheet and
+      forces a fresh scan.
+- [x] Accessibility labels on all four actions.
 - [x] Paths middle-truncate rather than pushing the actions off-screen.
 
 ## 01. Glass effect
@@ -63,8 +65,8 @@ repository is selected — something a control inside the repository header coul
 
 | Section | Checked / Total | Status |
 | --- | --- | --- |
-| Already shipped | 6 / 6 | Done |
+| Already shipped | 7 / 7 | Done |
 | 01 — Glass effect | 2 / 5 | In progress |
 | 02 — Open items | 0 / 2 | Open |
 | 03 — Appearance and language | 2 / 2 | Moved to the app shell |
-| **Total** | **10 / 15** | **In progress** |
+| **Total** | **11 / 16** | **In progress** |

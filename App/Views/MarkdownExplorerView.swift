@@ -4,6 +4,7 @@ import AppKit
 /// The Docs tab: markdown files on the left, the rendered document on the right.
 struct MarkdownExplorerView: View {
     let repository: Repository
+    let identityScanResult: RepositoryIdentityScanResult?
 
     @State private var tree: [MarkdownNode] = []
     @State private var selectedPath: String?
@@ -68,6 +69,11 @@ struct MarkdownExplorerView: View {
                 Spacer()
                 if isScanning {
                     ProgressView().controlSize(.small)
+                } else if let cachedCount = identityScanResult?[.markdown].count, tree.isEmpty {
+                    Text("\(cachedCount)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .accessibilityLabel("\(cachedCount) markdown files found by repository scan")
                 } else {
                     Text("\(MarkdownFileTree.fileCount(tree))")
                         .font(.caption)

@@ -9,6 +9,7 @@ struct RepositoryOverviewView<StatusBadge: View>: View {
     /// Every recorded run, newest first. Statistics are computed here rather than handed in, so
     /// the date range can change without a round trip through the store.
     let records: [BuildRecord]
+    let identityScanResult: RepositoryIdentityScanResult?
     @ViewBuilder let statusBadge: () -> StatusBadge
 
     @State private var range: StatsRange = .allTime
@@ -24,6 +25,13 @@ struct RepositoryOverviewView<StatusBadge: View>: View {
                 LabeledContent("Path/URL", value: repository.source.displayPath)
                 LabeledContent("Connection") { statusBadge() }
                 LabeledContent("Total Builds", value: "\(records.count)")
+                if let identityScanResult {
+                    Divider()
+                    ForEach(RepositoryIdentityScanCategory.allCases) { category in
+                        let categoryResult = identityScanResult[category]
+                        LabeledContent(category.title, value: "\(categoryResult.count)")
+                    }
+                }
             }
             .sectionCard()
 
