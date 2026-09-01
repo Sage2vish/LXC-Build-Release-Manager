@@ -457,7 +457,7 @@ final class SidebarAndHTMLTests: XCTestCase {
 
     // MARK: App shell background
 
-    func testAppBackgroundStaysVisibleInDarkMode() {
+    @MainActor func testAppBackgroundStaysVisibleInDarkMode() {
         var prefs = Preferences()
         prefs.reduceTransparency = false
 
@@ -473,7 +473,7 @@ final class SidebarAndHTMLTests: XCTestCase {
         XCTAssertEqual(state.overlayOpacity, 0.26, accuracy: 0.0001)
     }
 
-    func testAppBackgroundIsSuppressedWhenReduceTransparencyIsEnabled() {
+    @MainActor func testAppBackgroundIsSuppressedWhenReduceTransparencyIsEnabled() {
         var prefs = Preferences()
         prefs.reduceTransparency = true
 
@@ -481,7 +481,7 @@ final class SidebarAndHTMLTests: XCTestCase {
         XCTAssertFalse(state.shouldShow)
     }
 
-    func testAppBackgroundImageIsBundledInTheAssetsSubdirectory() {
+    @MainActor func testAppBackgroundImageIsBundledInTheAssetsSubdirectory() {
         XCTAssertNotNil(AppBackground.imageURL())
         XCTAssertEqual(AppBackground.imageURL()?.lastPathComponent, "ui-back-main.png")
     }
@@ -577,6 +577,20 @@ final class LocalizationCoverageTests: XCTestCase {
         )
     }
 
+    func testEveryTranslatableStringHasPunjabi() throws {
+        var untranslated: [String] = []
+        for (key, value) in try catalogue() {
+            guard let entry = value as? [String: Any] else { continue }
+            if entry["shouldTranslate"] as? Bool == false { continue }
+            let localizations = entry["localizations"] as? [String: Any] ?? [:]
+            if localizations["pa"] == nil { untranslated.append(key) }
+        }
+        XCTAssertTrue(
+            untranslated.isEmpty,
+            "\(untranslated.count) strings have no Punjabi: \(untranslated.sorted().prefix(10))"
+        )
+    }
+
     func testHindiValuesAreActuallyDifferentFromEnglish() throws {
         // A "translation" identical to the source is the most common way a catalogue looks
         // complete while changing nothing on screen.
@@ -594,6 +608,21 @@ final class LocalizationCoverageTests: XCTestCase {
             if unchanged && !isToken { copied.append(key) }
         }
         XCTAssertTrue(copied.isEmpty, "Hindi is identical to English for: \(copied.sorted().prefix(10))")
+    }
+
+    func testPunjabiValuesAreActuallyDifferentFromEnglish() throws {
+        var copied: [String] = []
+        for (key, value) in try catalogue() {
+            guard let entry = value as? [String: Any],
+                  let localizations = entry["localizations"] as? [String: Any],
+                  let punjabi = localizations["pa"] as? [String: Any],
+                  let unit = punjabi["stringUnit"] as? [String: Any],
+                  let translated = unit["value"] as? String else { continue }
+            let unchanged = translated == key
+            let isToken = key.allSatisfy { !$0.isLetter }
+            if unchanged && !isToken { copied.append(key) }
+        }
+        XCTAssertTrue(copied.isEmpty, "Punjabi is identical to English for: \(copied.sorted().prefix(10))")
     }
 
     func testTechnicalTokensAreMarkedNotToTranslate() throws {

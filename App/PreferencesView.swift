@@ -522,10 +522,12 @@ struct PreferencesView: View {
         }
     }
 }
-#Preview {
-    PreferencesView(
-        store: PreferencesStore.shared,
-        historyStore: BuildHistoryStore.shared
-    )
+struct PreferencesView_Previews: PreviewProvider {
+    static var previews: some View {
+        PreferencesView(
+            store: PreferencesStore.shared,
+            historyStore: BuildHistoryStore.shared
+        )
+    }
 }
 

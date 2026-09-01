@@ -49,8 +49,17 @@ struct AppBackground: View {
     @Environment(\.colorScheme) private var colorScheme
 
     static func imageURL(in bundle: Bundle = .main) -> URL? {
-        bundle.url(forResource: "ui-back-main", withExtension: "png", subdirectory: "Assets")
-        ?? bundle.url(forResource: "ui-back-main", withExtension: "png")
+        if let url = bundle.url(forResource: "ui-back-main", withExtension: "png", subdirectory: "Assets")
+            ?? bundle.url(forResource: "ui-back-main", withExtension: "png") {
+            return url
+        }
+        for b in Bundle.allBundles + Bundle.allFrameworks {
+            if let url = b.url(forResource: "ui-back-main", withExtension: "png", subdirectory: "Assets")
+                ?? b.url(forResource: "ui-back-main", withExtension: "png") {
+                return url
+            }
+        }
+        return nil
     }
 
     private static let image: NSImage? = imageURL().flatMap { NSImage(contentsOf: $0) }

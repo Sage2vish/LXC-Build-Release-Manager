@@ -540,11 +540,13 @@ final class UpdateAndLanguageTests: XCTestCase {
         XCTAssertNil(AppLanguage(preference: "System Default").languageCode)
         XCTAssertEqual(AppLanguage(preference: "English").languageCode, "en")
         XCTAssertEqual(AppLanguage(preference: "Hindi").languageCode, "hi")
+        XCTAssertEqual(AppLanguage(preference: "Punjabi").languageCode, "pa")
         // An old or hand-edited value must not break loading.
         XCTAssertEqual(AppLanguage(preference: "Klingon"), .systemDefault)
         XCTAssertEqual(AppLanguage(preference: ""), .systemDefault)
-        // Hindi is shown in its own script.
+        // Native scripts
         XCTAssertEqual(AppLanguage.hindi.nativeName, "हिन्दी")
+        XCTAssertEqual(AppLanguage.punjabi.nativeName, "ਪੰਜਾਬੀ")
         XCTAssertEqual(AppLanguage.english.nativeName, "English")
     }
 
@@ -558,6 +560,10 @@ final class UpdateAndLanguageTests: XCTestCase {
         // Re-applying the same language is not a change, so no relaunch is offered.
         XCTAssertFalse(AppLanguageController.apply(.hindi, defaults: defaults))
 
+        XCTAssertTrue(AppLanguageController.apply(.punjabi, defaults: defaults))
+        XCTAssertEqual(AppLanguageController.currentOverride(defaults: defaults), "pa")
+        XCTAssertFalse(AppLanguageController.apply(.punjabi, defaults: defaults))
+
         XCTAssertTrue(AppLanguageController.apply(.english, defaults: defaults))
         XCTAssertEqual(AppLanguageController.currentOverride(defaults: defaults), "en")
 
@@ -570,8 +576,11 @@ final class UpdateAndLanguageTests: XCTestCase {
     func testHindiCatalogCoversEveryEnglishKey() throws {
         // The catalog ships with the app; every declared key must have a Hindi value, or the
         // language picker silently shows English.
+        let bundle = Bundle.allBundles.first { $0.path(forResource: "Localizable", ofType: "strings", inDirectory: nil, forLocalization: "hi") != nil }
+            ?? Bundle.main
         let path = try XCTUnwrap(
-            Bundle.main.path(forResource: "Localizable", ofType: "strings", inDirectory: nil, forLocalization: "hi"),
+            bundle.path(forResource: "Localizable", ofType: "strings", inDirectory: nil, forLocalization: "hi")
+            ?? Bundle.allBundles.lazy.compactMap { $0.path(forResource: "Localizable", ofType: "strings", inDirectory: nil, forLocalization: "hi") }.first,
             "Hindi localization missing from the app bundle"
         )
         let data = try Data(contentsOf: URL(fileURLWithPath: path))
@@ -589,10 +598,30 @@ final class UpdateAndLanguageTests: XCTestCase {
         XCTAssertEqual(strings["Run"], "चलाएँ")
         XCTAssertEqual(strings["Repositories"], "रिपॉज़िटरी")
         XCTAssertEqual(strings["Preferences"], "प्राथमिकताएँ")
+    }
 
-        // English is the source language and needs no compiled catalog; it falls back to the
-        // literal strings in code.
-        XCTAssertTrue(Bundle.main.localizations.contains("hi"))
+    func testPunjabiCatalogCoversEveryEnglishKey() throws {
+        let bundle = Bundle.allBundles.first { $0.path(forResource: "Localizable", ofType: "strings", inDirectory: nil, forLocalization: "pa") != nil }
+            ?? Bundle.main
+        let path = try XCTUnwrap(
+            bundle.path(forResource: "Localizable", ofType: "strings", inDirectory: nil, forLocalization: "pa")
+            ?? Bundle.allBundles.lazy.compactMap { $0.path(forResource: "Localizable", ofType: "strings", inDirectory: nil, forLocalization: "pa") }.first,
+            "Punjabi localization missing from the app bundle"
+        )
+        let data = try Data(contentsOf: URL(fileURLWithPath: path))
+        let strings = try XCTUnwrap(
+            PropertyListSerialization.propertyList(from: data, format: nil) as? [String: String]
+        )
+        XCTAssertGreaterThan(strings.count, 40, "Expected the Punjabi catalog to be populated")
+        for (key, value) in strings {
+            XCTAssertFalse(value.trimmingCharacters(in: .whitespaces).isEmpty, "\(key) has an empty Punjabi value")
+            if !["GitHub"].contains(key) {
+                XCTAssertNotEqual(value, key, "\(key) is untranslated in Punjabi")
+            }
+        }
+        XCTAssertEqual(strings["Run"], "ਚਲਾਓ")
+        XCTAssertEqual(strings["Repositories"], "ਰਿਪੋਜ਼ਿਟਰੀਆਂ")
+        XCTAssertEqual(strings["Preferences"], "ਤਰਜੀਹਾਂ")
     }
 }
 

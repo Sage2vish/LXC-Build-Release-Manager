@@ -12,7 +12,9 @@ final class BuildNotificationService {
         case cancelled
     }
 
-    private let center = UNUserNotificationCenter.current()
+    private var center: UNUserNotificationCenter? {
+        Bundle.main.bundleIdentifier != nil ? UNUserNotificationCenter.current() : nil
+    }
     private var didRequestAuthorization = false
 
     func notify(_ kind: Kind, repository: Repository, script: BuildScript, preferences: Preferences) {
@@ -38,7 +40,7 @@ final class BuildNotificationService {
     private func ensureAuthorizationIfNeeded(_ completion: @escaping @Sendable () -> Void) {
         guard !didRequestAuthorization else { return }
         didRequestAuthorization = true
-        let center = self.center
+        guard let center = self.center else { return }
         center.getNotificationSettings { settings in
             guard settings.authorizationStatus == .notDetermined else {
                 Task { @MainActor in completion() }
@@ -51,6 +53,7 @@ final class BuildNotificationService {
     }
 
     private func post(kind: Kind, repository: Repository, script: BuildScript, preferences: Preferences) {
+        guard let center = self.center else { return }
         let content = UNMutableNotificationContent()
         content.title = repository.name
         content.body = bodyText(kind: kind, script: script)

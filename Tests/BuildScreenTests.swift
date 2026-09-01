@@ -374,6 +374,7 @@ final class HistoryFilterTests: XCTestCase {
 final class AppLanguageLabelTests: XCTestCase {
     func testLabelShowsEnglishNameThenNativeName() {
         XCTAssertEqual(AppLanguage.hindi.pickerLabel, "Hindi — हिन्दी")
+        XCTAssertEqual(AppLanguage.punjabi.pickerLabel, "Punjabi — ਪੰਜਾਬੀ")
     }
 
     func testLabelIsNotRepeatedWhenBothNamesMatch() {
@@ -399,7 +400,7 @@ final class AppLanguageLabelTests: XCTestCase {
         XCTAssertEqual(AppLanguage(preference: "Klingon"), .systemDefault)
     }
 
-    func testAppearanceSliderStopsRunLightSystemDark() {
+    @MainActor func testAppearanceSliderStopsRunLightSystemDark() {
         // System sits in the middle: it is the resting position, with an override either side.
         XCTAssertEqual(AppearanceSlider.title(for: .light), "Bright")
         XCTAssertEqual(AppearanceSlider.title(for: .system), "System Default")
@@ -535,13 +536,13 @@ final class ToolbarControlTests: XCTestCase {
         XCTAssertEqual(AppTheme.allCases.count, 3, "The appearance control is a three-stop picker")
     }
 
-    func testAppearanceStopsAreOrderedBrightDefaultDark() {
+    @MainActor func testAppearanceStopsAreOrderedBrightDefaultDark() {
         XCTAssertEqual(AppearanceSlider.title(for: .light), "Bright")
         XCTAssertEqual(AppearanceSlider.title(for: .system), "System Default")
         XCTAssertEqual(AppearanceSlider.title(for: .dark), "Dark")
     }
 
-    func testEveryAppearanceStopHasItsOwnIconAndExplanation() {
+    @MainActor func testEveryAppearanceStopHasItsOwnIconAndExplanation() {
         var assets = Set<String>()
         for theme in AppTheme.allCases {
             let asset = AppearanceSlider.asset(for: theme)
@@ -556,5 +557,55 @@ final class ToolbarControlTests: XCTestCase {
         // Space in the bar is scarce; space in the menu is not.
         XCTAssertEqual(AppLanguage.hindi.nativeName, "हिन्दी")
         XCTAssertEqual(AppLanguage.hindi.pickerLabel, "Hindi — हिन्दी")
+        XCTAssertEqual(AppLanguage.punjabi.nativeName, "ਪੰਜਾਬੀ")
+        XCTAssertEqual(AppLanguage.punjabi.pickerLabel, "Punjabi — ਪੰਜਾਬੀ")
+    }
+}
+
+// MARK: - Sidebar row presentation
+
+/// Covers `ListBoxRowBackground` — the drawn container that makes a `List`'s rows read as a
+/// single rounded box. The `Position` enum drives which corners and edges each row is
+/// responsible for; getting it wrong produces square corners on a rounded box, or rules that
+/// bleed past the border. The `cornerRadius` constant is shared by the fill shape and the
+/// open-path border stroke (`ListBoxBorder`); the two must use the same value or the outline
+/// drifts off the curve of the fill.
+final class SidebarRowTests: XCTestCase {
+
+    @MainActor
+    func testCornerRadiusIsSixteenthInchAndDocumentsTheSharedContract() {
+        // 8pt: small enough to read as a container rather than a pill. Asserting it here pins
+        // the value so a future change to either the fill or the border cannot drift silently.
+        XCTAssertEqual(ListBoxRowBackground.cornerRadius, 8)
+    }
+
+    @MainActor
+    func testPositionInitializerMapsIndexAndCountToCorrectCase() {
+        // A lone row draws all four corners and both hairlines itself.
+        XCTAssertEqual(ListBoxRowBackground.Position(index: 0, count: 1), .only)
+        // Two-row group: no middle rows.
+        XCTAssertEqual(ListBoxRowBackground.Position(index: 0, count: 2), .first)
+        XCTAssertEqual(ListBoxRowBackground.Position(index: 1, count: 2), .last)
+        // Four-row group covers every case.
+        XCTAssertEqual(ListBoxRowBackground.Position(index: 0, count: 4), .first)
+        XCTAssertEqual(ListBoxRowBackground.Position(index: 1, count: 4), .middle)
+        XCTAssertEqual(ListBoxRowBackground.Position(index: 2, count: 4), .middle)
+        XCTAssertEqual(ListBoxRowBackground.Position(index: 3, count: 4), .last)
+    }
+
+    @MainActor
+    func testIsFirstAndIsLastCoverAllFourCases() {
+        // .only owns both ends of the box.
+        XCTAssertTrue(ListBoxRowBackground.Position.only.isFirst)
+        XCTAssertTrue(ListBoxRowBackground.Position.only.isLast)
+        // .first owns the top, not the bottom.
+        XCTAssertTrue(ListBoxRowBackground.Position.first.isFirst)
+        XCTAssertFalse(ListBoxRowBackground.Position.first.isLast)
+        // .last owns the bottom, not the top.
+        XCTAssertFalse(ListBoxRowBackground.Position.last.isFirst)
+        XCTAssertTrue(ListBoxRowBackground.Position.last.isLast)
+        // .middle owns neither; it just draws two straight sides and a hairline.
+        XCTAssertFalse(ListBoxRowBackground.Position.middle.isFirst)
+        XCTAssertFalse(ListBoxRowBackground.Position.middle.isLast)
     }
 }

@@ -10,6 +10,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     case systemDefault = "System Default"
     case english = "English"
     case hindi = "Hindi"
+    case punjabi = "Punjabi"
 
     var id: String { rawValue }
 
@@ -19,6 +20,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case .systemDefault: return nil
         case .english: return "en"
         case .hindi: return "hi"
+        case .punjabi: return "pa"
         }
     }
 
@@ -28,6 +30,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case .systemDefault: return "System Default"
         case .english: return "English"
         case .hindi: return "Hindi"
+        case .punjabi: return "Punjabi"
         }
     }
 
@@ -37,6 +40,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case .systemDefault: return "System Default"
         case .english: return "English"
         case .hindi: return "हिन्दी"
+        case .punjabi: return "ਪੰਜਾਬੀ"
         }
     }
 

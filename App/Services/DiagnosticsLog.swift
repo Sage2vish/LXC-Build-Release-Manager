@@ -56,9 +56,7 @@ enum DiagnosticsLog {
 
         let expanded = (raw as NSString).expandingTildeInPath
         let directory = URL(fileURLWithPath: expanded, isDirectory: true)
-        guard (try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)) != nil else {
-            return nil
-        }
+        _ = try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
         return directory.appendingPathComponent("diagnostics.log")
     }
 }

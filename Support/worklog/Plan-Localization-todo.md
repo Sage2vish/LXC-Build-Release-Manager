@@ -1,4 +1,4 @@
-# Plan — Localization (`language`: English + Hindi)
+# Plan — Localization (`language`: English + Hindi + Punjabi)
 
 > **Owns:** localization: the string catalogue, the shipped languages, and how a language switch takes effect.
 
@@ -14,9 +14,10 @@ Per direction:
 | --- | --- |
 | **English (`en`)** | Standard and main language. Development language, and the fallback for any missing key. |
 | **Hindi (`hi`)** | Second supported language. |
+| **Punjabi (`pa`)** | Third supported language. |
 
 "System Default" stays the top option and means: follow macOS, falling back to English when the
-system language is neither English nor Hindi.
+system language is none of English, Hindi, or Punjabi.
 
 ## How the switch works
 

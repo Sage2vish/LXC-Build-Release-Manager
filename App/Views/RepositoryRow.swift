@@ -1,5 +1,7 @@
 import SwiftUI
 
+private let listBoxCornerRadius: CGFloat = 8
+
 struct RepositoryRow: View {
     let repository: Repository
     @ObservedObject var store: RepositoryStore
@@ -74,7 +76,7 @@ struct ListBoxRowBackground: View {
 
     /// Small enough to read as a container rather than as a pill, and shared by the fill and the
     /// border so the two cannot drift apart.
-    static let cornerRadius: CGFloat = 8
+    static let cornerRadius: CGFloat = listBoxCornerRadius
 
 
     /// The box's margin from the panel's edges. Applied here rather than by the row, because a
@@ -127,7 +129,7 @@ struct ListBoxBorder: Shape {
 
     func path(in rect: CGRect) -> Path {
         var path = Path()
-        let radius = min(ListBoxRowBackground.cornerRadius, rect.height / 2)
+        let radius = min(listBoxCornerRadius, rect.height / 2)
 
         // Where this row's straight sides stop. A row that owns the bottom corners has to hand the
         // last `radius` of each side over to the curve: running the side all the way to `maxY` drew

@@ -1377,17 +1377,19 @@ struct RepositoryDetailView: View {
     }
 }
 
-#Preview {
-    LogPane(
-        title: "Example Log Output",
-        lines: [
-            DisplayLine(id: UUID(), timestampText: "10:15:01", text: "Build started...", stream: .stdout, ansiColor: nil),
-            DisplayLine(id: UUID(), timestampText: "10:15:03", text: "Compiling main.swift", stream: .stdout, ansiColor: nil),
-            DisplayLine(id: UUID(), timestampText: "10:15:10", text: "\u{001B}[32mBuild succeeded.\u{001B}[0m", stream: .stdout, ansiColor: .green),
-            DisplayLine(id: UUID(), timestampText: "10:15:11", text: "[stderr] Warning: Deprecated API usage", stream: .stderr, ansiColor: .yellow)
-        ],
-        preferences: Preferences.recommendedDefaults
-    )
-    .frame(width: 800, height: 500)
-    .padding()
+struct LogPane_Previews: PreviewProvider {
+    static var previews: some View {
+        LogPane(
+            title: "Example Log Output",
+            lines: [
+                DisplayLine(id: UUID(), timestampText: "10:15:01", text: "Build started...", stream: .stdout, ansiColor: nil),
+                DisplayLine(id: UUID(), timestampText: "10:15:03", text: "Compiling main.swift", stream: .stdout, ansiColor: nil),
+                DisplayLine(id: UUID(), timestampText: "10:15:10", text: "\u{001B}[32mBuild succeeded.\u{001B}[0m", stream: .stdout, ansiColor: .green),
+                DisplayLine(id: UUID(), timestampText: "10:15:11", text: "[stderr] Warning: Deprecated API usage", stream: .stderr, ansiColor: .yellow)
+            ],
+            preferences: Preferences.recommendedDefaults
+        )
+        .frame(width: 800, height: 500)
+        .padding()
+    }
 }

@@ -11,5 +11,6 @@ xcodebuild \
   -scheme LXC-Build-Release-Manager \
   -configuration Debug \
   -destination 'platform=macOS' \
+  -derivedDataPath .derivedData \
   CODE_SIGNING_ALLOWED=NO \
   build
