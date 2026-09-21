@@ -1,0 +1,23 @@
+# project-system.yaml — repository layout manifest (projectops-v2 §17 / CON012)
+project:
+  name: Lexvora Build and Release Manager
+  shortcode: build-release-manager
+  theme: lexvora-company
+
+repository:
+  folder_naming: lenient      # prefixed = strict (audit ERROR); lenient = migration pending (WARN)
+  fallback_shortcode: prj-code
+
+folders:
+  core: false
+  shared: false
+  modules: false
+  packages: false
+  tests: false
+  scripts: false
+  tools: false
+  build: false
+  deploy: false
+  release: false
+  config: false
+  examples: false
